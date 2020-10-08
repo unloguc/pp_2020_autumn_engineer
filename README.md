@@ -1,5 +1,7 @@
-[![Build Status](https://travis-ci.com/learning-process/parallel_programming_course.svg?branch=master)](https://travis-ci.com/learning-process/parallel_programming_course)
-![Build application](https://github.com/learning-process/parallel_programming_course/workflows/Build%20application/badge.svg?branch=master)
+[![Build Status](https://travis-ci.com/allnes/pp_2020_autumn_engineer.svg?branch=main)](https://travis-ci.com/allnes/pp_2020_autumn_engineer)
+![Build application](https://github.com/allnes/pp_2020_autumn_engineer/workflows/Build%20application/badge.svg?branch=master)
+
+## Upd. Репозиторий до 18 октября находится в тестовом режиме - могут быть внесены новые изменения и проверки!!!
 
 # Parallel programming course
 
