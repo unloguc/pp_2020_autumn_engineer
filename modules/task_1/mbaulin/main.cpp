@@ -1,8 +1,8 @@
-// Copyright 2018 Nesterov Alexander
-#include "../../../3rdparty/gtest-mpi/linux/gtest-mpi-listener.hpp"
+// Copyright 2020 Mikhail Baulin
 #include <gtest/gtest.h>
 #include <vector>
-#include "./ops_mpi.h"
+#include "./matrix_max_mpi.h"
+#include "../../../3rdparty/gtest-mpi/linux/gtest-mpi-listener.hpp"
 
 
 TEST(Parallel_Operations_MPI, Test_Max) {
@@ -38,8 +38,7 @@ TEST(Parallel_Operations_MPI, Test_Max_24) {
 
 
     int** mat = new int* [rows];
-    for (int i = 0; i < rows; i++)
-    {
+    for (int i = 0; i < rows; i++) {
         mat[i] = new int[cols];
         for (int j = 0; j < cols; j++)
             mat[i][j] = i * cols + j;
