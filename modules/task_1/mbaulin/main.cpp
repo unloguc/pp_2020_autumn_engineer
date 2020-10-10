@@ -49,7 +49,6 @@ TEST(Parallel_Operations_MPI, Test_Max_24) {
     global_max = getParallelOperations(mat, rows, cols);
 
     if (rank == 0) {
-        int reference_max = findMax(mat, rows, cols);
         ASSERT_EQ(24, global_max);
     }
 }

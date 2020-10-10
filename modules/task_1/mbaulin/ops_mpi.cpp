@@ -22,7 +22,7 @@ int** fillMatrixWithRandomNumbers(int** mat, int rows, int cols)
 
 int findMax(int** mat, int rows, int cols)
 {
-    int maxElement = INT_MIN;
+    int maxElement = -1;
 
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
@@ -46,7 +46,7 @@ int getParallelOperations(int** mat, int rows, int cols)
 
     if (rank == 0) {
         for (int proc = 1; proc < size; proc++) {
-            for (int i = proc * delta; (proc + 1) * delta ; i++)
+            for (int i = proc * delta; i < (proc + 1) * delta ; i++)
             {
                 if (i > rows) break;
                 MPI_Send(mat[i], cols,
@@ -63,12 +63,11 @@ int getParallelOperations(int** mat, int rows, int cols)
         local_mat = mat;
     }
     else {
-        for (int i = rank * delta; (rank + 1) * delta; i++)
+        for (int i = rank * delta; i < (rank + 1) * delta; i++)
         {
             MPI_Status status;
             MPI_Recv(local_mat[i], delta, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
         }
-        MPI_Status status;
     }
 
     int global_sum = 0;
