@@ -43,6 +43,11 @@ int getParallelOperations(int* mat, int rows, int cols) {
 
     if (rank == 0) {
         for (int proc = 1; proc < size; proc++) {
+        // for (int i = proc * delta; i < (proc + 1) * delta; i++) {
+        //    if (i > rows) break;
+        //    MPI_Send(&mat[i * cols], cols,
+        //        MPI_INT, proc, 0, MPI_COMM_WORLD);
+        //}
             MPI_Send(&mat[proc * delta * cols], delta * cols,
                 MPI_INT, proc, 0, MPI_COMM_WORLD);
         }
@@ -53,10 +58,10 @@ int getParallelOperations(int* mat, int rows, int cols) {
     if (rank == 0) {
         local_mat = mat;
     } else {
-        //for (int i = 0; i < delta; i++) {
-        //    MPI_Status status;
-        //    MPI_Recv(&local_mat[i * cols], cols, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
-        //}
+    // for (int i = 0; i < delta; i++) {
+    //    MPI_Status status;
+    //    MPI_Recv(&local_mat[i * cols], cols, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
+    //}
         MPI_Status status;
         MPI_Recv(local_mat, delta * cols, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
     }

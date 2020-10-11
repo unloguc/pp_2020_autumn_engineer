@@ -11,7 +11,7 @@ TEST(Parallel_Operations_MPI, Test_Max) {
     int cols = 50;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    int* mat = new int [rows * cols];
+    int* mat = new int[rows * cols];
 
     if (rank == 0) {
         mat = fillMatrixWithRandomNumbers(mat, rows, cols);
@@ -107,8 +107,7 @@ int main(int argc, char** argv) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
 
-    if (rank == 0)
-    {
+    if (rank == 0) {
         std::cout << "Please input number: ";
         std::cin >> temp;
     }
