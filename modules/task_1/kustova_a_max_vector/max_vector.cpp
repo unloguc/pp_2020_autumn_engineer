@@ -78,6 +78,7 @@ std::vector<int> getRandomVector(int sz) {
 
 int getSequentialOperations(std::vector<int> vec, std::string ops) {
     const int  sz = vec.size();
+    if (sz == 0) throw ("Empty_vector");
     int reduction_elem = 0;
     reduction_elem = vec[0];
     for (int  i = 1; i < sz; i++) {
@@ -88,6 +89,7 @@ int getSequentialOperations(std::vector<int> vec, std::string ops) {
 
 int getParallelOperations(std::vector<int> global_vec,
                           int count_size_vector, std::string ops) {
+    if (global_vec.size() == 0) throw ("Empty_vector");
     int size, rank;
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
