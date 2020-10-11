@@ -5,14 +5,21 @@
 #include "./max_vector.h"
 
 TEST(Parallel_Operations_MPI, Test_can_count_Max) {
+    cout << 1;
     int rank;
+    cout << 2;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    cout << 3;
     std::vector<int> global_vec;
+    cout << 4;
     const int count_size_vector = 100;
-
+    cout << 5;
     if (rank == 0) {
+    cout << 6;
         global_vec = getRandomVector(count_size_vector);
+    cout << 7;
     }
+    cout << 8;
     ASSERT_NO_THROW(getParallelOperations(global_vec, count_size_vector, "max"));
 }
 
