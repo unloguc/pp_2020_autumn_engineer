@@ -65,6 +65,17 @@ TEST(Parallel_Operations_MPI, Test_can_gen_random_vector) {
     }
 }
 
+TEST(Parallel_Operations_MPI, Test_throw_gen_vector_with_negative_length) {
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    std::vector<int> global_vec1;
+    std::vector<int> global_vec2;
+    const int count_size_vector = -100;
+
+    if (rank == 0) {
+        ASSERT_ANY_THROW(getRandomVector(count_size_vector));
+    }
+}
 
 
 int main(int argc, char** argv) {
