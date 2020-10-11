@@ -58,15 +58,23 @@ int getParallelOperations(int** mat, int rows, int cols) {
     if (rank == 0) {
         local_mat = mat;
     } else {
-        for (int i = rank * delta; i < (rank + 1) * delta; i++) {
+        for (int i = 0; i < delta; i++) {
             MPI_Status status;
-            MPI_Recv(local_mat[i], delta, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
+            MPI_Recv(local_mat[i], cols, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
         }
     }
 
-    int global_sum = 0;
-    int local_sum = findMax(local_mat, delta, cols);
+    int global_max = 0;
+    int local_max = findMax(local_mat, delta, cols);
+
+    if (rank == 0 && rows > size * delta) {
+        int local_max_tail;
+        local_mat = &mat[size * delta];
+        local_max_tail = findMax(local_mat, rows - (size * delta), cols);
+        local_max = (local_max > local_max_tail) ? local_max : local_max_tail;
+    }
+
     MPI_Op op_code = MPI_MAX;
-    MPI_Reduce(&local_sum, &global_sum, 1, MPI_INT, op_code, 0, MPI_COMM_WORLD);
-    return global_sum;
+    MPI_Reduce(&local_max, &global_max, 1, MPI_INT, op_code, 0, MPI_COMM_WORLD);
+    return global_max;
 }

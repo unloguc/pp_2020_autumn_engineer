@@ -11,11 +11,9 @@ TEST(Parallel_Operations_MPI, Test_Max) {
     int cols = 50;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-
     int** mat = new int* [rows];
     for (int i = 0; i < rows; i++)
         mat[i] = new int[cols];
-
 
     if (rank == 0) {
         mat = fillMatrixWithRandomNumbers(mat, rows, cols);
@@ -36,12 +34,16 @@ TEST(Parallel_Operations_MPI, Test_Max_24) {
     int cols = 5;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-
     int** mat = new int* [rows];
     for (int i = 0; i < rows; i++) {
         mat[i] = new int[cols];
-        for (int j = 0; j < cols; j++)
-            mat[i][j] = i * cols + j;
+    }
+
+    if (rank == 0) {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++)
+                mat[i][j] = i * cols + j;
+        }
     }
 
     int global_max;
@@ -49,6 +51,60 @@ TEST(Parallel_Operations_MPI, Test_Max_24) {
 
     if (rank == 0) {
         ASSERT_EQ(24, global_max);
+    }
+}
+
+TEST(Parallel_Operations_MPI, Test_Max_19607) {
+    int rank;
+    int rows = 129;
+    int cols = 152;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+    int** mat = new int* [rows];
+    for (int i = 0; i < rows; i++) {
+        mat[i] = new int[cols];
+    }
+
+    if (rank == 0) {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++)
+                mat[i][j] = i * cols + j;
+        }
+    }
+
+    int global_max;
+    global_max = getParallelOperations(mat, rows, cols);
+
+    if (rank == 0) {
+        ASSERT_EQ(19607, global_max);
+    }
+}
+
+TEST(Parallel_Operations_MPI, Test_Max_55555) {
+    int rank;
+    int rows = 129;
+    int cols = 152;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+    int** mat = new int* [rows];
+    for (int i = 0; i < rows; i++) {
+        mat[i] = new int[cols];
+    }
+
+    if (rank == 0) {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++)
+                mat[i][j] = i * cols + j;
+        }
+    }
+
+    mat[75][54] = 55555;
+
+    int global_max;
+    global_max = getParallelOperations(mat, rows, cols);
+
+    if (rank == 0) {
+        ASSERT_EQ(55555, global_max);
     }
 }
 
