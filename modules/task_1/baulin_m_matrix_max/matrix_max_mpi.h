@@ -5,8 +5,8 @@
 #include <vector>
 #include <string>
 
-int** fillMatrixWithRandomNumbers(int** mat, int rows, int cols);
-int findMax(int** mat, int rows, int cols);
-int getParallelOperations(int** mat, int rows, int cols);
+int* fillMatrixWithRandomNumbers(int* mat, int rows, int cols);
+int getSequentialOperations(int* mat, int rows, int cols);
+int getParallelOperations(int* mat, int rows, int cols);
 
 #endif  // MODULES_TASK_1_MBAULIN_MATRIX_MAX_MPI_H_

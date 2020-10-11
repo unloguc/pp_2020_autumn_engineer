@@ -11,9 +11,7 @@ TEST(Parallel_Operations_MPI, Test_Max) {
     int cols = 50;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    int** mat = new int* [rows];
-    for (int i = 0; i < rows; i++)
-        mat[i] = new int[cols];
+    int* mat = new int [rows * cols];
 
     if (rank == 0) {
         mat = fillMatrixWithRandomNumbers(mat, rows, cols);
@@ -23,7 +21,7 @@ TEST(Parallel_Operations_MPI, Test_Max) {
     global_max = getParallelOperations(mat, rows, cols);
 
     if (rank == 0) {
-        int reference_max = findMax(mat, rows, cols);
+        int reference_max = getSequentialOperations(mat, rows, cols);
         ASSERT_EQ(reference_max, global_max);
     }
 }
@@ -34,15 +32,12 @@ TEST(Parallel_Operations_MPI, Test_Max_24) {
     int cols = 5;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    int** mat = new int* [rows];
-    for (int i = 0; i < rows; i++) {
-        mat[i] = new int[cols];
-    }
+    int* mat = new int[rows * cols];
 
     if (rank == 0) {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++)
-                mat[i][j] = i * cols + j;
+                mat[i * cols + j] = i * cols + j;
         }
     }
 
@@ -60,15 +55,12 @@ TEST(Parallel_Operations_MPI, Test_Max_19607) {
     int cols = 152;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    int** mat = new int* [rows];
-    for (int i = 0; i < rows; i++) {
-        mat[i] = new int[cols];
-    }
+    int* mat = new int[rows * cols];
 
     if (rank == 0) {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++)
-                mat[i][j] = i * cols + j;
+                mat[i * cols + j] = i * cols + j;
         }
     }
 
@@ -86,19 +78,16 @@ TEST(Parallel_Operations_MPI, Test_Max_55555) {
     int cols = 152;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    int** mat = new int* [rows];
-    for (int i = 0; i < rows; i++) {
-        mat[i] = new int[cols];
-    }
+    int* mat = new int[rows * cols];
 
     if (rank == 0) {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++)
-                mat[i][j] = i * cols + j;
+                mat[i * cols + j] = i * cols + j;
         }
     }
 
-    mat[75][54] = 55555;
+    mat[75 * cols + 54] = 55555;
 
     int global_max;
     global_max = getParallelOperations(mat, rows, cols);
@@ -111,6 +100,22 @@ TEST(Parallel_Operations_MPI, Test_Max_55555) {
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     MPI_Init(&argc, &argv);
+
+#ifdef _DEBUG
+
+    int rank, temp;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+
+    if (rank == 0)
+    {
+        std::cout << "Please input number: ";
+        std::cin >> temp;
+    }
+
+    MPI_Barrier(MPI_COMM_WORLD);
+
+#endif
 
     ::testing::AddGlobalTestEnvironment(new GTestMPIListener::MPIEnvironment);
     ::testing::TestEventListeners& listeners =
