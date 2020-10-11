@@ -66,7 +66,6 @@ int getParallelOperations(std::vector<int> global_vec,
 #include <random>
 #include <ctime>
 #include <algorithm>
-#include "max_vector.h"
 
 
 std::vector<int> getRandomVector(int sz) {
