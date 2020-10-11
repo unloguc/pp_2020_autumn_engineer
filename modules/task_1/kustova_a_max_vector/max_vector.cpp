@@ -78,7 +78,6 @@ std::vector<int> getRandomVector(int sz) {
 
 int getSequentialOperations(std::vector<int> vec, std::string ops) {
     const int  sz = vec.size();
-    if (sz == 0) throw ("Empty_vector");
     int reduction_elem = 0;
     reduction_elem = vec[0];
     for (int  i = 1; i < sz; i++) {
@@ -89,7 +88,6 @@ int getSequentialOperations(std::vector<int> vec, std::string ops) {
 
 int getParallelOperations(std::vector<int> global_vec,
                           int count_size_vector, std::string ops) {
-    if (global_vec.size() == 0) throw ("Empty_vector");
     int size, rank;
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -114,7 +112,7 @@ int getParallelOperations(std::vector<int> global_vec,
     int global_sum = 0;
     int local_sum = getSequentialOperations(local_vec, ops);
     MPI_Op op_code;
-    op_code = MPI_MAX;
+    op_code = MPI_MAX; }
     MPI_Reduce(&local_sum, &global_sum, 1, MPI_INT, op_code, 0, MPI_COMM_WORLD);
     return global_sum;
 }
