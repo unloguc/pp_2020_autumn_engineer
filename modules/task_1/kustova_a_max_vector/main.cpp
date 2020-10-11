@@ -94,42 +94,6 @@ int main(int argc, char** argv) {
 #include <vector>
 #include "./max_vector.h"
 
-TEST(Parallel_Operations_MPI, Test_Sum) {
-    int rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    std::vector<int> global_vec;
-    const int count_size_vector = 100;
-
-    if (rank == 0) {
-        global_vec = getRandomVector(count_size_vector);
-    }
-
-    int global_sum = getParallelOperations(global_vec, count_size_vector, "+");
-
-    if (rank == 0) {
-        int reference_sum = getSequentialOperations(global_vec, "+");
-        ASSERT_EQ(reference_sum, global_sum);
-    }
-}
-
-TEST(Parallel_Operations_MPI, Test_Diff) {
-    int rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    std::vector<int> global_vec;
-    const int count_size_vector = 100;
-
-    if (rank == 0) {
-        global_vec = getRandomVector(count_size_vector);
-    }
-
-    int global_diff = getParallelOperations(global_vec, count_size_vector, "-");
-
-    if (rank == 0) {
-        int reference_diff = getSequentialOperations(global_vec, "-");
-        ASSERT_EQ(reference_diff, global_diff);
-    }
-}
-
 TEST(Parallel_Operations_MPI, Test_Max) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
