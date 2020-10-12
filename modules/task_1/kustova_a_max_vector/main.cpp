@@ -3,77 +3,65 @@
 #include <gtest/gtest.h>
 #include <vector>
 #include "./max_vector.h"
-TEST(Parallel_Operations_MPI, Test_can_count_Max) {
-    std::cout << 1;
+TEST(Parallel_Operations_MPI, can_count_max) {
     int rank;
-    std::cout << 2;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    std::cout << 3;
-    std::vector<int> global_vec;
-    std::cout << 4;
-    const int count_size_vector = 100;
-    std::cout << 5;
+    std::vector<int> vec;
+    const int size = 100;
     if (rank == 0) {
-    std::cout << 6;
-        global_vec = getRandomVector(count_size_vector);
-    std::cout << 7;
+        vec = getRandomVector(size);
     }
-    std::cout << 8;
-    ASSERT_NO_THROW(getParallelOperations(global_vec, count_size_vector, "max"));
+    ASSERT_NO_THROW(getParallelOperations(vec));
 }
 
-TEST(Parallel_Operations_MPI, Test_Max) {
+TEST(Parallel_Operations_MPI, find_max) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    std::vector<int> global_vec;
-    const int count_size_vector = 100;
+    std::vector<int> vec;
+    const int size = 100;
 
     if (rank == 0) {
-        global_vec = getRandomVector(count_size_vector);
+        vec = getRandomVector(size);
     }
 
     int global_max;
-    global_max = getParallelOperations(global_vec, count_size_vector, "max");
+    global_max = getParallelOperations(vec);
 
     if (rank == 0) {
-        int reference_max = getSequentialOperations(global_vec, "max");
+        int reference_max = getSequentialOperations(vec);
         ASSERT_EQ(reference_max, global_max);
     }
 }
 
 
-TEST(Parallel_Operations_MPI, Test_can_find_local_max) {
+TEST(Parallel_Operations_MPI, can_find_local_max) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    std::vector<int> global_vec = {3, 4, 9, -6};
+    std::vector<int> vec = {3, 4, 9, -6};
     if (rank == 0) {
-        int reference_max = getSequentialOperations(global_vec, "max");
+        int reference_max = getSequentialOperations(vec);
         ASSERT_EQ(9, reference_max);
     }
 }
 
 
-TEST(Parallel_Operations_MPI, Test_can_gen_random_vector) {
+TEST(Parallel_Operations_MPI, can_gen_random_vector) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    std::vector<int> global_vec1;
-    std::vector<int> global_vec2;
-    const int count_size_vector = 100;
+    const int size = 100;
 
     if (rank == 0) {
-        ASSERT_NO_THROW(getRandomVector(count_size_vector));
+        ASSERT_NO_THROW(getRandomVector(size));
     }
 }
 
-TEST(Parallel_Operations_MPI, Test_throw_gen_vector_with_negative_length) {
+TEST(Parallel_Operations_MPI, throw_gen_vector_with_negative_length) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    std::vector<int> global_vec1;
-    std::vector<int> global_vec2;
-    const int count_size_vector = -100;
+    const int size = -100;
 
     if (rank == 0) {
-        ASSERT_ANY_THROW(getRandomVector(count_size_vector));
+        ASSERT_ANY_THROW(getRandomVector(size));
     }
 }
 

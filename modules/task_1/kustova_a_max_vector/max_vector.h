@@ -5,9 +5,8 @@
 #include <vector>
 #include <string>
 
-std::vector<int> getRandomVector(int  sz);
-int getParallelOperations(std::vector<int> global_vec,
-                          int count_size_vector, std::string ops);
-int getSequentialOperations(std::vector<int> vec, std::string ops);
+std::vector<int> getRandomVector(int  n);
+int getParallelOperations(std::vector<int> global_vec);
+int getSequentialOperations(std::vector<int> vec);
 
 #endif  // MODULES_TASK_1_KUSTOVA_A_MAX_VECTOR_MAX_VECTOR_H_
