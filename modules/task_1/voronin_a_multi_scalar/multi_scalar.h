@@ -3,7 +3,6 @@
 #define MODULES_TASK_1_VORONIN_A_MULTI_SCALAR_MULTI_SCALAR_H_
 
 #include <vector>
-#include <string>
 
 std::vector<int> getRandomVector(int  size);
 int getParallelOperations(std::vector<int> global_vec, std::vector<int> second_global_vec,

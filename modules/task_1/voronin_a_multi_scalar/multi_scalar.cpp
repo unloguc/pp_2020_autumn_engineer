@@ -1,7 +1,6 @@
 // Copyright 2020 Voronin Aleksey
 #include <mpi.h>
 #include <vector>
-#include <string>
 #include <random>
 #include <ctime>
 #include <algorithm>
