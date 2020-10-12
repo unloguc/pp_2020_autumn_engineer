@@ -6,30 +6,26 @@
 TEST(Parallel_Operations_MPI, Test_can_count_Max) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    std::vector<int> global_vec;
-    const int count_size_vector = 100;
+    std::vector<int> vec;
+    const int len = 100;
     if (rank == 0) {
-        global_vec = getRandomVector(count_size_vector);
+        vec = getRandomVector(len);
     }
-    ASSERT_NO_THROW(getParallelOperations(global_vec, count_size_vector));
+    ASSERT_NO_THROW(getParallelOperations(vec, len));
 }
 
 TEST(Parallel_Operations_MPI, Test_Max) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    std::vector<int> global_vec;
-    const int count_size_vector = 100;
-
+    std::vector<int> vec;
+    const int len = 100;
     if (rank == 0) {
-        global_vec = getRandomVector(count_size_vector);
+        vec = getRandomVector(len);
     }
-
-    int global_max;
-    global_max = getParallelOperations(global_vec, count_size_vector);
-
+    int parallel_max = getParallelOperations(vec, len);
     if (rank == 0) {
-        int reference_max = getSequentialOperations(global_vec);
-        ASSERT_EQ(reference_max, global_max);
+        int usual_max = getSequentialOperations(vec);
+        ASSERT_EQ(usual_max, parallel_max);
     }
 }
 
@@ -37,10 +33,10 @@ TEST(Parallel_Operations_MPI, Test_Max) {
 TEST(Parallel_Operations_MPI, Test_can_find_local_max) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    std::vector<int> global_vec = {3, 4, 9, -6};
+    std::vector<int> vec = {3, 4, 9, -6};
     if (rank == 0) {
-        int reference_max = getSequentialOperations(global_vec);
-        ASSERT_EQ(9, reference_max);
+        int usual_max = getSequentialOperations(vec);
+        ASSERT_EQ(9, usual_max);
     }
 }
 
@@ -48,12 +44,9 @@ TEST(Parallel_Operations_MPI, Test_can_find_local_max) {
 TEST(Parallel_Operations_MPI, Test_can_gen_random_vector) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    std::vector<int> global_vec1;
-    std::vector<int> global_vec2;
-    const int count_size_vector = 100;
-
+    const int len = 100;
     if (rank == 0) {
-        ASSERT_NO_THROW(getRandomVector(count_size_vector));
+        ASSERT_NO_THROW(getRandomVector(len));
     }
 }
 
