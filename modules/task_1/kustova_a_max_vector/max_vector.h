@@ -5,9 +5,9 @@
 #include <vector>
 #include <string>
 
-std::vector<int> getRandomVector(int  n);
-int getParallelOperations(std::vector<int> vec,
+std::vector<int> generateVector(int  n);
+int getParallelMax(std::vector<int> vec,
                           int len);
-int getSequentialOperations(std::vector<int> vec);
+int getLocalMax(std::vector<int> vec);
 
 #endif  // MODULES_TASK_1_KUSTOVA_A_MAX_VECTOR_MAX_VECTOR_H_

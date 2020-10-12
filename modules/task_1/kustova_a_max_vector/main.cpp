@@ -9,9 +9,9 @@ TEST(Parallel_Operations_MPI, Test_can_count_Max) {
     std::vector<int> vec;
     const int len = 100;
     if (rank == 0) {
-        vec = getRandomVector(len);
+        vec = generateVector(len);
     }
-    ASSERT_NO_THROW(getParallelOperations(vec, len));
+    ASSERT_NO_THROW(getParallelMax(vec, len));
 }
 
 TEST(Parallel_Operations_MPI, Test_Max) {
@@ -20,11 +20,11 @@ TEST(Parallel_Operations_MPI, Test_Max) {
     std::vector<int> vec;
     const int len = 100;
     if (rank == 0) {
-        vec = getRandomVector(len);
+        vec = generateVector(len);
     }
-    int parallel_max = getParallelOperations(vec, len);
+    int parallel_max = getParallelMax(vec, len);
     if (rank == 0) {
-        int usual_max = getSequentialOperations(vec);
+        int usual_max = getLocalMax(vec);
         ASSERT_EQ(usual_max, parallel_max);
     }
 }
@@ -35,7 +35,7 @@ TEST(Parallel_Operations_MPI, Test_can_find_local_max) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     std::vector<int> vec = {3, 4, 9, -6};
     if (rank == 0) {
-        int usual_max = getSequentialOperations(vec);
+        int usual_max = getLocalMax(vec);
         ASSERT_EQ(9, usual_max);
     }
 }
@@ -46,7 +46,7 @@ TEST(Parallel_Operations_MPI, Test_can_gen_random_vector) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     const int len = 100;
     if (rank == 0) {
-        ASSERT_NO_THROW(getRandomVector(len));
+        ASSERT_NO_THROW(generateVector(len));
     }
 }
 
