@@ -35,9 +35,9 @@ int getParallelMax(std::vector<int> vec, int len_vector) {
     }
 
     std::vector<int> local_vec(delta);
-    if (rank == 0)
+    if (rank == 0) {
         local_vec = std::vector<int>(vec.begin(), vec.begin() + delta);
-    else {
+    } else {
         MPI_Status status;
         MPI_Recv(&local_vec[0], delta, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
     }
