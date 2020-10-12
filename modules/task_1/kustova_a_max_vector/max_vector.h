@@ -6,8 +6,7 @@
 #include <string>
 
 std::vector<int> generateVector(int  n);
-int getParallelMax(std::vector<int> vec,
-                          int len);
+int getParallelMax(std::vector<int> vec, int len);
 int getLocalMax(std::vector<int> vec);
 
 #endif  // MODULES_TASK_1_KUSTOVA_A_MAX_VECTOR_MAX_VECTOR_H_

@@ -3,6 +3,7 @@
 #include <gtest/gtest.h>
 #include <vector>
 #include "./max_vector.h"
+
 TEST(Parallel_Operations_MPI, Test_can_count_Max) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -29,7 +30,6 @@ TEST(Parallel_Operations_MPI, Test_Max) {
     }
 }
 
-
 TEST(Parallel_Operations_MPI, Test_can_find_local_max) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -39,7 +39,6 @@ TEST(Parallel_Operations_MPI, Test_can_find_local_max) {
         ASSERT_EQ(9, usual_max);
     }
 }
-
 
 TEST(Parallel_Operations_MPI, Test_can_gen_random_vector) {
     int rank;
