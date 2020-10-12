@@ -23,11 +23,11 @@ int getSequentialOperations(std::vector<int> vec) {
     return reduction_elem;
 }
 
-int getParallelOperations(std::vector<int> global_vec) {
+int getParallelOperations(std::vector<int> global_vec,
+                          int count_size_vector) {
     int size, rank;
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    int count_size_vector = global_vec.size();
     const int delta = count_size_vector / size;
 
     if (rank == 0) {

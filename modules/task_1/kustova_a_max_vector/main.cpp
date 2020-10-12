@@ -11,7 +11,7 @@ TEST(Parallel_Operations_MPI, Test_can_count_Max) {
     if (rank == 0) {
         global_vec = getRandomVector(count_size_vector);
     }
-    ASSERT_NO_THROW(getParallelOperations(global_vec));
+    ASSERT_NO_THROW(getParallelOperations(global_vec, count_size_vector));
 }
 
 TEST(Parallel_Operations_MPI, Test_Max) {
@@ -25,7 +25,7 @@ TEST(Parallel_Operations_MPI, Test_Max) {
     }
 
     int global_max;
-    global_max = getParallelOperations(global_vec);
+    global_max = getParallelOperations(global_vec, count_size_vector);
 
     if (rank == 0) {
         int reference_max = getSequentialOperations(global_vec);
