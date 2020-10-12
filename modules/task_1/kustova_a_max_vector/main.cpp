@@ -4,22 +4,14 @@
 #include <vector>
 #include "./max_vector.h"
 TEST(Parallel_Operations_MPI, Test_can_count_Max) {
-    std::cout << 1;
     int rank;
-    std::cout << 2;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    std::cout << 3;
     std::vector<int> global_vec;
-    std::cout << 4;
     const int count_size_vector = 100;
-    std::cout << 5;
     if (rank == 0) {
-    std::cout << 6;
         global_vec = getRandomVector(count_size_vector);
-    std::cout << 7;
     }
-    std::cout << 8;
-    ASSERT_NO_THROW(getParallelOperations(global_vec, count_size_vector));
+    ASSERT_NO_THROW(getParallelOperations(global_vec));
 }
 
 TEST(Parallel_Operations_MPI, Test_Max) {
@@ -33,7 +25,7 @@ TEST(Parallel_Operations_MPI, Test_Max) {
     }
 
     int global_max;
-    global_max = getParallelOperations(global_vec, count_size_vector);
+    global_max = getParallelOperations(global_vec);
 
     if (rank == 0) {
         int reference_max = getSequentialOperations(global_vec);
