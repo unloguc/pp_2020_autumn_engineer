@@ -97,24 +97,33 @@ TEST(Parallel_Operations_MPI, Test_Max_55555) {
     }
 }
 
+TEST(Parallel_Operations_MPI, Test_Max_Negative) {
+    int rank;
+    int rows = 129;
+    int cols = 152;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+    int* mat = new int[rows * cols];
+
+    if (rank == 0) {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++)
+                mat[i * cols + j] = i * cols + j - 400000;
+        }
+    }
+
+    int global_max;
+    global_max = getParallelOperations(mat, rows, cols);
+
+    if (rank == 0) {
+        int reference_max = getSequentialOperations(mat, rows, cols);
+        ASSERT_EQ(reference_max, global_max);
+    }
+}
+
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     MPI_Init(&argc, &argv);
-
-#ifdef _DEBUG
-
-    int rank, temp;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-
-
-    if (rank == 0) {
-        std::cout << "Please input number: ";
-        std::cin >> temp;
-    }
-
-    MPI_Barrier(MPI_COMM_WORLD);
-
-#endif
 
     ::testing::AddGlobalTestEnvironment(new GTestMPIListener::MPIEnvironment);
     ::testing::TestEventListeners& listeners =

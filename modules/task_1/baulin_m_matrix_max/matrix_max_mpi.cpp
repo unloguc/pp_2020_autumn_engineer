@@ -20,7 +20,7 @@ int* fillMatrixWithRandomNumbers(int* mat, int rows, int cols) {
 }
 
 int getSequentialOperations(int* mat, int rows, int cols) {
-    int maxElement = -1;
+    int maxElement = INT_MIN;
 
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
