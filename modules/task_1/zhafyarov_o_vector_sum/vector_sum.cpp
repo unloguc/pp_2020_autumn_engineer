@@ -29,7 +29,7 @@ int getParallelOperations(std::vector <int> vec, int Size) {
 
     if (ProcRank == 0) {
         for (int i = 1; i < ProcNum; i++) {
-            MPI_Send(&vec[0] + i * SizeForProc, SizeForProc, MPI_INT, i, 0, MPI_COMM_WORLD);
+            MPI_Send(&vec[0] + i * SizeForProc + Div, SizeForProc, MPI_INT, i, 0, MPI_COMM_WORLD);
         }
 
         for (int i = 0; i < Div + SizeForProc; i++) {

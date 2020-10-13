@@ -39,20 +39,6 @@ TEST(Parallel_Operations_MPI, Test_Vector1) {
 TEST(Parallel_Operations_MPI, Test_Vector2) {
     int Size = 5;
     std::vector<int> vec = { 0, 0, 0, 0, 0 };
-    int sum = 3;
-    int ProcRank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
-
-    int parallel_sum = getParallelOperations(vec, Size);
-
-    if (ProcRank == 0) {
-        ASSERT_NE(parallel_sum, sum);
-    }
-}
-
-TEST(Parallel_Operations_MPI, Test_Vector3) {
-    int Size = 5;
-    std::vector<int> vec = { -1, -2, -3, -4, -5 };
     int sum = 0;
     int ProcRank;
     MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
@@ -60,7 +46,21 @@ TEST(Parallel_Operations_MPI, Test_Vector3) {
     int parallel_sum = getParallelOperations(vec, Size);
 
     if (ProcRank == 0) {
-        ASSERT_LT(parallel_sum, sum);
+        ASSERT_EQ(parallel_sum, sum);
+    }
+}
+
+TEST(Parallel_Operations_MPI, Test_Vector3) {
+    int Size = 5;
+    std::vector<int> vec = { -1, -2, -3, -4, -5 };
+    int sum = -15;
+    int ProcRank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
+
+    int parallel_sum = getParallelOperations(vec, Size);
+
+    if (ProcRank == 0) {
+        ASSERT_EQ(parallel_sum, sum);
     }
 }
 
@@ -81,6 +81,42 @@ TEST(Parallel_Operations_MPI, Test_Vector4) {
         vec.pop_back();
         int sequential_sum = getSequentialOperations(vec);
         ASSERT_NE(parallel_sum, sum);
+    }
+}
+
+TEST(Parallel_Operations_MPI, Test_Vector5) {
+    int Size = 0;
+    std::vector<int> vec(Size);
+    int sum = 0;
+    int ProcRank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
+
+    if (ProcRank == 0) {
+        vec = getRandomVector(Size);
+    }
+
+    int parallel_sum = getParallelOperations(vec, Size);
+
+    if (ProcRank == 0) {
+        ASSERT_EQ(parallel_sum, sum);
+    }
+}
+
+TEST(Parallel_Operations_MPI, Test_Vector6) {
+    int Size = 1;
+    std::vector<int> vec(Size);
+    int sum = 5;
+    int ProcRank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
+
+    if (ProcRank == 0) {
+        vec[0] = 5;
+    }
+
+    int parallel_sum = getParallelOperations(vec, Size);
+
+    if (ProcRank == 0) {
+        ASSERT_EQ(parallel_sum, sum);
     }
 }
 
