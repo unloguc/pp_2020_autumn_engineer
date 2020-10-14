@@ -54,8 +54,8 @@ int getParallelOperations(std::vector <int> vec, int Size) {
 
 int getSequentialOperations(std::vector<int> vec) {
     int sum = 0;
-
-    for (int i = 0; i < vec.size(); i++) {
+    const int Size = vec.size();
+    for (int i = 0; i < Size; i++) {
         sum += vec[i];
     }
 
