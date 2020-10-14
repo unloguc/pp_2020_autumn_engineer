@@ -67,7 +67,7 @@ TEST(Parallel_Operations_MPI, Test_Vector3) {
 TEST(Parallel_Operations_MPI, Test_Vector4) {
     int Size = 10;
     std::vector<int> vec(Size);
-    int sum = 0;
+    int sequential_sum = 0;
     int ProcRank;
     MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
 
@@ -79,8 +79,8 @@ TEST(Parallel_Operations_MPI, Test_Vector4) {
 
     if (ProcRank == 0) {
         vec.pop_back();
-        int sequential_sum = getSequentialOperations(vec);
-        ASSERT_NE(parallel_sum, sum);
+        sequential_sum = getSequentialOperations(vec);
+        ASSERT_NE(parallel_sum, sequential_sum);
     }
 }
 
