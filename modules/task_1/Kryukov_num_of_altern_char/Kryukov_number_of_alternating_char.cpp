@@ -5,7 +5,7 @@
 #include <random>
 #include <ctime>
 #include <algorithm>
-#include "..\..\..\modules\task_1\Kryukov_num_of_altern_char\Kryukov_number_of_alternating_char.h"
+#include "../../../modules/task_1/Kryukov_num_of_altern_char/Kryukov_number_of_alternating_char.h"
 
 std::vector<int> getRandomVector(int size) {
 	std::mt19937 gen;
@@ -36,7 +36,7 @@ int getParallelNUMalternCHAR(std::vector<int> general_vec, int size_vector) {
 	const int delta = size_vector / size;
 
 	if (rank == 0) {
-		for (int process = 0; process < size; process++)
+		for (int process = 0; process < size-1; process++)
 			MPI_Send(&general_vec[0] + process * delta, delta,
 				MPI_INT, process, 0, MPI_COMM_WORLD);
 	}
@@ -57,4 +57,3 @@ int getParallelNUMalternCHAR(std::vector<int> general_vec, int size_vector) {
 	MPI_Reduce(&local_altern, &final_altern, 1, MPI_INT, op_code, 0, MPI_COMM_WORLD);
 	return final_altern;
 }
-
