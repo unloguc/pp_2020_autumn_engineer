@@ -7,9 +7,10 @@
 #include <algorithm>
 
 std::vector<int> generateVector(int n) {
+    std::mt19937 gen;
+    gen.seed(static_cast<unsigned int>(time(0)));
     std::vector<int> vec(n);
-    unsigned int k = time(NULL) % 100;
-    for (int  i = 0; i < n; i++) { vec[i] = rand_r(&k) % 100; }
+    for (int i = 0; i < n; i++) { vec[i] = gen() % 100; }
     return vec;
 }
 

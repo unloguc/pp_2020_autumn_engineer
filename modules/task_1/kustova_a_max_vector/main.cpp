@@ -11,8 +11,8 @@ TEST(Parallel_Operations_MPI, Test_can_count_Max) {
     const int len = 100;
     if (rank == 0) {
         vec = generateVector(len);
+        ASSERT_NO_THROW(getParallelMax(vec, len));
     }
-    ASSERT_NO_THROW(getParallelMax(vec, len));
 }
 
 TEST(Parallel_Operations_MPI, Test_Max) {
@@ -49,7 +49,15 @@ TEST(Parallel_Operations_MPI, Test_can_gen_random_vector) {
     }
 }
 
-
+TEST(Parallel_Operations_MPI, Test_throw_gen_vector_with_negative_length) {
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    std::vector<int> vec;
+    const int len = -20;
+    if (rank == 0) {
+        ASSERT_ANY_THROW(generateVector(len));
+    }
+}
 
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
