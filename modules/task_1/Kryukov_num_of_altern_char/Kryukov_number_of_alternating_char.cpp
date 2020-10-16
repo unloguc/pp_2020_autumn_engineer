@@ -8,11 +8,11 @@
 #include "../../../modules/task_1/Kryukov_num_of_altern_char/Kryukov_number_of_alternating_char.h"
 
 std::vector<int> getRandomVector(int size) {
-	std::mt19937 gen;
-	gen.seed(static_cast<unsigned int>(time(0)));
-	std::vector<int> vec(size);
-	for (int i = 0; i < size; i++) { vec[i] = gen() % 100; }
-	return vec;
+    std::mt19937 gen;
+    gen.seed(static_cast<unsigned int>(time(0)));
+    std::vector<int> vec(size);
+    for (int i = 0; i < size; i++) { vec[i] = gen() % 100; }
+    return vec;
 }
 
 int getNUMalternCHAR(std::vector<int> vec) {
@@ -42,9 +42,10 @@ int getParallelNUMalternCHAR(std::vector<int> general_vec, int size_vector) {
 	}
 
 	std::vector<int> local_vec(delta);
-	if (rank == 0)
+	if (rank == 0) {
 		local_vec = std::vector<int>(general_vec.begin(),
 			general_vec.begin() + delta);
+	}
 	else {
 		MPI_Status status;
 		MPI_Recv(&local_vec[0], delta, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
