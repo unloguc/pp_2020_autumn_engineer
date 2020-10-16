@@ -1,6 +1,4 @@
-﻿// Copyright 2020 Kryukov Sergey
-
-
+﻿// Copyright 2020 Kryukov Sergey  
 #include <gtest-mpi-listener.hpp>
 #include <gtest/gtest.h>
 #include <vector>
@@ -13,7 +11,7 @@ TEST(Parallel_Operations_MPI, Test_num_altern) {
     std::vector<int> general_vec;
     const int size_vector = 10;
     if (rank == 0) {
-    	general_vec = getRandomVector(size_vector);
+        general_vec = getRandomVector(size_vector);
     }
     int global_sum = getParallelNUMalternCHAR(general_vec, size_vector);
     if (rank == 0) {
@@ -29,7 +27,7 @@ TEST(Parallel_Operations_MPI, Test_create_vector_with_correct_size) {
     const int size_vector = 10;
     general_vec = getRandomVector(size_vector);
     if (rank == 0) {
-    	ASSERT_EQ(general_vec.size(), 10);
+        ASSERT_EQ(general_vec.size(), 10);
     }
 }
 
@@ -39,7 +37,7 @@ TEST(Parallel_Operation_MPI, Test_create_vector_with_negative_size) {
     std::vector<int> general_vec;
     const int size_vector = -10;
     if (rank == 0) {
-    	ASSERT_ANY_THROW(getRandomVector(size_vector));
+        ASSERT_ANY_THROW(getRandomVector(size_vector));
     }
 }
 
@@ -49,7 +47,7 @@ TEST(Parallel_Operation_MPI, Test_create_vector_with_positive_size) {
     std::vector<int> general_vec;
     const int size_vector = 1110;
     if (rank == 0) {
-    	ASSERT_NO_THROW(getRandomVector(size_vector));
+         ASSERT_NO_THROW(getRandomVector(size_vector));
     }
 }
 
@@ -59,22 +57,19 @@ TEST(Parallel_Operation_MPI, check_correct_realized_algorithm_work) {
     std::vector<int> general_vec = { 1, -1, 0, 2, -2, 5 };
     std::vector<int> general_vec1 = { 1, 1, 0, 2, 5 };
     if (rank == 0) {
-    	ASSERT_EQ(getNUMalternCHAR(general_vec), 4);
-    	ASSERT_EQ(getNUMalternCHAR(general_vec1), 0);
+        ASSERT_EQ(getNUMalternCHAR(general_vec), 4);
+        ASSERT_EQ(getNUMalternCHAR(general_vec1), 0);
     }
 }
 
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     MPI_Init(&argc, &argv);
-    
     ::testing::AddGlobalTestEnvironment(new GTestMPIListener::MPIEnvironment);
     ::testing::TestEventListeners& listeners =
     ::testing::UnitTest::GetInstance()->listeners();
-    
     listeners.Release(listeners.default_result_printer());
     listeners.Release(listeners.default_xml_generator());
-    
     listeners.Append(new GTestMPIListener::MPIMinimalistPrinter);
     return RUN_ALL_TESTS();
 }
