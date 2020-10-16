@@ -32,7 +32,7 @@ TEST(Integration_Test, Integration_Dont_Throws_Exceptions) {
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   if (rank == 0) {
-    EXPECT_NO_THROW(integration(f, 2, 1, 3), 2);
+    EXPECT_NO_THROW(integration(f, 2, 1, 3));
   }
 }
 
