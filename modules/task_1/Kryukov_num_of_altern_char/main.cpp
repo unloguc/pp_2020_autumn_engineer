@@ -4,7 +4,6 @@
 #include <vector>
 #include "./Kryukov_number_of_alternating_char.h"
 
-
 TEST(Parallel_Operations_MPI, Test_num_altern) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
