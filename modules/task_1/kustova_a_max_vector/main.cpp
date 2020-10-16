@@ -11,8 +11,8 @@ TEST(Parallel_Operations_MPI, Test_can_count_Max) {
     const int len = 100;
     if (rank == 0) {
         vec = generateVector(len);
-        ASSERT_NO_THROW(getParallelMax(vec, len));
     }
+    ASSERT_NO_THROW(getParallelMax(vec, len));
 }
 
 TEST(Parallel_Operations_MPI, Test_Max) {
