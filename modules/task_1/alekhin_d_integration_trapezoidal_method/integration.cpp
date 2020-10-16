@@ -33,7 +33,6 @@ double integration(std::function<double(double)> func, int n, int a, int b) {
   double** func_y = new double* [size];
 
   double step_x = (b - a) / static_cast<double>(n);
-  double local_integ_width = (b - a) / static_cast<double>(size);
 
   if (rank == 0) {
     for (int i = 0; i < size; i++) {
