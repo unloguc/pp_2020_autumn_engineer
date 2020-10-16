@@ -46,7 +46,7 @@ TEST(Parallel_Operation_MPI, Test_create_vector_with_positive_size) {
     std::vector<int> general_vec;
     const int size_vector = 1110;
     if (rank == 0) {
-         ASSERT_NO_THROW(getRandomVector(size_vector));
+         ASSERT_NO_THROW(general_vec = getRandomVector(size_vector));
     }
 }
 
