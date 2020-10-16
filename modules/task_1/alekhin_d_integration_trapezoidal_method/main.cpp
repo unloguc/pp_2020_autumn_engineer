@@ -11,19 +11,12 @@ TEST(Function_Test, MyFunc_Return_50_From_100)
 {
 	EXPECT_EQ(f(100), 50);
 }
-/*
+
 TEST(Local_Integration_Test, Local_Integration_Dont_Throws_Exceptions)
 {
-	std::vector<double> func_x;
-	std::vector<double> func_y;
+	double func_x[] = {1, 2, 3};
+	double func_y[] = {2, 4, 6};
 
-	func_x.push_back(1);
-	func_x.push_back(2);
-	func_x.push_back(3);
-
-	func_y.push_back(2);
-	func_y.push_back(4);
-	func_y.push_back(6);
 
 	EXPECT_NO_THROW(localIntegration(func_x, func_y, 3));
 
@@ -31,37 +24,23 @@ TEST(Local_Integration_Test, Local_Integration_Dont_Throws_Exceptions)
 
 TEST(Local_Integration_Test, Local_Integration_Return_Right_Value)
 {
-	std::vector<double> func_x;
-	std::vector<double> func_y;
-
-	func_x.push_back(1);
-	func_x.push_back(2);
-	func_x.push_back(3);
-
-	func_y.push_back(2);
-	func_y.push_back(4);
-	func_y.push_back(6);
+	double func_x[] = {1, 2, 3};
+	double func_y[] = {2, 4, 6};
 
 	EXPECT_EQ(localIntegration(func_x, func_y, 3), 8);
 }
 
 TEST(Local_Integration_Test, Local_Integration_Return_Right_Value_2)
 {
-	std::vector<double> func_x;
-	std::vector<double> func_y;
-
-	func_x.push_back(1);
-	func_x.push_back(3);
-
-	func_y.push_back(2);
-	func_y.push_back(6);
+	double func_x[] = { 1, 3 };
+	double func_y[] = { 2, 6 };
 
 	EXPECT_EQ(localIntegration(func_x, func_y, 2), 8);
 }
-*/
+
 TEST(Integration, Integration_Dont_Throws_Exceptions)
 {
-	EXPECT_NO_THROW(integration(f, 4, 1, 3));
+	EXPECT_NO_THROW(integration(f, 6, 1, 7));
 }
 
 TEST(Integration, Integration_Throws_Exceptions_When_Number_Of_Fragmentation_Less_1)
@@ -76,26 +55,13 @@ TEST(Integration, Integration_Throws_Exceptions_When_A_MORE_B)
 
 TEST(Integration, Integration_Return_Right_Value)
 {
-	EXPECT_EQ(integration(f, 4, 1, 3), 2);
+	EXPECT_EQ(integration(f, 6, 1, 7), 12);
 }
 
-TEST(Integration, Integration_Return_Right_Value_2)
-{
-	EXPECT_EQ(integration(f, 2, 0, 10), 25);
-}
 
 int main(int argc, char** argv) {
 	::testing::InitGoogleTest(&argc, argv);
 	MPI_Init(&argc, &argv);
-
-	::testing::AddGlobalTestEnvironment(new GTestMPIListener::MPIEnvironment);
-	::testing::TestEventListeners& listeners =
-		::testing::UnitTest::GetInstance()->listeners();
-
-	listeners.Release(listeners.default_result_printer());
-	listeners.Release(listeners.default_xml_generator());
-
-	listeners.Append(new GTestMPIListener::MPIMinimalistPrinter);
 
 	return RUN_ALL_TESTS();
 }
