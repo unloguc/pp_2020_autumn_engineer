@@ -5,7 +5,7 @@
 #include <vector>
 #include <string>
 
-std::vector<int> generateVector(int  n);
+std::vector<int> generateVector(int n);
 int getParallelMax(std::vector<int> vec, int len);
 int getLocalMax(std::vector<int> vec);
 
