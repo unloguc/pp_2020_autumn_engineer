@@ -13,10 +13,8 @@ double localIntegration(std::function<double(double)> func, int n, double a, dou
   if (n < 1) throw "Error";
   double local_integral = 0;
   double width = (b - a) / n;
-  std::cout << std::endl << "n: " << n << ", a: " << a << " b: " << b << std::endl;
   for (int i = 0; i < n; i++) {
     local_integral += (f(a + i * width) + f(a + (i + 1) * width)) * width / 2;
-    std::cout << std::endl << "local_integral: " << local_integral << std::endl;
   }
   return local_integral;
 }
@@ -46,7 +44,6 @@ double integration(std::function<double(double)> func, int n, int a, int b) {
         local_integral = localIntegration(func, n - (n / size) * (size - 1), a + rank * step, b);
     }
   }
-  std::cout << std::endl << local_integral << std::endl;
   double global_integral = 0;
   MPI_Reduce(&local_integral, &global_integral, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 
