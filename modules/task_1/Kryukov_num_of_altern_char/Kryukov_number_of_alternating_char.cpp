@@ -1,4 +1,4 @@
-// Copyright 2020 Kryukov Sergey  
+// Copyright 2020 Kryukov Sergey
 #include <mpi.h>
 #include <vector>
 #include <string>
@@ -21,8 +21,7 @@ int getNUMalternCHAR(std::vector<int> vec) {
     for (int i = 0; i < size - 1; i++) {
         if (vec[i] < 0 && vec[i + 1] >= 0) {
             number += 1;
-        }
-        else if (vec[i] >= 0 && vec[i + 1] < 0) {
+        } else if (vec[i] >= 0 && vec[i + 1] < 0) {
             number += 1;
         } else {
             continue;
@@ -36,7 +35,6 @@ int getParallelNUMalternCHAR(std::vector<int> general_vec, int size_vector) {
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     const int delta = size_vector / size;
-    
     if (rank == 0) {
         for (int process = 0; process < size-1; process++)
             MPI_Send(&general_vec[0] + process * delta, delta,
@@ -49,9 +47,8 @@ int getParallelNUMalternCHAR(std::vector<int> general_vec, int size_vector) {
             general_vec.begin() + delta);
     } else {
         MPI_Status status;
-		MPI_Recv(&local_vec[0], delta, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
+        MPI_Recv(&local_vec[0], delta, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
     }
-
     int final_altern = 0;
     int local_altern = getNUMalternCHAR(local_vec);
     MPI_Op op_code;

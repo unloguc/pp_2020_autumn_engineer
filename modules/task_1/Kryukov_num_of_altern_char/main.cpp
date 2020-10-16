@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Kryukov Sergey  
+﻿// Copyright 2020 Kryukov Sergey
 #include <gtest-mpi-listener.hpp>
 #include <gtest/gtest.h>
 #include <vector>
