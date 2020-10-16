@@ -39,7 +39,7 @@ TEST(Integration_Test, Integration_Return_Right_Value) {
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   if (rank == 0)
-    EXPECT_TRUE(abs(integration(f, 2, 1, 3) - 2 < 0.001));
+    EXPECT_TRUE(abs(integration(f, 2, 1, 3) - 2) < 0.001);
 }
 
 TEST(Integration_Test, Integration_Return_Right_Value_2) {
