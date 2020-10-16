@@ -3,15 +3,16 @@
 
 #include <functional>
 #include <math.h>
+#include<vector>
 
 double myFunc(double);
 
 extern  std::function<double(double)> f;
 
 // passing function, number of segments and integration limits
-double integrationSequentialMethod(std::function<double(double)>, int, int, int); 
+double localIntegration(double*, double*, int);
 
 // passing function, number of segments and integration limits
-double integrationParallelMethod(std::function<double(double)>,int, int, int);
+double integration(std::function<double(double)>,int, int, int);
 
 #endif // MODULES_TASK_1_INTEGRATION_H_

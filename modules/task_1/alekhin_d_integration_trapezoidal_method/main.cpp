@@ -11,34 +11,91 @@ TEST(Function_Test, MyFunc_Return_50_From_100)
 {
 	EXPECT_EQ(f(100), 50);
 }
-
-TEST(Sequential_Integration_Test, Sequential_Integration_Return_Half_A_4_From_0_1)
+/*
+TEST(Local_Integration_Test, Local_Integration_Dont_Throws_Exceptions)
 {
-	EXPECT_EQ(integrationSequentialMethod(f, 5, 0, 1), 1/4);
+	std::vector<double> func_x;
+	std::vector<double> func_y;
+
+	func_x.push_back(1);
+	func_x.push_back(2);
+	func_x.push_back(3);
+
+	func_y.push_back(2);
+	func_y.push_back(4);
+	func_y.push_back(6);
+
+	EXPECT_NO_THROW(localIntegration(func_x, func_y, 3));
+
 }
 
-TEST(Sequential_Integration_Test, Sequential_Integration_Return_25_From_0_10)
+TEST(Local_Integration_Test, Local_Integration_Return_Right_Value)
 {
-	EXPECT_EQ(integrationSequentialMethod(f, 5, 0, 10), 25);
+	std::vector<double> func_x;
+	std::vector<double> func_y;
+
+	func_x.push_back(1);
+	func_x.push_back(2);
+	func_x.push_back(3);
+
+	func_y.push_back(2);
+	func_y.push_back(4);
+	func_y.push_back(6);
+
+	EXPECT_EQ(localIntegration(func_x, func_y, 3), 8);
 }
 
-TEST(Sequential_Integration_Test, Sequential_Integration_Works_Fine_With_Huge_Numbers_Of_Segments)
+TEST(Local_Integration_Test, Local_Integration_Return_Right_Value_2)
 {
-	EXPECT_NO_THROW(integrationSequentialMethod(f, 999999, 0, 1););
-	EXPECT_EQ(integrationSequentialMethod(f, 5, 0, 1), 1 / 4);
+	std::vector<double> func_x;
+	std::vector<double> func_y;
+
+	func_x.push_back(1);
+	func_x.push_back(3);
+
+	func_y.push_back(2);
+	func_y.push_back(6);
+
+	EXPECT_EQ(localIntegration(func_x, func_y, 2), 8);
+}
+*/
+TEST(Integration, Integration_Dont_Throws_Exceptions)
+{
+	EXPECT_NO_THROW(integration(f, 4, 1, 3));
 }
 
-TEST(Sequential_Integration_Test, Sequential_Integration_Works_Fine_With_a_equals_b)
+TEST(Integration, Integration_Throws_Exceptions_When_Number_Of_Fragmentation_Less_1)
 {
-	EXPECT_EQ(integrationSequentialMethod(f, 5, 5, 5), 0);
+	EXPECT_ANY_THROW(integration(f, 0, 1, 3));
 }
 
-TEST(Sequential_Integration_Test, Sequential_Integration_Throws_Error_If_Numbers_Of_Segments_Less_1)
+TEST(Integration, Integration_Throws_Exceptions_When_A_MORE_B)
 {
-	EXPECT_ANY_THROW(integrationSequentialMethod(f, 0, 0, 1););
+	EXPECT_ANY_THROW(integration(f, 4, 4, 3));
 }
 
-TEST(Sequential_Integration_Test, Sequential_Integration_Throws_Error_If_a_more_than_b)
+TEST(Integration, Integration_Return_Right_Value)
 {
-	EXPECT_ANY_THROW(integrationSequentialMethod(f, 5, 5, 1););
+	EXPECT_EQ(integration(f, 4, 1, 3), 2);
+}
+
+TEST(Integration, Integration_Return_Right_Value_2)
+{
+	EXPECT_EQ(integration(f, 2, 0, 10), 25);
+}
+
+int main(int argc, char** argv) {
+	::testing::InitGoogleTest(&argc, argv);
+	MPI_Init(&argc, &argv);
+
+	::testing::AddGlobalTestEnvironment(new GTestMPIListener::MPIEnvironment);
+	::testing::TestEventListeners& listeners =
+		::testing::UnitTest::GetInstance()->listeners();
+
+	listeners.Release(listeners.default_result_printer());
+	listeners.Release(listeners.default_xml_generator());
+
+	listeners.Append(new GTestMPIListener::MPIMinimalistPrinter);
+
+	return RUN_ALL_TESTS();
 }
