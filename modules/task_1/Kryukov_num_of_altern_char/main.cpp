@@ -55,8 +55,8 @@ TEST(Parallel_Operation_MPI, check_correct_realized_algorithm_work) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     std::vector<int> general_vec = { 1, -1, 0, 2, -2, 5 };
     std::vector<int> general_vec1 = { 1, 1, 0, 2, 5 };
-	int result1 = getNUMalternCHAR(general_vec);
-	int result2 = getNUMalternCHAR(general_vec1);
+    int result1 = getNUMalternCHAR(general_vec);
+    int result2 = getNUMalternCHAR(general_vec1);
     if (rank == 0) {
         ASSERT_EQ(result1, 4);
         ASSERT_EQ(result2, 0);
