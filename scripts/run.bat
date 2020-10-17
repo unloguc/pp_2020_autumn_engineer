@@ -36,5 +36,3 @@ for /r "." %%a in (build\bin\*_mpi.exe) do (
         "C:\Program Files\Microsoft MPI\Bin\mpiexec.exe" -np 4 %%~fa || exit /b 1
     )
 )
-
-
