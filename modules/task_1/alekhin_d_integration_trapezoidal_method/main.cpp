@@ -29,19 +29,35 @@ TEST(Local_Integration_Test, Local_Integration_Throws_Error_When_B_Less_A) {
 }
 
 TEST(Integration_Test, Integration_Dont_Throws_Exceptions) {
-  EXPECT_NO_THROW(integration(f, 2, 1, 3));
+  int rank;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  if (rank == 0) {
+    EXPECT_NO_THROW(integration(f, 2, 1, 3));
+  }
 }
 
 TEST(Integration_Test, Integration_Return_Right_Value) {
-  EXPECT_TRUE(abs(integration(f, 2, 1, 3) - 2) < 0.001);
+  int rank;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  if (rank == 0) {
+    EXPECT_TRUE(abs(integration(f, 2, 1, 3) - 2) < 0.001);
+  }
 }
 
 TEST(Integration_Test, Integration_Return_Right_Value_2) {
-  EXPECT_TRUE(abs(integration(f, 3, 1, 3) - 2) < 0.001);
+  int rank;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  if (rank == 0) {
+    EXPECT_TRUE(abs(integration(f, 3, 1, 3) - 2) < 0.001);
+  }
 }
 
 TEST(Integration_Test, Integration_Return_Right_Value_3) {
-  EXPECT_TRUE(abs(integration(f, 3, 1, 4) - 3.75) < 0.001);
+  int rank;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  if (rank == 0) {
+    EXPECT_TRUE(abs(integration(f, 3, 1, 4) - 3.75) < 0.001);
+  }
 }
 
 int main(int argc, char** argv) {
