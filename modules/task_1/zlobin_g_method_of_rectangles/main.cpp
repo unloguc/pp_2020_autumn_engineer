@@ -76,7 +76,7 @@ TEST_P(Test_Different_Submethods, Test_Parallel_Submethods) {
     }
 }
 
-TEST_P(Test_Different_Submethods, Test_Sequential_And_Parallel_Are_Equival) {
+TEST_P(Test_Different_Submethods, Test_Sequential_And_Parallel_Are_Equival_1) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     
@@ -96,9 +96,50 @@ TEST_P(Test_Different_Submethods, Test_Sequential_And_Parallel_Are_Equival) {
     }
 }
 
-TEST_P(Test_Different_Submethods, DISABLED_Test_Sequential_And_Parallel_Time_Compare) {
+TEST_P(Test_Different_Submethods, Test_Sequential_And_Parallel_Are_Equival_2) {
     int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    
+    Methods method = GetParam();
+
+    auto func = [] (double _x) -> double
+        {
+            return _x * cos(_x) - 8;
+        };
+
+    double par_sum = getParallelIntegration(func, 0, 2, 100, method);
+
+    if (rank == 0) {
+        double error = pow(10.0, -8);
+        double seq_sum = getSequentialIntegration(func, 0, 2, 100, method);
+        ASSERT_NEAR(seq_sum, par_sum, error);
+    }
+}
+
+TEST_P(Test_Different_Submethods, Test_Sequential_And_Parallel_Are_Equival_3) {
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    
+    Methods method = GetParam();
+
+    auto func = [] (double _x) -> double
+        {
+            return pow(0.1, _x) * sin(_x);
+        };
+
+    double par_sum = getParallelIntegration(func, 0, 2, 100, method);
+
+    if (rank == 0) {
+        double error = pow(10.0, -8);
+        double seq_sum = getSequentialIntegration(func, 0, 2, 100, method);
+        ASSERT_NEAR(seq_sum, par_sum, error);
+    }
+}
+
+TEST_P(Test_Different_Submethods, DISABLED_Test_Sequential_And_Parallel_Time_Compare) {
+    int rank, size;
     double time, par_time, seq_time;
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     
     Methods method = GetParam();
@@ -123,6 +164,8 @@ TEST_P(Test_Different_Submethods, DISABLED_Test_Sequential_And_Parallel_Time_Com
         std::cout << "Sequential time: " << seq_time << std::endl;
 
         ASSERT_NEAR(seq_sum, par_sum, error);
+        if (size > 1)
+            ASSERT_TRUE(par_time < seq_time);
     }
 }
 
