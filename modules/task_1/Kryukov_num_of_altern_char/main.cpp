@@ -26,7 +26,7 @@ TEST(Parallel_Operations_MPI, Test_create_vector_with_correct_size) {
     const int size_vector = 10;
     general_vec = getRandomVector(size_vector);
     if (rank == 0) {
-        ASSERT_EQ(10, 10);
+        ASSERT_EQ((int)general_vec.size(), size_vector);
     }
 }
 
