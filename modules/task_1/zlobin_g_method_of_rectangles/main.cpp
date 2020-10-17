@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Zlobin George
+﻿  // Copyright 2020 Zlobin George
 #include <gtest-mpi-listener.hpp>
 #include <gtest/gtest.h>
 #include <cmath>
@@ -9,8 +9,7 @@ TEST(Parallel_Operations_MPI, Test_Sequential_Is_Correct) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
     if (rank == 0) {
-        auto func = [] (double _x) -> double
-            {
+        auto func = [] (double _x) -> double {
                 return 2;
             };
 
@@ -24,8 +23,7 @@ TEST(Parallel_Operations_MPI, Test_Parallel_Is_Correct) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    auto func = [] (double _x) -> double
-        {
+    auto func = [] (double _x) -> double {
             return 2;
         };
 
@@ -46,8 +44,7 @@ TEST_P(Test_Different_Submethods, Test_Sequential_Submethods) {
     Methods method = GetParam();
 
     if (rank == 0) {
-        auto func = [] (double _x) -> double
-            {
+        auto func = [] (double _x) -> double {
                 return _x;
             };
 
@@ -63,8 +60,7 @@ TEST_P(Test_Different_Submethods, Test_Parallel_Submethods) {
     
     Methods method = GetParam();
 
-    auto func = [] (double _x) -> double
-        {
+    auto func = [] (double _x) -> double {
             return _x;
         };
 
@@ -82,8 +78,7 @@ TEST_P(Test_Different_Submethods, Test_Sequential_And_Parallel_Are_Equival_1) {
     
     Methods method = GetParam();
 
-    auto func = [] (double _x) -> double
-        {
+    auto func = [] (double _x) -> double {
             return _x * _x + 5;
         };
 
@@ -102,8 +97,7 @@ TEST_P(Test_Different_Submethods, Test_Sequential_And_Parallel_Are_Equival_2) {
     
     Methods method = GetParam();
 
-    auto func = [] (double _x) -> double
-        {
+    auto func = [] (double _x) -> double {
             return _x * cos(_x) - 8;
         };
 
@@ -122,8 +116,7 @@ TEST_P(Test_Different_Submethods, Test_Sequential_And_Parallel_Are_Equival_3) {
     
     Methods method = GetParam();
 
-    auto func = [] (double _x) -> double
-        {
+    auto func = [] (double _x) -> double {
             return pow(0.1, _x) * sin(_x);
         };
 
@@ -144,20 +137,19 @@ TEST_P(Test_Different_Submethods, DISABLED_Test_Sequential_And_Parallel_Time_Com
     
     Methods method = GetParam();
 
-    auto func = [] (double _x) -> double
-        {
+    auto func = [] (double _x) -> double {
             return _x * _x * _x - 3 * _x + 55;
         };
 
     time = MPI_Wtime();
-    double par_sum = getParallelIntegration(func, 0, 20, (int) pow(10, 6), method);
+    double par_sum = getParallelIntegration(func, 0, 20, static_cast<int>pow(10, 6), method);
     par_time = MPI_Wtime() - time;
 
     if (rank == 0) {
         double error = pow(10.0, -8);
 
         time = MPI_Wtime();
-        double seq_sum = getSequentialIntegration(func, 0, 20, (int) pow(10, 6), method);
+        double seq_sum = getSequentialIntegration(func, 0, 20, static_cast<int>pow(10, 6), method);
         seq_time = MPI_Wtime() - time;
 
         std::cout << "Parallel time: " << par_time << std::endl;
@@ -173,8 +165,7 @@ INSTANTIATE_TEST_SUITE_P(
         Parallel_Operations_MPI,
         Test_Different_Submethods,
         ::testing::Values(
-                LEFT_RECTANGLES, RIGHT_RECTANGLES, MEAN_RECTANGLES
-        ));
+                LEFT_RECTANGLES, RIGHT_RECTANGLES, MEAN_RECTANGLES));
 
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
