@@ -36,7 +36,7 @@ int getParallelNUMalternCHAR(std::vector<int> general_vec, int size_vector) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     const int delta = size_vector / size;
     if (rank == 0) {
-        for (int process = 0; process < size-1; process++)
+        for (int process = 1; process < size; process++)
             MPI_Send(&general_vec[0] + process * delta, delta,
                 MPI_INT, process, 0, MPI_COMM_WORLD);
     }
