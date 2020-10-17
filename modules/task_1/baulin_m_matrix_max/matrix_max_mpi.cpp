@@ -4,6 +4,7 @@
 #include <string>
 #include <random>
 #include <ctime>
+#include <climits>
 #include <algorithm>
 
 int* fillMatrixWithRandomNumbers(int* mat, int rows, int cols) {
