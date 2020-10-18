@@ -142,14 +142,14 @@ TEST_P(Test_Different_Submethods, DISABLED_Test_Sequential_And_Parallel_Time_Com
         };
 
     time = MPI_Wtime();
-    double par_sum = getParallelIntegration(func, 0, 20, static_cast<int>( pow(10, 6) ), method);
+    double par_sum = getParallelIntegration(func, 0, 20, static_cast<int>(pow(10, 6) ), method);
     par_time = MPI_Wtime() - time;
 
     if (rank == 0) {
         double error = pow(10.0, -8);
 
         time = MPI_Wtime();
-        double seq_sum = getSequentialIntegration(func, 0, 20, static_cast<int>( pow(10, 6) ), method);
+        double seq_sum = getSequentialIntegration(func, 0, 20, static_cast<int>(pow(10, 6) ), method);
         seq_time = MPI_Wtime() - time;
 
         std::cout << "Parallel time: " << par_time << std::endl;
