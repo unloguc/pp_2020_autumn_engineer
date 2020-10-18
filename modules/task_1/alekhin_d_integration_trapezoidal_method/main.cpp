@@ -37,19 +37,13 @@ TEST(Integration_Test, Integration_Dont_Throws_Exceptions) {
 TEST(Integration_Test, Integration_Return_Right_Value) {
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  EXPECT_TRUE(abs(integration(f, 2, 1, 3) - 2) < 0.001);
+  EXPECT_TRUE(integration(f, 2, 1, 3), 2);
 }
 
 TEST(Integration_Test, Integration_Return_Right_Value_2) {
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  EXPECT_TRUE(abs(integration(f, 3, 1, 3) - 2) < 0.001);
-}
-
-TEST(Integration_Test, Integration_Return_Right_Value_3) {
-  int rank;
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  EXPECT_TRUE(abs(integration(f, 3, 1, 4) - 3.75) < 0.001);
+  EXPECT_EQ(integration(f, 3, 1, 4), 3.75);
 }
 
 int main(int argc, char** argv) {
