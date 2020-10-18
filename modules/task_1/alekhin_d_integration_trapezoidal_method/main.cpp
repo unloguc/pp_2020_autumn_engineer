@@ -37,7 +37,7 @@ TEST(Integration_Test, Integration_Dont_Throws_Exceptions) {
 TEST(Integration_Test, Integration_Return_Right_Value) {
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  EXPECT_TRUE(integration(f, 2, 1, 3), 2);
+  EXPECT_EQ(integration(f, 2, 1, 3), 2);
 }
 
 TEST(Integration_Test, Integration_Return_Right_Value_2) {
