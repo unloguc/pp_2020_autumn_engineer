@@ -40,7 +40,7 @@ class Test_Different_Submethods :public ::testing::TestWithParam<Methods> {};
 TEST_P(Test_Different_Submethods, Test_Sequential_Submethods) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    
+
     Methods method = GetParam();
 
     if (rank == 0) {
@@ -57,7 +57,7 @@ TEST_P(Test_Different_Submethods, Test_Sequential_Submethods) {
 TEST_P(Test_Different_Submethods, Test_Parallel_Submethods) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    
+
     Methods method = GetParam();
 
     auto func = [] (double _x) -> double {
@@ -75,7 +75,7 @@ TEST_P(Test_Different_Submethods, Test_Parallel_Submethods) {
 TEST_P(Test_Different_Submethods, Test_Sequential_And_Parallel_Are_Equival_1) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    
+
     Methods method = GetParam();
 
     auto func = [] (double _x) -> double {
@@ -94,7 +94,7 @@ TEST_P(Test_Different_Submethods, Test_Sequential_And_Parallel_Are_Equival_1) {
 TEST_P(Test_Different_Submethods, Test_Sequential_And_Parallel_Are_Equival_2) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    
+
     Methods method = GetParam();
 
     auto func = [] (double _x) -> double {
@@ -113,7 +113,7 @@ TEST_P(Test_Different_Submethods, Test_Sequential_And_Parallel_Are_Equival_2) {
 TEST_P(Test_Different_Submethods, Test_Sequential_And_Parallel_Are_Equival_3) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    
+
     Methods method = GetParam();
 
     auto func = [] (double _x) -> double {
@@ -134,7 +134,7 @@ TEST_P(Test_Different_Submethods, DISABLED_Test_Sequential_And_Parallel_Time_Com
     double time, par_time, seq_time;
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    
+
     Methods method = GetParam();
 
     auto func = [] (double _x) -> double {
