@@ -1,5 +1,4 @@
 // Copyright 2020 Eremina Alena
-#include <diff_elements.h>
 #include <mpi.h>
 #include <math.h>
 #include <vector>
@@ -8,6 +7,7 @@
 #include <ctime>
 #include <algorithm>
 #include <iostream>
+#include "../../../modules/task_1/eremina_a_diff_elements/diff_elements.h"
 
 std::vector<int> getRandomVector(int sz) {
     std::mt19937 gen;
@@ -67,7 +67,7 @@ void getParallelOperations(std::vector<int> global_vec, int count_size_vector, i
 
         getSequentialOperations(local_vec, elems);
 
-        MPI_Op_create(reinterpret_cast<MPI_User_function *>maxDiffElems, true, &op);
+        MPI_Op_create(reinterpret_cast<MPI_User_function *>(maxDiffElems), true, &op);
         MPI_Reduce(elems, max_diff_elems, 2, MPI_INT, op, 0, MPI_COMM_WORLD);
     }
 }

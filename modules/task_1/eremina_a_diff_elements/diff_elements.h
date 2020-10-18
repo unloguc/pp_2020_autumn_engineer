@@ -2,6 +2,7 @@
 #ifndef MODULES_TASK_1_EREMINA_A_DIFF_ELEMENTS_DIFF_ELEMENTS_H_
 #define MODULES_TASK_1_EREMINA_A_DIFF_ELEMENTS_DIFF_ELEMENTS_H_
 
+#include <mpi.h>
 #include <vector>
 
 std::vector<int> getRandomVector(int size);

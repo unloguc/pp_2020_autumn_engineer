@@ -1,9 +1,9 @@
 // Copyright 2020 Eremina Alena
-#include <diff_elements.h>
 #include <gtest-mpi-listener.hpp>
 #include <gtest/gtest.h>
 #include <cmath>
 #include <vector>
+#include "./diff_elements.h"
 
 TEST(Parallel_Operations_MPI, Test_Create_Vector) {
     std::vector<int> global_vec;
