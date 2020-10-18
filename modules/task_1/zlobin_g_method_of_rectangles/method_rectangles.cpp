@@ -4,7 +4,7 @@
 
 double getSequentialIntegration(double(*Func)(double), const double& a, const double& b,
                     const int& n, const int& method) {
-    const double h = (b - a) / static_cast<double> n;
+    const double h = (b - a) / static_cast<double>(n);
     double sum = 0;
 
     switch (method) {
@@ -29,7 +29,7 @@ double getSequentialIntegration(double(*Func)(double), const double& a, const do
 
 double getParallelIntegration(double(*Func)(double), const double& a, const double& b,
                     const int& n, const int& method) {
-    const double h = (b - a) / static_cast<double> n;
+    const double h = (b - a) / static_cast<double>(n);
     double global_sum = 0;
 
     int size, rank;
