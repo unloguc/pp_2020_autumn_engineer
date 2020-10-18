@@ -26,7 +26,7 @@ void maxDiffElems(int* in, int* out, int* len, MPI_Datatype *dtype) {
 
 void getSequentialOperations(std::vector<int> vec, int* elems) {
     int diff = 0;
-    for (int i = 0; i < vec.size() - 1; i++) {
+    for (int i = 0; i < static_cast<int>(vec.size() - 1); i++) {
         if (abs(vec[i] - vec[i + 1]) > diff) {
             diff = abs(vec[i] - vec[i + 1]);
             elems[0] = vec[i];
