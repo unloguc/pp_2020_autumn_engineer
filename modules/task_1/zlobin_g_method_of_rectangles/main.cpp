@@ -156,8 +156,9 @@ TEST_P(Test_Different_Submethods, DISABLED_Test_Sequential_And_Parallel_Time_Com
         std::cout << "Sequential time: " << seq_time << std::endl;
 
         ASSERT_NEAR(seq_sum, par_sum, error);
-        if (size > 1)
+        if (size > 1) {
             ASSERT_TRUE(par_time < seq_time);
+        }
     }
 }
 
