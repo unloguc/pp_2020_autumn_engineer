@@ -46,5 +46,6 @@ double integration(std::function<double(double)> func, int n, int a, int b) {
   }
   double global_integral = 0;
   MPI_Reduce(&local_integral, &global_integral, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+  MPI_Bcast(&global_integral, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
   return global_integral;
 }
