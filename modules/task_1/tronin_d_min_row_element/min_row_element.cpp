@@ -1,8 +1,8 @@
 // Copyright 2020 Tronin Dmitry
+#include "../../modules/task_1/tronin_d_min_row_element/min_row_element.h"
+#include <mpi.h>
 #include <vector>
 #include <algorithm>
-#include "../../modules/task_1/tronin_d_min_row_element/min_row_element.h"
-#include "mpi/mpi.h"
 
 
 std::vector<int32_t> getRandomVector(size_t size) {
