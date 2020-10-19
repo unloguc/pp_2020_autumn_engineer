@@ -1,4 +1,4 @@
-// Copyrated 2020 Tronin Dmitry
+// Copyright 2020 Tronin Dmitry
 #ifndef MODULES_TASK_1_TRONIN_D_MIN_ROW_ELEMENT_MIN_ROW_ELEMENT_H_
 #define MODULES_TASK_1_TRONIN_D_MIN_ROW_ELEMENT_MIN_ROW_ELEMENT_H_
 

@@ -1,4 +1,6 @@
-// Copyrated 2020 Tronin Dmitry
+// Copyright 2020 Tronin Dmitry
+#include <vector>
+#include <algorithm>
 #include "./min_row_element.h"
 #include "mpi/mpi.h"
 

@@ -1,7 +1,8 @@
-// Copyrated 2020 Tronin Dmitry
+// Copyright 2020 Tronin Dmitry
 #include <gtest/gtest.h>
-#include <vector>
 #include <gtest-mpi-listener.hpp>
+#include <vector>
+#include <algorithm>
 #include "./min_row_element.h"
 
 void TestCreate(const size_t size);
