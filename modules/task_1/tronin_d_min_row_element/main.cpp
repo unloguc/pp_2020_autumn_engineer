@@ -24,7 +24,7 @@ TEST(ParallelMibRowElement, big) {
 }
 
 TEST(ParallelMibRowElement, very_big) {
-    TestCreate(10000);
+    TestCreate(1000);
 }
 
 void TestCreate(const size_t size) {
