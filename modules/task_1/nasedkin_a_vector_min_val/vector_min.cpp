@@ -18,7 +18,8 @@ std::vector<int> rndVector(int vector_size) {
 
 int SequentialMininum(std::vector<int> vec) {
   int min_element = vec[0];
-  for (int i = 1; i < vec.size(); i++)
+  int vector_size = vec.size();
+  for (int i = 1; i < vector_size; i++)
     if (min_element > vec[i]) { min_element = vec[i]; }
   return min_element;
 }
