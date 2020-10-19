@@ -13,9 +13,6 @@ double integrationSequential(std::function<double(double)> f, double a, double b
 
   double h = (b - a) / static_cast<double>(n);
   double integral = 0;
-  /*for (double i = a; i <= b; i += h){
-    integral += f(i + h / 2.0);
-  }*/
   for (int i = 0; i < n; i++) {
     double x = a + h * i;
     integral += f(x + h / 2.0);
