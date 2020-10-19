@@ -6,7 +6,7 @@ double function(double x) {
   return x * x;
 }
 
-double integrationSequential(std::function<double(double)> f, double a, double b, int n){
+double integrationSequential(std::function<double(double)> f, double a, double b, int n) {
   if (a > b) throw "Left border can't be less than right";
   if (n < 1) throw "Number of segments can't be less than 1";
   if (f == nullptr) throw "Function error";
@@ -16,8 +16,8 @@ double integrationSequential(std::function<double(double)> f, double a, double b
   /*for (double i = a; i <= b; i += h){
     integral += f(i + h / 2.0);
   }*/
-  for (int i = 0; i < n; i++){
-	double x = a + h * i;
+  for (int i = 0; i < n; i++) {
+    double x = a + h * i;
     integral += f(x + h / 2.0);
   }
   integral *= h;
@@ -25,7 +25,7 @@ double integrationSequential(std::function<double(double)> f, double a, double b
   return integral;
 }
 
-double integrationParallel(std::function<double(double)> f, double a, double b, int n){
+double integrationParallel(std::function<double(double)> f, double a, double b, int n) {
   if (a > b) throw "Left border can't be less than right";
   if (n < 1) throw "Number of segments can't be less than 1";
   if (f == nullptr) throw "Function error";
@@ -38,26 +38,9 @@ double integrationParallel(std::function<double(double)> f, double a, double b, 
   MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
   MPI_Comm_size(MPI_COMM_WORLD, &proc_num);
 
-  double parts = (b - a) / static_cast<double>(proc_num);
-
-  /*if (n >= proc_num){
-    for (double i = a + proc_rank * parts; i < a + ((static_cast<double>(proc_rank) + 1) * parts); i += h){
-      sum += f(i + h / 2.0);
-    }
-  } else {
-    for (double i = a + proc_rank * h; i <= b - (static_cast<double>(n) - (static_cast<double>(proc_rank))) * h; i += h){
-      if (proc_rank >= n){
-	    break;
-	  }
-	  sum += f(i + h / 2.0);
-	}
-  }*/
-  /*for (double i = a + proc_rank * h; i < b; i += h * proc_num){
-    sum += f(i + h / 2);
-  }*/
-  for (int i = proc_rank; i < n; i += proc_num){
-	double x = a + h * i;
-	sum += f(x + h / 2.0);
+  for (int i = proc_rank; i < n; i += proc_num) {
+    double x = a + h * i;
+    sum += f(x + h / 2.0);
   }
 
   sum *= h;

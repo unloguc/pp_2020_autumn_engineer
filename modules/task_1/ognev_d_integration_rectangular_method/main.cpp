@@ -40,7 +40,7 @@ TEST(Parallel_Integration_Test, Return_Right_Value) {
   ASSERT_EQ(integral, 2.6640625);
 }
 
-TEST(Compare_Test, Parralel_Equals_Sequential){
+TEST(Compare_Test, Parralel_Equals_Sequential) {
   double sequential_integral = integrationSequential(function, 0, 3, 16);
   double parallel_integral = integrationParallel(function, 0, 3, 16);
   ASSERT_EQ(sequential_integral, parallel_integral);
