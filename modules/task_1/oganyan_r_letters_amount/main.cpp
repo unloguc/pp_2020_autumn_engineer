@@ -12,17 +12,11 @@ void CustomTest(const int test_size) {
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   std::string global_str;
   if (rank==0) {
-   // std::cout<<"Creating_randomstring_in_process_0"<<std::endl;
     global_str = getRandomString(test_size);
-
-    std::cout<<global_str<<std::endl;
   }
-
   auto paral_ans = getParallelOperations(global_str, test_size);
   if (rank==0) {
     auto seq_ans = getSequentialOperations(global_str);
-    std::cout<<paral_ans<<std::endl;
-    std::cout<<seq_ans<<std::endl;
     ASSERT_EQ(seq_ans, paral_ans);
   }
 
@@ -60,12 +54,5 @@ int main(int argc, char** argv) {
 
   listeners.Append(new GTestMPIListener::MPIMinimalistPrinter);
 
-  //std::cout<<"Run_tests"<<std::endl;
   return RUN_ALL_TESTS();
 }
-/*
-int main() {
-  std::cout<<"kek";
-  return 0;
-}
- */
