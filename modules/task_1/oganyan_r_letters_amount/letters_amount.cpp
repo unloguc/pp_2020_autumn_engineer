@@ -15,9 +15,9 @@ std::string getRandomString(int size) {
   std::string new_str;
   gen.seed(static_cast<unsigned int>(time(0)));
   for (std::size_t i = 0; i < (size_t)size; ++i) {
-    new_str[i] += alphabet[gen() % 62 ];
+    new_str+= alphabet[gen() % 62 ];
   }
-  std::cout<<"randomstring_done"<<std::endl;
+  //std::cout<<"randomstring_done"<<std::endl;
   return new_str;
 }
 
@@ -49,19 +49,43 @@ int getParallelOperations(std::string global_str, int size_str) {
   const int delta = size_str / size;
   int remain = size_str % size;
   if (rank == 0) {
+    std:: cout<<"delta:"<<delta<<std::endl;
+    std:: cout<<"remain:"<<remain<<std::endl;
+    int margin = 1;
     for (std::size_t process = 1; process < (std::size_t)size; ++process) {
-      int bigproc = remain-process+1>0?1:0;
-      MPI_Send(&global_str[0] + process * delta + bigproc, delta + bigproc,
-               MPI_CHAR, process, 0, MPI_COMM_WORLD);
+      int kek=0;//
+      if (remain - (int)process > 0) {
+        MPI_Send(&global_str[0] + process * delta + margin, delta + 1,
+                 MPI_CHAR, process, 0, MPI_COMM_WORLD);
+        ++margin;
+        ++kek;//
+      }
+      else {
+        MPI_Send(&global_str[0] + process * delta + margin, delta,
+                 MPI_CHAR, process, 0, MPI_COMM_WORLD);
+      }
+      std::cout<<process<<": "<< process * delta + margin<<" "<<delta + kek <<std::endl;//
     }
   }
   std::string local_str;
+  local_str.resize(delta);
+  if (rank<=remain-1) {
+    local_str.resize(delta+1);
+  }
+
   if (rank == 0) {
-    int bigproc = remain>0?1:0;
-    local_str = std::string(global_str.begin(), global_str.begin() + delta + bigproc);
+    //std:: cout<<"works before recv, rank=0"<<std::endl;
+    if (rank<=remain-1) {
+      local_str = std::string(global_str.begin(), global_str.begin() + delta + 1);
+    }
+    else {
+      local_str = std::string(global_str.begin(), global_str.begin() + delta);
+    }
+
   } else {
     MPI_Status status;
-    if (rank <= remain) {
+    //std:: cout<<"works before recv, rank = "<<rank<<std::endl;
+    if (rank <= remain-1) {
       MPI_Recv(&local_str[0], delta + 1, MPI_CHAR, 0, 0, MPI_COMM_WORLD, &status);
     } else {
       MPI_Recv(&local_str[0], delta, MPI_CHAR, 0, 0, MPI_COMM_WORLD, &status);
