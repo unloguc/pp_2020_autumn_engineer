@@ -24,17 +24,15 @@ TEST(Parallel_Operations_MPI, Test_Can_Generate_Random_Vector) {
   }
 }
 
-TEST(Parallel_Operations_MPI, Test_Vector_Ordered) {
-  int Size = 5;
-  std::vector<int> vec = { 1, 2, 3, 4, 5 };
-  int sum = 0;
+TEST(Parallel_Operations_MPI, Test_Size_0) {
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-  int vec_sum = getParallelVector(vec, Size);
+  std::vector<int> vec;
+  const int size_vector = 0;
 
   if (rank == 0) {
-  ASSERT_EQ(vec_sum, sum);
+  ASSERT_NO_THROW(getRandomVector(size_vector));
   }
 }
 
