@@ -16,13 +16,11 @@ std::vector<int> getRandomVector(int sz) {
     return vec;
 }
 
-  int getSequentialPart(std::vector<int> vec) {
-    const int  sz = vec.size();
-
+  int getSequentialPart(std::vector<int> vec, int sz) {
   if (sz == 0) return 0;
 
   int sum = 0;
-  for (int i = 0; i < sz ; i++) {
+  for (int i = 0; i < sz - 1; i++) {
      if (vec[i] > vec[i + 1])
              sum++;
   }
@@ -50,11 +48,11 @@ int getParallelVector(std::vector<int> global_vec, int size_vector) {
 if (rank == 0) {
 std::vector<int> local_vec(delta + rest);
   local_vec = std::vector<int>(global_vec.begin(), global_vec.begin() + delta + rest);
-  LocalSum = getSequentialPart(local_vec);
+  LocalSum = getSequentialPart(local_vec, static_cast<int>(local_vec.size()));
   } else {
     std::vector<int> local_vec(delta + 1);
     MPI_Recv(&local_vec[0], delta + 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
-    LocalSum = getSequentialPart(local_vec);
+    LocalSum = getSequentialPart(local_vec, static_cast<int>(local_vec.size()));
   }
 
   MPI_Reduce(&LocalSum, &GlobalSum, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);

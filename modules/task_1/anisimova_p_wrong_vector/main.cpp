@@ -59,12 +59,11 @@ TEST(Parallel_Operations_MPI, Test_Made_Vector) {
   vec[2] = 15;
   vec[3] = 15;
   vec[4] = 2;
-  vec[5] = 0;
   }
   int sum = getParallelVector(vec, size_vector);
 
   if (rank == 0) {
-  ASSERT_EQ(3, sum);
+  ASSERT_EQ(2, sum);
   }
 }
 
