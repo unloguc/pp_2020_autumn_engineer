@@ -1,11 +1,11 @@
 // Copyright 2020 Khismatulina Karina
 #include <mpi.h>
+#include <time.h>
 #include <vector>
 #include <random>
 #include <cassert>
 #include <climits>
 #include "../../../modules/task_1/khismatulina_k_max_column_sum/matrix_sum_column.h"
-#include <time.h>
 
 std::vector<int> getMatrix(int line, int column) {
     std::mt19937 gen;
