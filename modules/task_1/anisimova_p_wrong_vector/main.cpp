@@ -37,7 +37,6 @@ TEST(Parallel_Operations_MPI, Test_Vector_Ordered) {
   vec[2] = 2;
   vec[3] = 3;
   vec[4] = 4;
-  vec[5] = 5;
   }
 
   int sum = getParallelVector(vec, size);
