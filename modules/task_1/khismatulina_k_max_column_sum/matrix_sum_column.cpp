@@ -3,24 +3,22 @@
 #include <vector>
 #include <random>
 #include <cassert>
+#include <climits>
 #include "../../../modules/task_1/khismatulina_k_max_column_sum/matrix_sum_column.h"
-
-
+#include <time.h>
 
 std::vector<int> getMatrix(int line, int column) {
-    assert(line > 1 && column > 1);
-    std::random_device rd;
-    std::mt19937 mersenne(rd);
+    std::mt19937 gen;
+    gen.seed(static_cast<unsigned int>(time(0)));
     std::uniform_int_distribution<> dist(0, 100);
     std::vector<int> matrix(line * column);
     for (int i = 0; i < line * column; ++i) {
-        matrix[i] = rd();
+        matrix[i] = dist(gen);
     }
     return matrix;
 }
 
-std::vector<int> transposedMatrix(std::vector<int> matrix, int line, int column)
-{
+std::vector<int> transposedMatrix(std::vector<int> matrix, int line, int column) {
     assert(matrix.size() != 0 && line != 0 && column != 0);
     std::vector<int> transMatrix(line * column);
     for (int i = 0; i < line; ++i) {
@@ -32,7 +30,6 @@ std::vector<int> transposedMatrix(std::vector<int> matrix, int line, int column)
 }
 
 int getMaxColumnSumSequential(std::vector<int> matrix, int line, int column) {
-
     std::vector<int> transMatrix = transposedMatrix(matrix, line, column);
     int currentSum = 0;
     int maxSum = 0;
@@ -52,16 +49,14 @@ int getMaxColumnSumSequential(std::vector<int> matrix, int line, int column) {
 
 int getMaxColumnSumParallel(std::vector<int> matrix, int line, int column) {
     int rank, size;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank); //number of process
-    MPI_Comm_size(MPI_COMM_WORLD, &size); //kolichestvo of process
-    MPI_Status status;
-    std::vector<int> allSum(column);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);  // number of process
+    MPI_Comm_size(MPI_COMM_WORLD, &size);  // kolichestvo of process
 
     const int delta = column / size;
     int remainder = column - size * delta;
 
     std::vector<int> transMatrix;
-    //send to slave proccess
+    // send to slave proccess
     if (rank == 0) {
         transMatrix.resize(line * column);
         transMatrix = transposedMatrix(matrix, line, column);
@@ -72,7 +67,7 @@ int getMaxColumnSumParallel(std::vector<int> matrix, int line, int column) {
         }
     }
 
-    //receive from master proccess
+    // receive from master proccess
     int* localVec;
     if (rank == 0) {
         localVec = &transMatrix[0];
