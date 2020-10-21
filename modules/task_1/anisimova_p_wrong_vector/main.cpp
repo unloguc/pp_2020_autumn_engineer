@@ -64,7 +64,7 @@ TEST(Parallel_Operations_MPI, Test_Made_Vector) {
   int sum = getParallelVector(vec, size_vector);
 
   if (rank == 0) {
-  ASSERT_EQ(2, sum);
+  ASSERT_EQ(3, sum);
   }
 }
 
