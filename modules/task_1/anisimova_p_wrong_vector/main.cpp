@@ -28,12 +28,16 @@ TEST(Parallel_Operations_MPI, Test_Vector_Ordered) {
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-  const int size = 10;
+  const int size = 5;
   std::vector<int> vec(size);
 
   if (rank == 0) {
-  for (int i = 0; i < size; i++)
-  vec[i] = i;
+  vec[0] = 0;
+  vec[1] = 1;
+  vec[2] = 2;
+  vec[3] = 3;
+  vec[4] = 4;
+  vec[5] = 5;
   }
 
   int sum = getParallelVector(vec, size);
