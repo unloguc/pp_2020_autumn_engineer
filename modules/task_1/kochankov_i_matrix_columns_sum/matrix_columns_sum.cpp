@@ -55,6 +55,7 @@ vector<int> parallel_sum(const vector<vector<int>>& matrix) {
             }
         }
     } else {
+        MPI_Status status;
         if (rank == size - 1) {
             delta = len - delta * (size - 1);
         }
@@ -62,7 +63,7 @@ vector<int> parallel_sum(const vector<vector<int>>& matrix) {
         local_matrix = vector<vector<int>>(delta);
         for (int vector_num = 0; vector_num < delta; vector_num++) {
             local_matrix[vector_num] = vector<int>(matrix[0].size());
-            MPI_Recv(&local_matrix[vector_num][0], matrix[0].size(), MPI_INT, 0, 0, MPI_COMM_WORLD, nullptr);
+            MPI_Recv(&local_matrix[vector_num][0], matrix[0].size(), MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
         }
     }
     auto local_result = sequential_operations(local_matrix);
