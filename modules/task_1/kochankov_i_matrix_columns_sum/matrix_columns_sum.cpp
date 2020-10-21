@@ -11,8 +11,8 @@ vector<int> sequential_operations(const vector<vector<int>>& matrix) {
     vector<int> result(matrix[0].size());
     std::fill(result.begin(), result.end(), 0);
 
-    for (int i = 0; i < matrix.size(); i++) {
-        for (int j = 0; j < matrix[i].size(); j++) {
+    for (int i = 0; i < static_cast<int>(matrix.size()); i++) {
+        for (int j = 0; j < static_cast<int>(matrix[i].size()); j++) {
             result[j] += matrix[i][j];
         }
     }
