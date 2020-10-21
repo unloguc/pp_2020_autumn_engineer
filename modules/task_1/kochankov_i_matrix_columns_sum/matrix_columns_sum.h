@@ -6,9 +6,10 @@
 #include <vector>
 
 using std::vector;
+#define Matrix(T) vector<vector<T>>
 
-std::vector<vector<double >> get_rand_matrix(int x, int y);
-vector<double> sequential_operations(const vector<vector<double>>& matrix, int result_size, int start_index);
-vector<double> parallel_sum(const vector<vector<double >>& matrix);
+Matrix(int) get_rand_matrix(int x, int y);
+vector<int> sequential_operations(const Matrix(int)& matrix);
+vector<int> parallel_sum(const Matrix(int)& matrix);
 
 #endif  // MODULES_TASK_1_KOCHANKOV_I_MATRIX_COLUMNS_SUM_MATRIX_COLUMNS_SUM_H_
