@@ -6,7 +6,7 @@
 
 
 TEST(Parallel_Operations_MPI, parallel_sum_works) {
-    Matrix(int) matrix(3);
+    vector<vector<int>> matrix(3);
     matrix[0] = vector<int>(4);
     vector<int> result_vector;
     vector<int> parallel_result;
@@ -14,7 +14,7 @@ TEST(Parallel_Operations_MPI, parallel_sum_works) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     if (rank == 0) {
-        matrix = Matrix(int)({ {1, 5, 2, 3}, {1, 5, 2, 3}, {1, 5, 2, 3} });
+        matrix = vector<vector<int>>({ {1, 5, 2, 3}, {1, 5, 2, 3}, {1, 5, 2, 3} });
         result_vector = vector<int>({3, 15, 6, 9});
     }
 
@@ -26,7 +26,7 @@ TEST(Parallel_Operations_MPI, parallel_sum_works) {
 }
 
 TEST(Parallel_Operations_MPI, sequential_operations_works) {
-    Matrix(int) matrix(3);
+    vector<vector<int>> matrix(3);
     matrix[0] = vector<int>(4);
     vector<int> result_vector;
     vector<int> sequential_result;
@@ -34,7 +34,7 @@ TEST(Parallel_Operations_MPI, sequential_operations_works) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     if (rank == 0) {
-        matrix = Matrix(int)({ {1, 5, 2, 3}, {1, 5, 2, 3}, {1, 5, 2, 3} });
+        matrix = vector<vector<int>>({ {1, 5, 2, 3}, {1, 5, 2, 3}, {1, 5, 2, 3} });
         result_vector = vector<int>({3, 15, 6, 9});
 
         sequential_result = sequential_operations(matrix);
@@ -44,7 +44,7 @@ TEST(Parallel_Operations_MPI, sequential_operations_works) {
 }
 
 TEST(Parallel_Operations_MPI, parallel_sum_one_line) {
-    Matrix(int) matrix(1);
+    vector<vector<int>> matrix(1);
     matrix[0] = vector<int>(4);
     vector<int> result_vector;
     vector<int> parallel_result;
@@ -52,7 +52,7 @@ TEST(Parallel_Operations_MPI, parallel_sum_one_line) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     if (rank == 0) {
-        matrix = Matrix(int)({{1, 2, 3, 4}});
+        matrix = vector<vector<int>>({{1, 2, 3, 4}});
         result_vector = vector<int>({1, 2, 3, 4});
     }
 
@@ -64,7 +64,7 @@ TEST(Parallel_Operations_MPI, parallel_sum_one_line) {
 }
 
 TEST(Parallel_Operations_MPI, get_rand_matrix_works) {
-    Matrix(int) matrix(5);
+    vector<vector<int>> matrix(5);
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -90,7 +90,7 @@ TEST(Parallel_Operations_MPI, get_rand_matrix_negative_size) {
 }
 
 TEST(Parallel_Operations_MPI, parallel_sum_works_random_matrix) {
-    Matrix(int) matrix(1000);
+    vector<vector<int>> matrix(1000);
     matrix[0] = vector<int>(1000);
     vector<int> sequential_result;
     vector<int> parallel_result;

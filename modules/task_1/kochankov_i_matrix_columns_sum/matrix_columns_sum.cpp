@@ -4,11 +4,10 @@
 #include <ctime>
 #include <vector>
 #include <algorithm>
-#include "iostream"
 #include "../../../modules/task_1/kochankov_i_matrix_columns_sum/matrix_columns_sum.h"
 
 
-vector<int> sequential_operations(const Matrix(int)& matrix) {
+vector<int> sequential_operations(const vector<vector<int>>& matrix) {
     vector<int> result(matrix[0].size());
     std::fill(result.begin(), result.end(), 0);
 
@@ -21,16 +20,16 @@ vector<int> sequential_operations(const Matrix(int)& matrix) {
     return result;
 }
 
-vector<int> parallel_sum(const Matrix(int)& matrix) {
-    int size, rank, len = matrix.size();
+vector<int> parallel_sum(const vector<vector<int>>& matrix) {
+    int size, rank, len = static_cast<int>(matrix.size());
 
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
     vector<int> columns_sums(len);
 
-    if (len < size){
-        if (rank == 0){
+    if (len < size) {
+        if (rank == 0) {
             return sequential_operations(matrix);
         } else {
             return vector<int>();
@@ -39,29 +38,29 @@ vector<int> parallel_sum(const Matrix(int)& matrix) {
 
     int delta = len / size;
     int start_index;
-    Matrix(int) local_matrix;
+    vector<vector<int>> local_matrix;
 
-    if (rank == 0){
-        local_matrix = Matrix(int)(delta);
+    if (rank == 0) {
+        local_matrix = vector<vector<int>>(delta);
         std::copy(matrix.begin(), matrix.begin()+delta, local_matrix.begin());
 
         int count = delta;
-        for (int process_num = 1; process_num < size; process_num++){
+        for (int process_num = 1; process_num < size; process_num++) {
             start_index = delta * process_num;
             if (process_num == size - 1) {
                 count = len - start_index;
             }
-            for (int vector_num = start_index; vector_num < start_index+count; vector_num++){
+            for (int vector_num = start_index; vector_num < start_index+count; vector_num++) {
                 MPI_Send(&matrix[vector_num][0], matrix[vector_num].size(), MPI_INT, process_num, 0, MPI_COMM_WORLD);
             }
         }
     } else {
-        if (rank == size - 1){
+        if (rank == size - 1) {
             delta = len - delta * (size - 1);
         }
 
-        local_matrix = Matrix(int)(delta);
-        for (int vector_num = 0; vector_num < delta; vector_num++){
+        local_matrix = vector<vector<int>>(delta);
+        for (int vector_num = 0; vector_num < delta; vector_num++) {
             local_matrix[vector_num] = vector<int>(matrix[0].size());
             MPI_Recv(&local_matrix[vector_num][0], matrix[0].size(), MPI_INT, 0, 0, MPI_COMM_WORLD, nullptr);
         }
