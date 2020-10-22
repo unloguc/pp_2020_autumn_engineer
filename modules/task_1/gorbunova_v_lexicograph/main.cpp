@@ -1,3 +1,4 @@
+// Copyright 2020 Gorbunova Valeria
 #include <gtest-mpi-listener.hpp>
 #include <gtest/gtest.h>
 #include <mpi.h>

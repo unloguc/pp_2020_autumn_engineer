@@ -1,3 +1,4 @@
+// Copyright 2020 Gorbunova Valeria
 #include <mpi.h>
 #include <string>
 #include <algorithm>
