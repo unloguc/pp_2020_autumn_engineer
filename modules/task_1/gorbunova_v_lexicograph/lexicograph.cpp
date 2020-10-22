@@ -50,9 +50,7 @@ bool getParallelOperation(const std::string s1, const std::string s2) {
     bool result, res;
     if (rank == 0) {
         part = s1_s2.substr(0, div + mod + 1);
-    }
-        
-    
+    }   
     else {
         MPI_Status status;
         MPI_Recv(&startval, 1, MPI_INT, 0, 1, MPI_COMM_WORLD, &status);
