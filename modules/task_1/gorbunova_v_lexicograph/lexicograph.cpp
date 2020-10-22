@@ -6,19 +6,19 @@
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
-#include "./lexicograph.h"
+#include "modules/task_1/gorbunova_v_lexicograph/lexicograph.h"
 
 
 std::string generateString(const int length) {
     std::string s;
     for (int i = 0; i < length; i++) {
-        s += std::rand() % 10 + 97;  
+        s += std::rand() % 10 + 97;
     }
     return s;
 }
 
 bool getSecuentialOperation(const std::string part) {
-  int length = (part.length());
+    int length = (part.length());
     for (int i = 1; i < length; i++)
         if (part[i] < part[i - 1]) {
             if ((part[i - 1] != '.') && (part[i] != '.'))
@@ -44,13 +44,12 @@ bool getParallelOperation(const std::string s1, const std::string s2) {
             MPI_Send(&endval, 1, MPI_INT, i, 2, MPI_COMM_WORLD);
         }
     }
-       
     std::string part;
     int startval, endval;
     bool result, res;
     if (rank == 0) {
         part = s1_s2.substr(0, div + mod + 1);
-    }   
+    }
     else {
         MPI_Status status;
         MPI_Recv(&startval, 1, MPI_INT, 0, 1, MPI_COMM_WORLD, &status);
@@ -62,4 +61,3 @@ bool getParallelOperation(const std::string s1, const std::string s2) {
     MPI_Allreduce(&result, &res, 1, MPI_C_BOOL, MPI_LAND, MPI_COMM_WORLD);
     return res;
 }
-
