@@ -2,7 +2,7 @@
 #include <gtest-mpi-listener.hpp>
 #include <gtest/gtest.h>
 #include <vector>
-#include "../../../modules/task_1/khismatulina_k_max_column_sum/matrix_sum_column.h"
+#include "../../../modules/task_1/khismatulina_k_column_sum/matrix_sum_column.h"
 
 TEST(matrix_summ_solumn_tests, test_1_sequential_5x5) {
     int rank;
