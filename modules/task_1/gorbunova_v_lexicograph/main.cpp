@@ -5,21 +5,22 @@
 #include <string>
 #include "./lexicograph.h"
 
-TEST(Lexicograph_ordered, string_generation){
+TEST(Lexicograph_ordered, string_generation) {
     std::string s;
     ASSERT_NO_THROW(s = generateString(20));
 }
-
-TEST(lexicograph_ordered, orderd_strings_of_different_length){
+   
+TEST(lexicograph_ordered, orderd_strings_of_different_length) {
     std::string s1 = "112233AABBCCaabbcc", s2 = "1Aa";
     ASSERT_EQ(getParallelOperation(s1, s2), true);
 }
-TEST(lexicograph_ordered, orderd_and_unordered_strings_of_different_length){
+   
+TEST(lexicograph_ordered, orderd_and_unordered_strings_of_different_length) {
     std::string s1 = "dqbA3dvkdns14", s2 = "1Aabbd";
     ASSERT_EQ(getParallelOperation(s1, s2), false);
 }
 
-TEST(lexicograph_ordered, unordered_strings_of_different_length){
+TEST(lexicograph_ordered, unordered_strings_of_different_length) {
     std::string s1 = "dnw2F", s2 = "MDBECvscta63DGvschB3DVXCX";
     ASSERT_EQ(getParallelOperation(s1, s2), false);
 }
