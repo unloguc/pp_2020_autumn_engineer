@@ -6,7 +6,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
-#include "modules/task_1/gorbunova_v_lexicograph/lexicograph.h"
+#include "./../../modules/task_1/gorbunova_v_lexicograph/lexicograph.h"
 
 
 std::string generateString(const int length) {
