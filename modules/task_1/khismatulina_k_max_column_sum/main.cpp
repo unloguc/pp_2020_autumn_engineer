@@ -4,7 +4,7 @@
 #include <vector>
 #include "../../../modules/task_1/khismatulina_k_max_column_sum/matrix_sum_column.h"
 
-TEST(matrix_summ_solumn_tests, test_1_sequential) {
+TEST(matrix_summ_solumn_tests, test_1_sequential_5x5) {
     int rank;
     std::vector<int> vec{ 0,  1,  2,  3,  4,
                                5,  6,  7,  8,  9,
@@ -18,34 +18,64 @@ TEST(matrix_summ_solumn_tests, test_1_sequential) {
     }
 }
 
-
-TEST(matrix_summ_solumn_tests, test_2_parallel_matrix_3x3) {
-    std::vector <int> a;
+TEST(matrix_summ_solumn_tests, test_2_sequential_100x100) {
     int rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-
-    if (rank == 0) {
-        a = getMatrix(3, 4);
+    std::vector<int> vec(10000);
+    for (int i = 0; i < 10000; ++i) {
+        vec[i] = 1;
     }
+    int res = getMaxColumnSumSequential(vec, 100, 100);
 
-    int max_column_sum = getMaxColumnSumParallel(a, 3, 4);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     if (rank == 0) {
-        ASSERT_EQ(max_column_sum, getMaxColumnSumSequential(a, 3, 4));
+        ASSERT_EQ(res, 100);
     }
 }
 
-TEST(matrix_summ_solumn_tests, test_3_parallel_matrix_150x150) {
-    std::vector <int> a;
+TEST(matrix_summ_solumn_tests, test_1_parallel_matrix_3x4_random) {
+    std::vector<int> vec;
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
     if (rank == 0) {
-        a = getMatrix(150, 150);
+        vec = getMatrix(3, 4);
     }
 
-    int max_column_sum = getMaxColumnSumParallel(a, 150, 150);
+    int res = getMaxColumnSumParallel(vec, 3, 4);
     if (rank == 0) {
-        ASSERT_EQ(max_column_sum, getMaxColumnSumSequential(a, 150, 150));
+        ASSERT_EQ(res, getMaxColumnSumSequential(vec, 3, 4));
+    }
+}
+
+TEST(matrix_summ_solumn_tests, test_1_parallel_matrix_3x4_not_random) {
+    std::vector<int> vec;
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+    if (rank == 0) {
+        vec = {1, 2,  3,  4, 
+               5, 6,  7,  8,
+               9, 10, 11, 12};
+    }
+
+    int res = getMaxColumnSumParallel(vec, 3, 4);
+    if (rank == 0) {
+        ASSERT_EQ(res, getMaxColumnSumSequential(vec, 3, 4));
+    }
+}
+
+TEST(matrix_summ_solumn_tests, test_2_parallel_matrix_150x150) {
+    std::vector<int> vec;
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+    if (rank == 0) {
+        vec = getMatrix(150, 150);
+    }
+
+    int res = getMaxColumnSumParallel(vec, 150, 150);
+    if (rank == 0) {
+        ASSERT_EQ(res, getMaxColumnSumSequential(vec, 150, 150));
     }
 }
 

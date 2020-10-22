@@ -60,21 +60,24 @@ int getMaxColumnSumParallel(std::vector<int> matrix, int line, int column) {
     if (rank == 0) {
         transMatrix.resize(line * column);
         transMatrix = transposedMatrix(matrix, line, column);
-
-        for (int proc = 1; proc < size; proc++) {
-            MPI_Send(&transMatrix[proc * delta * line + remainder], delta * line,
-                MPI_INT, proc, 0, MPI_COMM_WORLD);
+        if (delta > 0) {
+            for (int proc = 1; proc < size; proc++) {
+                MPI_Send(&transMatrix[(proc * delta + remainder) * line], delta * line,
+                    MPI_INT, proc, 0, MPI_COMM_WORLD);
+            }
         }
     }
 
-    // receive from master proccess
     int* localVec;
+    // receive from master proccess
     if (rank == 0) {
         localVec = &transMatrix[0];
     } else {
-        localVec = new int[delta * line];
-        MPI_Status status;
-        MPI_Recv(localVec, delta * line, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
+        if (delta > 0) {
+            localVec = new int[delta * line];
+            MPI_Status status;
+            MPI_Recv(localVec, delta * line, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
+        }
     }
 
     int verySuperMax;
@@ -93,7 +96,7 @@ int getMaxColumnSumParallel(std::vector<int> matrix, int line, int column) {
         for (int i = 0; i < delta; ++i) {
             int sum = 0;
             for (int j = 0; j < line; ++j) {
-                sum += localVec[i * column + j];
+                sum += localVec[i * line + j];
             }
             if (sum > localMax) localMax = sum;
         }
