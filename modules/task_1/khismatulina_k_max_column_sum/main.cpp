@@ -12,9 +12,11 @@ TEST(matrix_summ_solumn_tests, test_1_sequential_5x5) {
                                15, 16, 17, 18, 19,
                                20, 21, 22, 23, 24 };
 
+    std::vector<int> expect{ 10, 35, 60, 85, 110 };
+
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     if (rank == 0) {
-        ASSERT_EQ(getMaxColumnSumSequential(vec, 5, 5), 70);
+        ASSERT_EQ(getSequential(vec, 5, 5), expect);
     }
 }
 
@@ -24,11 +26,12 @@ TEST(matrix_summ_solumn_tests, test_2_sequential_100x100) {
     for (int i = 0; i < 10000; ++i) {
         vec[i] = 1;
     }
-    int res = getMaxColumnSumSequential(vec, 100, 100);
+
+    std::vector<int> res = getColumnSumParallel(vec, 100, 100);
 
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     if (rank == 0) {
-        ASSERT_EQ(res, 100);
+        ASSERT_EQ(res, getSequential(vec, 100, 100));
     }
 }
 
@@ -41,9 +44,9 @@ TEST(matrix_summ_solumn_tests, test_1_parallel_matrix_3x4_random) {
         vec = getMatrix(3, 4);
     }
 
-    int res = getMaxColumnSumParallel(vec, 3, 4);
+    std::vector<int> res = getColumnSumParallel(vec, 3, 4);
     if (rank == 0) {
-        ASSERT_EQ(res, getMaxColumnSumSequential(vec, 3, 4));
+        ASSERT_EQ(res, getSequential(vec, 3, 4));
     }
 }
 
@@ -58,11 +61,12 @@ TEST(matrix_summ_solumn_tests, test_1_parallel_matrix_3x4_not_random) {
                9, 10, 11, 12};
     }
 
-    int res = getMaxColumnSumParallel(vec, 3, 4);
+    std::vector<int> res = getColumnSumParallel(vec, 3, 4);
     if (rank == 0) {
-        ASSERT_EQ(res, getMaxColumnSumSequential(vec, 3, 4));
+        ASSERT_EQ(res, getSequential(vec, 3, 4));
     }
 }
+
 
 TEST(matrix_summ_solumn_tests, test_2_parallel_matrix_150x150) {
     std::vector<int> vec;
@@ -73,9 +77,9 @@ TEST(matrix_summ_solumn_tests, test_2_parallel_matrix_150x150) {
         vec = getMatrix(150, 150);
     }
 
-    int res = getMaxColumnSumParallel(vec, 150, 150);
+    std::vector<int> res = getColumnSumParallel(vec, 150, 150);
     if (rank == 0) {
-        ASSERT_EQ(res, getMaxColumnSumSequential(vec, 150, 150));
+        ASSERT_EQ(res, getSequential(vec, 150, 150));
     }
 }
 

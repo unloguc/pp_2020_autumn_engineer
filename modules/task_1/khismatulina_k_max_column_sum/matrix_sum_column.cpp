@@ -18,90 +18,73 @@ std::vector<int> getMatrix(int line, int column) {
     return matrix;
 }
 
-std::vector<int> transposedMatrix(std::vector<int> matrix, int line, int column) {
-    assert(matrix.size() != 0 && line != 0 && column != 0);
-    std::vector<int> transMatrix(line * column);
+std::vector<int> getSequential(std::vector<int> matrix, int line, int column) {
+    std::vector<int> result(line);
     for (int i = 0; i < line; ++i) {
         for (int j = 0; j < column; ++j) {
-            transMatrix[j * line + i] = matrix[i * column + j];
+            result[i] += matrix[i * column + j];
         }
     }
-    return transMatrix;
+    return result;
 }
 
-int getMaxColumnSumSequential(std::vector<int> matrix, int line, int column) {
-    std::vector<int> transMatrix = transposedMatrix(matrix, line, column);
-    int currentSum = 0;
-    int maxSum = 0;
-    int k = 0;
-    for (int i = 1; i < column + 1; ++i) {
-        while (k != i * line) {
-            currentSum += transMatrix[k];
-            k += 1;
-        }
-        if (currentSum > maxSum) {
-            maxSum = currentSum;
-        }
-        currentSum = 0;
-    }
-    return maxSum;
-}
-
-int getMaxColumnSumParallel(std::vector<int> matrix, int line, int column) {
+std::vector<int> getColumnSumParallel(std::vector<int> matrix, int line, int column) {
     int rank, size;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);  // number of process
     MPI_Comm_size(MPI_COMM_WORLD, &size);  // kolichestvo of process
 
-    const int delta = column / size;
-    int remainder = column - size * delta;
+    int delta = line / size;
+    int remainder = line - size * delta;
 
-    std::vector<int> transMatrix;
     // send to slave proccess
     if (rank == 0) {
-        transMatrix.resize(line * column);
-        transMatrix = transposedMatrix(matrix, line, column);
         if (delta > 0) {
             for (int proc = 1; proc < size; proc++) {
-                MPI_Send(&transMatrix[(proc * delta + remainder) * line], delta * line,
+                MPI_Send(&matrix[(proc * delta + remainder) * column], delta * column,
                     MPI_INT, proc, 0, MPI_COMM_WORLD);
             }
         }
     }
 
-    int* localVec;
+    std::vector<int> localVec;
     // receive from master proccess
     if (rank == 0) {
-        localVec = &transMatrix[0];
+        localVec = matrix;
+        localVec.resize((delta + remainder) * column);
     } else {
         if (delta > 0) {
-            localVec = new int[delta * line];
+            localVec.resize(delta * column);
             MPI_Status status;
-            MPI_Recv(localVec, delta * line, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
+            MPI_Recv(&localVec[0], delta * column, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
         }
     }
 
-    int verySuperMax;
-    int localMax = INT_MIN;
-    MPI_Op op_code = MPI_MAX;
+    std::vector<int> verySuperSumOfLine(line);
+    int* recvcounts = new int[size] {0};
+    int* displs = new int[size] {0};
+
+    for (int i = 0; i < size; ++i) {
+        recvcounts[i] = delta;
+        if (i == 0) {
+            recvcounts[i] += remainder;
+            displs[i] = 0;
+        } else {
+            displs[i] = displs[i - 1] + delta;
+            if (i == 1) {
+                displs[i] += remainder;
+            }
+        }
+    }
+
     if (rank == 0) {
-        for (int i = 0; i < delta + remainder; ++i) {
-            int sum = 0;
-            for (int j = 0; j < line; ++j) {
-                sum += localVec[i * line + j];
-            }
-            if (sum > localMax) localMax = sum;
-        }
-        MPI_Reduce(&localMax, &verySuperMax, 1, MPI_INT, op_code, 0, MPI_COMM_WORLD);
-    } else {
-        for (int i = 0; i < delta; ++i) {
-            int sum = 0;
-            for (int j = 0; j < line; ++j) {
-                sum += localVec[i * line + j];
-            }
-            if (sum > localMax) localMax = sum;
-        }
-        MPI_Reduce(&localMax, &verySuperMax, 1, MPI_INT, op_code, 0, MPI_COMM_WORLD);
+        delta += remainder;
     }
-    return verySuperMax;
-}
 
+    std::vector<int> result(1);
+    if (delta > 0 || rank == 0) {
+        result = getSequential(localVec, delta, column);
+    }
+    MPI_Gatherv(&result[0], delta, MPI_INT, &verySuperSumOfLine[0], recvcounts, displs,
+        MPI_INT, 0, MPI_COMM_WORLD);
+    return verySuperSumOfLine;
+}
