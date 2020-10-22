@@ -6,11 +6,10 @@
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
-
 #include "./lexicograph.h"
 
-std::string generateString(const int length) 
-{
+
+std::string generateString(const int length) {
     std::string s;
     for (int i = 0; i < length; i++) {
         s += std::rand() % 10 + 97;  
@@ -18,8 +17,7 @@ std::string generateString(const int length)
     return s;
 }
 
-bool getSecuentialOperation(const std::string part) 
-{
+bool getSecuentialOperation(const std::string part) {
   int length = (part.length());
     for (int i = 1; i < length; i++)
         if (part[i] < part[i - 1]) {
@@ -29,8 +27,7 @@ bool getSecuentialOperation(const std::string part)
     return true;
 }
 
-bool getParallelOperation(const std::string s1, const std::string s2)
-{
+bool getParallelOperation(const std::string s1, const std::string s2){
     std::string s1_s2 = s1 + '.' + s2 + '.';
     int size, rank;
     MPI_Comm_size(MPI_COMM_WORLD, &size);

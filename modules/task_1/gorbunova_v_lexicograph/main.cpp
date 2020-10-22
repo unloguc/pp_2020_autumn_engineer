@@ -2,9 +2,7 @@
 #include <gtest-mpi-listener.hpp>
 #include <gtest/gtest.h>
 #include <mpi.h>
-
 #include <string>
-
 #include "./lexicograph.h"
 
 TEST(Lexicograph_ordered, string_generation){
@@ -40,7 +38,6 @@ TEST(lexicograph_ordered, unordered_strings_of_same_length) {
     std::string s1 = "Nhwbgv4bsi3a", s2 = "skdh2b4bfh12k";
     ASSERT_EQ(getParallelOperation(s1, s2), false);
 }
-
 
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
