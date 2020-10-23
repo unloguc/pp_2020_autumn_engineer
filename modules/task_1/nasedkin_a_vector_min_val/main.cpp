@@ -8,9 +8,29 @@ TEST(Parallel_Operations_MPI, Can_Make_Random_Vector) {
   ASSERT_NO_THROW(rndVector(100));
 }
 
+TEST(Parallel_Operations_MPI, Cant_Make_Incorrect_Random_Vector) {
+    ASSERT_ANY_THROW(rndVector(-100));
+}
+
+TEST(Parallel_Operations_MPI, Can_Make_Sequential_Operation_Correct) {
+    std::vector<int> vec{ 5, 68, 4, 9, 9999 };
+    ASSERT_NO_THROW(SequentialMininum(vec));
+}
+
 TEST(Parallel_Operations_MPI, Is_Sequential_Operation_Correct) {
   std::vector<int> vec{5, 68, 4, 9, 9999};
   ASSERT_EQ(4, SequentialMininum(vec));
+}
+
+TEST(Parallel_Operations_MPI, Can_Make_Parallel_Operation_Correct) {
+  int procRank;
+  MPI_Comm_rank(MPI_COMM_WORLD, &procRank);
+  std::vector<int> vec;
+  int vec_size = 100;
+  if(procRank == 0) {
+  vec = rndVector(vec_size);
+  }
+  ASSERT_NO_THROW(ParallelMinimum(vec, vec_size));
 }
 
 TEST(Parallel_Operations_MPI, Is_Parallel_Operation_Correct) {

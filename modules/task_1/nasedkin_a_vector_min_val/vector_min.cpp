@@ -9,6 +9,9 @@
 
 
 std::vector<int> rndVector(int vector_size) {
+  if (vector_size <= 0) {
+    throw("Incorrect Vector Size");
+  }
   std::mt19937 random;
   random.seed(static_cast<unsigned int>(time(0)));
   std::vector<int> vec(vector_size);
@@ -47,8 +50,6 @@ int ParallelMinimum(std::vector<int> source_vector, int vector_size) {
   int vector_min_val = 0;
 
   int local_vector_min_val = SequentialMininum(local_vector);
-
-  // std::cout << std::endl << "process " << procRank << std::endl;
 
   MPI_Op op_code = MPI_MIN;
 
