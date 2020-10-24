@@ -40,6 +40,14 @@ TEST(lexicograph_ordered, unordered_strings_of_same_length) {
     ASSERT_EQ(getParallelOperation(s1, s2), false);
 }
 
+TEST(lexicograph_orderd, two_generating_strings) {
+    std::string s1;
+    std::string s2;
+    s1 = generateString(1001);
+    s2 = generateString(1002);
+    getParallelOperation(s1, s2);
+}
+
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     MPI_Init(&argc, &argv);
