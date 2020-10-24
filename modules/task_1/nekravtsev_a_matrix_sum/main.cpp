@@ -9,11 +9,10 @@ TEST(Parallel_Operations_MPI, Test_10x10_matrix) {
   int procRank;
   MPI_Comm_rank(MPI_COMM_WORLD, &procRank);
 
-  std::vector<std::vector<int>> matrix = setRandomMatrix(10, 10);
-  std::vector<int> tmp = matrixToVector(matrix);
+  std::vector<int> matrix = setRandomMatrix(10, 10);
 
-  int seq_result = SequentialCalc(tmp);
-  int par_result = ParallelCalc(tmp);
+  int seq_result = SequentialCalc(matrix, 100);
+  int par_result = ParallelCalc(matrix, 100);
 
   if (procRank == 0) {
     EXPECT_EQ(seq_result, par_result) << "Parallel and sequential functions give different results";
@@ -24,11 +23,10 @@ TEST(Parallel_Operations_MPI, Test_20114x777_matrix) {
   int procRank;
   MPI_Comm_rank(MPI_COMM_WORLD, &procRank);
 
-  std::vector<std::vector<int>> matrix = setRandomMatrix(20114, 777);
-  std::vector<int> tmp = matrixToVector(matrix);
+  std::vector<int> matrix = setRandomMatrix(20114, 777);
 
-  int seq_result = SequentialCalc(tmp);
-  int par_result = ParallelCalc(tmp);
+  int seq_result = SequentialCalc(matrix, matrix.size());
+  int par_result = ParallelCalc(matrix, matrix.size());
   if (procRank == 0) {
     EXPECT_EQ(seq_result, par_result) << "Parallel and sequential functions give different results";
   }
@@ -38,11 +36,10 @@ TEST(Parallel_Operations_MPI, Test_100x2_matrix) {
   int procRank;
   MPI_Comm_rank(MPI_COMM_WORLD, &procRank);
 
-  std::vector<std::vector<int>> matrix = setRandomMatrix(100, 2);
-  std::vector<int> tmp = matrixToVector(matrix);
+  std::vector<int> matrix = setRandomMatrix(100, 2);
 
-  int seq_result = SequentialCalc(tmp);
-  int par_result = ParallelCalc(tmp);
+  int seq_result = SequentialCalc(matrix, 200);
+  int par_result = ParallelCalc(matrix, 200);
 
   if (procRank == 0) {
     EXPECT_EQ(seq_result, par_result) << "Parallel and sequential functions give different results";
@@ -53,11 +50,10 @@ TEST(Parallel_Operations_MPI, Test_2x100_matrix) {
   int procRank;
   MPI_Comm_rank(MPI_COMM_WORLD, &procRank);
 
-  std::vector<std::vector<int>> matrix = setRandomMatrix(2, 100);
-  std::vector<int> tmp = matrixToVector(matrix);
+  std::vector<int> matrix = setRandomMatrix(2, 100);
 
-  int seq_result = SequentialCalc(tmp);
-  int par_result = ParallelCalc(tmp);
+  int seq_result = SequentialCalc(matrix, 200);
+  int par_result = ParallelCalc(matrix, 200);
 
   if (procRank == 0) {
     EXPECT_EQ(seq_result, par_result) << "Parallel and sequential functions give different results";
@@ -68,16 +64,12 @@ TEST(Parallel_Operations_MPI, Right_Calculate_80) {
   int procRank;
   MPI_Comm_rank(MPI_COMM_WORLD, &procRank);
 
-  std::vector<std::vector<int>> matrix(4);
-  for (int i = 0; i < 4; i++) {
-    matrix[i] = std::vector<int>(4);
-    for (int j = 0; j < 4; j++) {
-      matrix[i][j] = 5;
-    }
+  std::vector<int> matrix(16);
+  for (int i = 0; i < 16; i++) {
+    matrix[i] = 5;
   }
-  std::vector<int> tmp = matrixToVector(matrix);
 
-  int par_result = ParallelCalc(tmp);
+  int par_result = ParallelCalc(matrix, 16);
 
   if (procRank == 0) {
     EXPECT_EQ(par_result, 80) << "Wrong result";

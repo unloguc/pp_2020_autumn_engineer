@@ -4,12 +4,10 @@
 
 #include <vector>
 
-std::vector<std::vector<int>> setRandomMatrix(int rows, int cols);
+std::vector<int> setRandomMatrix(int rows, int cols);
 
-std::vector<int> matrixToVector(std::vector<std::vector<int>> matrix);
+int SequentialCalc(std::vector<int> matrix, int size);
 
-int SequentialCalc(std::vector<int> matrix);
-
-int ParallelCalc(std::vector<int> matrix);
+int ParallelCalc(std::vector<int> matrix, int size);
 
 #endif  // MODULES_TASK_1_NEKRAVTSEV_A_MATRIX_SUM_MATRIX_SUM_H_
