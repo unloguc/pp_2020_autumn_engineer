@@ -47,7 +47,7 @@ std::vector<int> getParallelColumnSum(const Matrix & matrix) {
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    if (columns < size) {
+    if (static_cast<int>(columns) < size) {
         return getSequentialColumnSum(matrix);
     }
 
@@ -74,7 +74,7 @@ std::vector<int> getParallelColumnSum(const Matrix & matrix) {
         }
       }
       if (size > 1) {
-        for (int i = 0; i < delta + columns % size; current_column++, i++) {
+        for (int i = 0; i <  static_cast<int>(delta + columns % size); current_column++, i++) {
           MPI_CALL(MPI_Send(&matrix[current_column][0], rows, MPI_INT, size - 1, 0,
                    MPI_COMM_WORLD));
         }
