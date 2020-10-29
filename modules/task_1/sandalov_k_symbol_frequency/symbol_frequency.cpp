@@ -50,7 +50,7 @@ int countFrequencyPar(const std::string& global_string, char symbol, int string_
                         MPI_CHAR, proc_num, 0, MPI_COMM_WORLD);
         }
         MPI_Send(&global_string[(size - 1) * delta], string_size - (size - 1) * delta,
-                        MPI_CHAR, size - 1, 0, MPI_COMM_WORLD);   
+                        MPI_CHAR, size - 1, 0, MPI_COMM_WORLD);
     }
     int global_sum = 0;
     int local_sum = 0;
