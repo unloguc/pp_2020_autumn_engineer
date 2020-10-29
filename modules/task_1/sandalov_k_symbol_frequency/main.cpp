@@ -1,9 +1,9 @@
-// Copyright 2018 Nesterov Alexander
+// Copyright 2020 Sandalov Konstantin
 #include <gtest-mpi-listener.hpp>
 #include <gtest/gtest.h>
 #include <iostream>
 #include <string>
-#include "symbol_frequency.h"
+#include "../../../modules/task_1/sandalov_k_symbol_frequency/symbol_frequency.h"
 
 TEST(Parallel_Operations_MPI, create_random_string) {
     std::string global_string;

@@ -1,10 +1,10 @@
-// Copyright 2018 Nesterov Alexander
-#include <iostream>
+// Copyright 2020 Sandalov Konstantin
 #include <mpi.h>
+#include <iostream>
 #include <string>
 #include <random>
 #include <ctime>
-#include "symbol_frequency.h"
+#include "../../../modules/task_1/sandalov_k_symbol_frequency/symbol_frequency.h"
 
 
 std::string getRandomString(int string_size) {
@@ -32,22 +32,25 @@ int countFrequencyPar(const std::string& global_string, char symbol, int string_
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
     if (string_size < size) {
-        if (rank == 0) return countFrequencySec(global_string, symbol, string_size);
-        else return 0;
+        if (rank == 0)
+            return countFrequencySec(global_string, symbol, string_size);
+        else
+            return 0;
     }
     const int delta = string_size / size;
     int real_size;
-    if (rank == size - 1) real_size = string_size - (size - 1) * delta;
-    else real_size = delta;
- 
+    if (rank == size - 1)
+        real_size = string_size - (size - 1) * delta;
+    else
+        real_size = delta;
+
     if (rank == 0 && size > 1) {
         for (int proc_num = 1; proc_num < size - 1; ++proc_num) {
             MPI_Send(&global_string[proc_num * delta], delta,
                         MPI_CHAR, proc_num, 0, MPI_COMM_WORLD);
         }
         MPI_Send(&global_string[(size - 1) * delta], string_size - (size - 1) * delta,
-                        MPI_CHAR, size - 1, 0, MPI_COMM_WORLD);
-        
+                        MPI_CHAR, size - 1, 0, MPI_COMM_WORLD);   
     }
     int global_sum = 0;
     int local_sum = 0;
