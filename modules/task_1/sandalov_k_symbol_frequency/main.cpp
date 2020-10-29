@@ -3,7 +3,6 @@
 #include <gtest/gtest.h>
 #include <iostream>
 #include <string>
-#include <iostream>
 #include "symbol_frequency.h"
 
 TEST(Parallel_Operations_MPI, create_random_string) {
@@ -98,7 +97,6 @@ TEST(Parallel_Operations_MPI, test_comparison_with_my_string) {
     int global_sum = countFrequencyPar(global_string, 'T', string_size);
     if (rank == 0) {
         int reference_sum = countFrequencySec(global_string, 'T', string_size);
-        std::cout << global_sum << '\t' << reference_sum << std::endl;
         ASSERT_EQ(reference_sum, global_sum);
     }
 }
