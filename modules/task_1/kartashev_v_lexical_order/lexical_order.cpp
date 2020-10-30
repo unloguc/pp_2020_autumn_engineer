@@ -2,7 +2,7 @@
 #include <mpi.h>
 #include <random>
 #include <algorithm>
-#include <chrono>
+#include <ctime>
 #include "iostream"
 #include "../../../modules/task_1/kartashev_v_lexical_order/lexical_order.h"
 
@@ -140,8 +140,7 @@ int get_parallel_operations(const char* str_1, const char* str_2, int length_1, 
 
 char* get_rand_string(int lenght) {
     std::mt19937 gen;
-    auto now = std::chrono::high_resolution_clock::now();
-    gen.seed(static_cast<unsigned int>(now.time_since_epoch().count()));
+    gen.seed(static_cast<unsigned int>(clock()));
 
     char *str = new char[lenght+1];
     for (int i = 0; i < lenght; i++) {
