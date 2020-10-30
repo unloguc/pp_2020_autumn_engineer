@@ -2,6 +2,7 @@
 #include <mpi.h>
 #include <random>
 #include <algorithm>
+#include <chrono>
 #include "iostream"
 #include "../../../modules/task_1/kartashev_v_lexical_order/lexical_order.h"
 
