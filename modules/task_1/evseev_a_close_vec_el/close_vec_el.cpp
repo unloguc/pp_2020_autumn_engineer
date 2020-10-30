@@ -1,6 +1,7 @@
 // Copyright 2020 Evseev Alexander
 #include <mpi.h>
 #include <cmath>
+#include <climits>
 #include <vector>
 #include <random>
 #include <string>
@@ -21,8 +22,8 @@ std::vector<int> getRandomVector(int sz) {
 }
 
 int getSequentialOperations(const std::vector<int> v) {
-    int  sz = v.size();
     int variMin = INT_MAX;
+    int  sz = v.size();
     if (sz != 0) {
         for (int i = 0; i < static_cast<int>(sz) - 1; i++) {
             if (variMin > abs(v[i] - v[i + 1]))
@@ -35,13 +36,13 @@ int getSequentialOperations(const std::vector<int> v) {
     return variMin;
 }
 
-int getParallelOperations(std::vector<int> global_vec) {
+int getParallelOperations(const std::vector<int> v) {
     int comm_size, rank;
     int variMin = INT_MAX;
     MPI_Comm_size(MPI_COMM_WORLD, &comm_size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Status status;
-    int size = global_vec.size() - 1;
+    int size = v.size() - 1;
     int buf_size = size / comm_size;
     int res = size % comm_size;
 
