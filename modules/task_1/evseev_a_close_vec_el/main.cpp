@@ -37,11 +37,11 @@ TEST(Test_close_el_on_vec_MPI, Test_small_size) {
     }
 }
 
-TEST(Test_close_el_on_vec_MPI, Test_25_size) {
+TEST(Test_close_el_on_vec_MPI, Test_50_size) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     std::vector<int> v;
-    v = getRandomVector(25);
+    v = getRandomVector(50);
     int different = getParallelOperations(v);
     if (rank == 0) {
         ASSERT_EQ(different, getSequentialOperations(v));
@@ -49,7 +49,7 @@ TEST(Test_close_el_on_vec_MPI, Test_25_size) {
 }
 
 
-TEST(Test_close_el_on_vec_MPI, Test_50_size) {
+TEST(Test_close_el_on_vec_MPI, Test_100_size) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     std::vector<int> v;
