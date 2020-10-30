@@ -10,39 +10,28 @@
 
 std::string GenRandString(int wordCount) {
     std::srand((unsigned)std::time(0));
-
     auto rword = []() -> std::string {
         std::vector<std::string> words = {"aaa", "bbb", "ccc", "ddd"};
 
         return words[ std::rand() % (words.size() - 1)];
     };
-
     std::string str("");
-
-    
     for (int i = 0; i < wordCount; i++) {
         str.append(rword());
         str.append(" ");
     }
-
-
     return str;
 }
 int ParCount(const std::string ref) {
     int size, rank;
-    
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-
     if (ref.empty() && rank == 0) {
         throw EMPTY_STRING_ERROR;
     }
-
     int del, ost;
-
     del = ref.size() / size;
     ost = ref.size() % size;
-
     if (rank == 0) {
         for (int i = 1; i < size; i++) {
             int start, end;
@@ -70,14 +59,12 @@ int ParCount(const std::string ref) {
     } else {
         deltaCount = SimpleCountDelta(delta);
     }
-    if ((rank != size - 1) && (delta[delta.size()-1] == ' ')){
+    if ((rank != size - 1) && (delta[delta.size()-1] == ' ')) {
         deltaCount++;
     }
     MPI_Reduce(&deltaCount, &stringCount, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
-
     return stringCount + 1;
 }
-
 int SimpleCountDelta(const std::string str) {
     if (str.empty()) {
         throw EMPTY_STRING_ERROR;
