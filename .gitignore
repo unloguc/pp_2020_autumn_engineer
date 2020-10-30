@@ -3,3 +3,6 @@ mpich
 cmake-build-release
 cmake-build-debug
 .idea/
+
+# Visual Studio Code folders
+.vscode/
