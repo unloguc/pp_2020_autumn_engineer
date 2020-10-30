@@ -33,7 +33,6 @@ TEST(Count_Words_MPI, Par_Count_Empty_Begin) {
     }
 }
 TEST(Count_Words_MPI, Empty_String_Count) {
-    int rank;
     std::string testStr("");
     ASSERT_ANY_THROW(SimpleCount(testStr));
 }
