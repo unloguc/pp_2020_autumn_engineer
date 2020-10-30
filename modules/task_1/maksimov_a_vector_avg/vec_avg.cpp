@@ -1,30 +1,27 @@
 // Copyright 2020 Maksimov Andrey
 #include <mpi.h>
+#include <time.h>
 #include <vector>
 #include <random>
-#include <time.h>
 
-std::vector<int> getRandomVector(int size)
-{
+std::vector<int> getRandomVector(int size) {
     std::vector<int> vec(size);
     srand(time(0));
     for (int i = 0; i < size; i++) {
-        vec[i] = rand();
+        vec[i] = rand_r();
     }
     return vec;
 }
 
-double getVectorAvgNotParall(std::vector<int> vec, int vecSize)
-{
+double getVectorAvgNotParall(std::vector<int> vec, int vecSize) {
     int sum = 0;
     for (int i = 0; i < vecSize; i++) {
         sum += vec[i];
     }
-    return (double)sum / vecSize;
+    return static_cast<double>(sum) / vecSize;
 }
 
-double getVectorAvg(std::vector<int> vec, int vecSize)
-{
+double getVectorAvg(std::vector<int> vec, int vecSize) {
     int procNum, procRank, size, sum, sumAll;
 
     MPI_Comm_size(MPI_COMM_WORLD, &procNum);
@@ -62,5 +59,5 @@ double getVectorAvg(std::vector<int> vec, int vecSize)
     }
     MPI_Reduce(&sum, &sumAll, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
 
-    return (double)sumAll / vecSize;
+    return static_cast<double>(sumAll) / vecSize;
 }
