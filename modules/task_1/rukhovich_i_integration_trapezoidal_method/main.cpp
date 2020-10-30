@@ -1,7 +1,7 @@
 #include <gtest-mpi-listener.hpp>
 #include <gtest/gtest.h>
 #include <vector>
-#include "./ops_mpi.h"
+#include "./integration_trapezoidal_method.h"
 
 TEST(Parallel_Operations_MPI, Test_Sum) {
     int rank;

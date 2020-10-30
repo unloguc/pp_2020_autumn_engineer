@@ -1,40 +1,54 @@
 #include <mpi.h>
-#include <vector>
-#include <string>
-#include <random>
-#include <ctime>
-#include <algorithm>
-#include "../../../modules/test_tasks/test_mpi/ops_mpi.h"
+#include <stdexcept>
+#include "./integration_trapezoidal_method.h"
 
 
-std::vector<int> getRandomVector(int sz) {
-    std::mt19937 gen;
-    gen.seed(static_cast<unsigned int>(time(0)));
-    std::vector<int> vec(sz);
-    for (int  i = 0; i < sz; i++) { vec[i] = gen() % 100; }
-    return vec;
+QuadraticPolynomial::QuadraticPolynomial(double a, double b, double c) : a(a), b(b), c(c) {}
+
+virtual QuadraticPolynomial::~QuadraticPolynomial() {}
+
+virtual double QuadraticPolynomial::operator()(double point) {
+    return a*point*point + b*point + c;
 }
 
-int getSequentialOperations(std::vector<int> vec, std::string ops) {
-    const int  sz = vec.size();
-    int reduction_elem = 0;
-    if (ops == "+") {
-        for (int  i = 0; i < sz; i++) {
-            reduction_elem += vec[i];
-        }
-    } else if (ops == "-") {
-        for (int  i = 0; i < sz; i++) {
-            reduction_elem -= vec[i];
-        }
-    } else if (ops == "max") {
-        reduction_elem = vec[0];
-        for (int  i = 1; i < sz; i++) {
-            reduction_elem = std::max(reduction_elem, vec[i]);
-        }
+double getIntegralSequentional(std::shared_ptr<Function> func, double from, double to,
+                               double precision) {
+    if (to < from) {
+        throw std::runtime_error("'from' must not be greater than 'to'");
     }
-    return reduction_elem;
+    if (precision <= 0d) {
+        throw std::runtime_error("'precision' must be greater than 0");
+    }
+
+    double cur_val = func(from), cur_point = from, ans = 0d;
+    if (cur_val < 0) {
+        throw std::runtime_error("Function value must not be less than 0");
+    }
+    while (cur_point + precision < to) {
+        cur_point += precision;
+
+        double next_val = func(cur_point);
+        if (next_val < 0) {
+            throw std::runtime_error("Function value must not be less than 0");
+        }
+        ans += (cur_val + next_val) * precision / 2d;
+
+        cur_val = next_val;
+    }
+
+    double last_val = func(to);
+    if (last_val < 0) {
+        throw std::runtime_error("Function value must not be less than 0");
+    }
+    ans += (cur_val + last_val) * (to - cur_point) / 2d;
+    return ans;
 }
 
+double getIntegralParallel(std::shared_ptr<Function> func, double from, double to,
+                           double precision) {
+    throw std::runtime_error("Not implemented yet");
+}
+/*
 int getParallelOperations(std::vector<int> global_vec,
                           int count_size_vector, std::string ops) {
     int size, rank;
@@ -66,3 +80,4 @@ int getParallelOperations(std::vector<int> global_vec,
     MPI_Reduce(&local_sum, &global_sum, 1, MPI_INT, op_code, 0, MPI_COMM_WORLD);
     return global_sum;
 }
+*/
