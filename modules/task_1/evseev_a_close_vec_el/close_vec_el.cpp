@@ -37,8 +37,8 @@ int getSequentialOperations(const std::vector<int> v) {
 }
 
 int getParallelOperations(const std::vector<int> v) {
-    int comm_size, rank;
     int variMin = INT_MAX;
+    int comm_size, rank;
     MPI_Comm_size(MPI_COMM_WORLD, &comm_size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Status status;
@@ -49,7 +49,7 @@ int getParallelOperations(const std::vector<int> v) {
     if (rank == 0) {
         if (buf_size >= 1) {
             for (int i = 1; i < comm_size; i++)
-                MPI_Send(&global_vec[res] + buf_size * i, buf_size, MPI_INT, i, 0, MPI_COMM_WORLD);
+                MPI_Send(&v[res] + buf_size * i, buf_size, MPI_INT, i, 0, MPI_COMM_WORLD);
         }
     } else {
         if (buf_size >= 1) {
@@ -61,7 +61,7 @@ int getParallelOperations(const std::vector<int> v) {
     }
     if (rank == 0) {
         int q;
-        std::vector<int> t(global_vec.begin(), global_vec.begin() + 1 + buf_size + res);
+        std::vector<int> t(v.begin(), v.begin() + 1 + buf_size + res);
         variMin = getSequentialOperations(t);
         if (buf_size >= 1) {
             for (int i = 1; i < comm_size; i++) {
