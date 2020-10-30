@@ -33,7 +33,6 @@ int getSequentialOperations(const std::vector<int> v) {
         return 0;
     }
     return variMin;
-
 }
 
 int getParallelOperations(std::vector<int> global_vec) {
@@ -50,10 +49,8 @@ int getParallelOperations(std::vector<int> global_vec) {
         if (buf_size >= 1) {
             for (int i = 1; i < comm_size; i++)
                 MPI_Send(&global_vec[res] + buf_size * i, buf_size, MPI_INT, i, 0, MPI_COMM_WORLD);
-
         }
-    }
-    else {
+    } else {
         if (buf_size >= 1) {
             std::vector<int> t(buf_size + 1);
             MPI_Recv(&t[0], buf_size + 1, MPI_INT, 0, MPI_ANY_TAG, MPI_COMM_WORLD, &status);

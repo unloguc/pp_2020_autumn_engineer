@@ -14,7 +14,6 @@ TEST(Test_close_el_on_vec_MPI, Test_close_one_el) {
         int different = getSequentialOperations(v);
         ASSERT_EQ(different, 2);
     }
-    
 }
 
 TEST(Test_close_el_on_vec_MPI, Test_Close_1Element) {
