@@ -5,10 +5,12 @@
 #include <random>
 
 std::vector<int> getRandomVector(int size) {
+    std::mt19937 gen;
+    gen.seed(time(0));
+
     std::vector<int> vec(size);
-    srand(time(0));
     for (int i = 0; i < size; i++) {
-        vec[i] = rand_r();
+        vec[i] = gen();
     }
     return vec;
 }
