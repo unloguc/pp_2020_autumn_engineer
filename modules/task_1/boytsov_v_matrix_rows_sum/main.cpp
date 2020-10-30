@@ -34,8 +34,9 @@ TEST(Parallel_Operation_MPI, Parallel_operations_run) {
         resultVector = std::vector<int>({4, 8, 10});
     }
     parallelResult = getParallelSumOfRows(mat, 3, 4);
-    if (rank == 0)
+    if (rank == 0) {
         EXPECT_EQ(parallelResult, resultVector);
+    }
 }
 
 TEST(Parallel_Operation_MPI, Can_create_matrix) {
