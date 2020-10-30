@@ -144,10 +144,10 @@ TEST(Parallel_Operations_MPI, get_rand_string_works) {
 
 TEST(Parallel_Operations_MPI, get_rand_str_negative_size) {
     int rank;
-    char * str;
 
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     if (rank == 0) {
+        char * str;
         EXPECT_ANY_THROW(str = get_rand_string(-5));
     }
 }
