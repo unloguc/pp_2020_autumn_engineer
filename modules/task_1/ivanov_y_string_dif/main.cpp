@@ -17,15 +17,15 @@ TEST(Parallel_Operations_MPI, Test_Can_Create_String) {
     }
 }
 
-TEST(Parallel_Operations_MPI, Test_Can_Get_Parallel_Operations) {
+TEST(Parallel_Operations_MPI, Test_Can_Get_Empty_String) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    const int size = 30;
+    const int size = 0;
     std::string global_str1 = generateString(size);
     std::string global_str2 = generateString(size);
 
     if (rank == 0) {
-        ASSERT_NO_THROW(getParallelDif(global_str1, global_str2, size));
+        ASSERT_EQ(getLocalDif(global_str1, global_str2, size), 0);
     }
 }
 
@@ -42,15 +42,15 @@ TEST(Parallel_Operations_MPI, Test_Can_Get_Local_Operations) {
     }
 }
 
-TEST(Parallel_Operations_MPI, Test_EQ_Two_Ways_Count) {
+TEST(Parallel_Operations_MPI, Test_Can_Create_And_Count_Long_String) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     std::string global_str1, global_str2;
-    const int size = 50;
+    const int size = 10000;
     global_str1 = generateString(size);
     global_str2 = generateString(size);
     if (rank == 0) {
-        ASSERT_TRUE(getLocalDif(global_str1, global_str2, size) == getParallelDif(global_str1, global_str2, size));
+        ASSERT_GE(getLocalDif(global_str1, global_str2, size), 0);
     }
 }
 
@@ -58,7 +58,7 @@ TEST(Parallel_Operations_MPI, Test_Two_Strings_Dif) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     std::string global_str1, global_str2;
-    const int size = 10;
+    const int size = 30;
     global_str1 = generateString(size);
     global_str2 = generateString(size);
     if (rank == 0) {

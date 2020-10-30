@@ -46,7 +46,6 @@ int getParallelDif(const std::string str1, const std::string str2, const int siz
     }
 
     std::string local_str1, local_str2;
-    std::string second_local_str1, second_local_str2;
     if (rank == 0) {
         local_str1 = std::string(str1.begin(), str1.begin() + delta);
         local_str2 = std::string(str2.begin(), str2.begin() + delta);
