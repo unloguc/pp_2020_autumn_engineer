@@ -1,21 +1,10 @@
 // Copyright 2020 Maksimov Andrey
 #include <vector>
-#include <random>
-#include <time.h>
 
 #include <gtest-mpi-listener.hpp>
 #include <gtest/gtest.h>
 
 #include "../../modules/task_1/maksimov_a_vector_avg/vec_avg.h"
-
-std::vector<int> getRandomVector(int size)
-{
-	std::vector<int> vec(size);
-	srand(time(0));
-	for (int i = 0; i < size; i++)
-		vec[i] = rand();
-	return vec;
-}
 
 TEST(Parallel_Operations_MPI, Test_Size_1)
 {

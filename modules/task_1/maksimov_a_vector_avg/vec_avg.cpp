@@ -1,60 +1,66 @@
 // Copyright 2020 Maksimov Andrey
 #include <mpi.h>
 #include <vector>
+#include <random>
+#include <time.h>
 
-#include "../../modules/task_1/maksimov_a_vector_avg/vec_avg.h"
+std::vector<int> getRandomVector(int size)
+{
+    std::vector<int> vec(size);
+    srand(time(0));
+    for (int i = 0; i < size; i++) {
+        vec[i] = rand();
+    }
+    return vec;
+}
 
 double getVectorAvgNotParall(std::vector<int> vec, int vecSize)
 {
-	int sum = 0;
-	for (int i = 0; i < vecSize; i++)
-		sum += vec[i];
-	return (double)sum / vecSize;
+    int sum = 0;
+    for (int i = 0; i < vecSize; i++) {
+        sum += vec[i];
+    }
+    return (double)sum / vecSize;
 }
 
 double getVectorAvg(std::vector<int> vec, int vecSize)
 {
-	int procNum;
-	int procRank;
+    int procNum, procRank, size, sum, sumAll;
 
-	int size;
+    MPI_Comm_size(MPI_COMM_WORLD, &procNum);
+    MPI_Comm_rank(MPI_COMM_WORLD, &procRank);
 
-	int sum;
-	int sumAll;
+    MPI_Bcast(&vecSize, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    if (procRank != procNum - 1) {
+        size = vecSize / procNum;
+    } else {
+        size = vecSize / procNum + vecSize % procNum;
+    }
 
-	MPI_Comm_size(MPI_COMM_WORLD, &procNum);
-	MPI_Comm_rank(MPI_COMM_WORLD, &procRank);
+    if (procRank == 0) {
+        for (int i = 1; i < procNum - 1; i++) {
+            MPI_Send(&vec[0] + vecSize / procNum * i, size, MPI_INT, i, 0, MPI_COMM_WORLD);
+        }
+        if (procNum > 1) {
+            MPI_Send(&vec[0] + vecSize / procNum * (procNum - 1),
+                     size + vecSize % procNum, MPI_INT, (procNum - 1), 0, MPI_COMM_WORLD);
+        }
+    }
 
-	MPI_Bcast(&vecSize, 1, MPI_INT, 0, MPI_COMM_WORLD);
-	if (procRank != procNum - 1)
-		size = vecSize / procNum;
-	else
-		size = vecSize / procNum + vecSize % procNum;
+    std::vector<int> localVec(size);
 
-	if (procRank == 0)
-	{
-		for (int i = 1; i < procNum - 1; i++)
-			MPI_Send(&vec[0] + vecSize / procNum * i, size, MPI_INT, i, 0, MPI_COMM_WORLD);
-		if (procNum > 1)
-			MPI_Send(&vec[0] + vecSize / procNum * (procNum - 1), size + vecSize % procNum, MPI_INT, (procNum - 1), 0, MPI_COMM_WORLD);
-	}
+    if (procRank == 0) {
+        localVec = std::vector<int>(vec.begin(), vec.begin() + size);
+    } else {
+        MPI_Status mpiStatus;
+        MPI_Recv(&localVec[0], size, MPI_INT, 0, 0, MPI_COMM_WORLD, &mpiStatus);
+    }
 
-	std::vector<int> localVec(size);
+    sum = 0;
+    for (int i = 0; i < size; i++) {
+        sum += localVec[i];
+    }
+    MPI_Reduce(&sum, &sumAll, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
 
-	if (procRank == 0)
-	{
-		localVec = std::vector<int>(vec.begin(), vec.begin() + size);
-	}
-	else
-	{
-		MPI_Status mpiStatus;
-		MPI_Recv(&localVec[0], size, MPI_INT, 0, 0, MPI_COMM_WORLD, &mpiStatus);
-	}
-
-	sum = 0;
-	for (int i = 0; i < size; i++)
-		sum += localVec[i];
-	MPI_Reduce(&sum, &sumAll, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
-
-	return (double)sumAll / vecSize;
+    return (double)sumAll / vecSize;
 }
