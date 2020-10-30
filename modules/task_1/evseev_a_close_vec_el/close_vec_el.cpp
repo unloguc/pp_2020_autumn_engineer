@@ -1,4 +1,6 @@
 // Copyright 2020 Evseev Alexander
+#include <mpi.h>
+#include <cmath>
 #include <vector>
 #include <random>
 #include <string>
@@ -6,6 +8,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
+
 #include "../../../modules/task_1/evseev_a_close_vec_el/close_vec_el.h"
 
 

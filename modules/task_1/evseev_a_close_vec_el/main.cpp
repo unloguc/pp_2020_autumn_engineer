@@ -2,6 +2,7 @@
 #include <gtest-mpi-listener.hpp>
 #include <gtest/gtest.h>
 #include <vector>
+#include <random>
 #include "./close_vec_el.h"
 
 TEST(Test_close_el_on_vec_MPI, Test_close_one_el) {
