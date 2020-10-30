@@ -2,7 +2,9 @@
 #include "../../../modules/task_1/boytsov_v_matrix_rows_sum/matrix_rows_sum.h"
 #include <mpi.h>
 #include <vector>
+#include <ctime>
 #include <random>
+#include <algorithm>
 
 std::vector<std::vector<int> > createRandomMatrix(const int M, const int N) {
     std::mt19937 gen;
