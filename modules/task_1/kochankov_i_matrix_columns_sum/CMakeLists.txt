@@ -14,7 +14,7 @@ if( USE_MPI )
     file(GLOB_RECURSE header_files "*.h")
     file(GLOB_RECURSE source_files "*.cpp")
     set(PACK_LIB "${ProjectId}_lib")
-    add_library(${PACK_LIB} STATIC ${header_files} ${source_files} Matrix.cpp Matrix.h)
+    add_library(${PACK_LIB} STATIC ${header_files} ${source_files})
 
     add_executable( ${ProjectId} ${source_files} main.cpp)
 
