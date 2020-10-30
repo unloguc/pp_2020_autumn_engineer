@@ -39,7 +39,7 @@ int get_parallel_operations(const char* str_1, const char* str_2, int length_1, 
         if (rank == 0) {
             return get_sequential_operations(str_1, str_2, length_1, length_2);
         } else {
-            return false;
+            return 0;
         }
     }
 
