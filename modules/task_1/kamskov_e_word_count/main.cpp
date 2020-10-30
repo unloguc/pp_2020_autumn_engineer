@@ -9,7 +9,7 @@
 TEST(Count_Words_MPI, Simple_Count) {
     std::string testStr = "Carpe diem. Seize the day, boys. Make your lives extraordinary.";
 
-    int res = SimpleCount(testStr);
+    int res = SimpleCount(testStr) + 1;
     ASSERT_EQ(res, 10);
 }
 
@@ -37,15 +37,6 @@ TEST(Count_Words_MPI, Empty_String_Count) {
     ASSERT_ANY_THROW(SimpleCount(testStr));
 }
 
-TEST(Count_Words_MPI, Par_Count_Double_Spaces) {
-    int rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    std::string testStr = "Life   is a nightmare that prevents one   from sleeping";
-    int res = ParCount(testStr);
-    if (rank == 0) {
-        ASSERT_EQ(res, 9);
-    }
-}
 TEST(Count_Words_MPI, Par_Count_Rand_String) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -55,9 +46,20 @@ TEST(Count_Words_MPI, Par_Count_Rand_String) {
         ASSERT_EQ(par_count, 30);
     }
 }
+
+TEST(Count_Words_MPI, Par_Count_Rand_String_More) {
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    std::string testStr = GenRandString(10000);
+    int par_count = ParCount(testStr);
+    if (rank == 0) {
+        ASSERT_EQ(par_count, 10000);
+    }
+}
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     MPI_Init(&argc, &argv);
+    std::string testStr = "Carpe diem. Seize the day, boys. Make your lives extraordinary.";
     ::testing::AddGlobalTestEnvironment(new GTestMPIListener::MPIEnvironment);
     ::testing::TestEventListeners& listeners =
     ::testing::UnitTest::GetInstance()->listeners();

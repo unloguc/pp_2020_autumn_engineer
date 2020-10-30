@@ -9,7 +9,7 @@
 
 int ParCount(const std::string);
 int SimpleCount(const std::string);
-
+int SimpleCountDelta(const std::string);
 /**
  * @brief Creates string with the specified count of random words.
  * @param wordCount Count of random words in a result string.
