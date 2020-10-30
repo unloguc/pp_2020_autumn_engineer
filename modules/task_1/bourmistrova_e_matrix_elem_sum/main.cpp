@@ -20,7 +20,7 @@ TEST(Parallel_Operations_MPI, Test_Sum) {
 
     if (mynode == 0) {
         int ref_sum = 0;
-        Sequential_method(matrix);
+        ref_sum = Sequential_method(matrix);
         ASSERT_EQ(ref_sum, par_sum);
     }
 }
@@ -36,5 +36,6 @@ int main(int argc, char **argv) {
     listeners.Release(listeners.default_xml_generator());
 
     listeners.Append(new GTestMPIListener::MPIMinimalistPrinter);
+
     return RUN_ALL_TESTS();
 }
