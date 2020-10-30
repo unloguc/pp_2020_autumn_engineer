@@ -30,8 +30,7 @@ TEST(Test_close_el_on_vec_MPI, Test_small_size) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     std::vector<int> v;
-    int size_vector = 3;
-    v = getRandomVector(size_vector);
+    v = getRandomVector(10);
     int different = getParallelOperations(v);
     if (rank == 0) {
         ASSERT_EQ(different, getSequentialOperations(v));
