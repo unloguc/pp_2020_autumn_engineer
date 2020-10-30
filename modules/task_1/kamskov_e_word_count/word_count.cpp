@@ -36,7 +36,7 @@ int ParCount(const std::string ref) {
         for (int i = 1; i < size; i++) {
             int start, end;
             start = i * del + ost;
-            end = start + del; 
+            end = start + del;
             MPI_Send(&start, 1, MPI_INT, i, 1, MPI_COMM_WORLD);
             MPI_Send(&end, 1, MPI_INT, i, 2, MPI_COMM_WORLD);
         }
