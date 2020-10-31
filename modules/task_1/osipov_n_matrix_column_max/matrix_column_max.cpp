@@ -61,7 +61,7 @@ int getColumnMaxParallel(std::vector<int> matrix, int line, int column) {
     if (rank == 0) {
         transMatrix.resize(line * column);
         transMatrix = transposedMatrix(matrix, line, column);
-        if (delta > 0) {          
+        if (delta > 0) {
             for (int proc = 1; proc < size; proc++) {
                 MPI_Send(&transMatrix[(proc * delta + remainder) * line], delta * line,
                     MPI_INT, proc, 0, MPI_COMM_WORLD);
