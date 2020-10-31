@@ -2,7 +2,7 @@
 #include <mpi.h>
 #include <utility>
 #include <algorithm>
-#include "monte_carlo.h"
+#include "./monte_carlo.h"
 
 double getIntegral(double _min, double _max, int splitCount, double(*func)(double)) {
 	if (splitCount == 0)
