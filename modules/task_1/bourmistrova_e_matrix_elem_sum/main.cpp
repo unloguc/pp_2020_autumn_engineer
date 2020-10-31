@@ -26,7 +26,7 @@ TEST(Parallel_Operations_MPI, Test_Sum) {
         ASSERT_EQ(ref_sum, par_sum);
     }
 }
-TEST(Parallel_Operations_MPI, Test_Sum_More_Min_Sum) {
+TEST(Parallel_Operations_MPI, Test_Lower_Bound) {
     int mynode;
     MPI_Comm_rank(MPI_COMM_WORLD, &mynode);
     const int rows = 56;
@@ -45,7 +45,7 @@ TEST(Parallel_Operations_MPI, Test_Sum_More_Min_Sum) {
         ASSERT_LE(ref_min_sum, par_sum);
     }
 }
-TEST(Parallel_Operations_MPI, Test_Sum_Less_Max_Sum) {
+TEST(Parallel_Operations_MPI, Test_Upper_Bound) {
     int mynode;
     MPI_Comm_rank(MPI_COMM_WORLD, &mynode);
     const int rows = 73;
@@ -64,18 +64,18 @@ TEST(Parallel_Operations_MPI, Test_Sum_Less_Max_Sum) {
         ASSERT_GE(ref_max_sum, par_sum);
     }
 }
-TEST(Parallel_Operations_MPI, Test_Diff_Num_Of_Proc_F) {
+TEST(Parallel_Operations_MPI, Test_Diff_Size_F) {
     int mynode;
     MPI_Comm_rank(MPI_COMM_WORLD, &mynode);
-    const int rows = 100;
-    const int columns = 100;
+    const int rows = 100000;
+    const int columns = 5;
     std::string oper = "+";
     std::vector<int> matrix(rows*columns);
     if (mynode == 0) {
         matrix = getRandomMatrix(rows, columns);
     }
 
-    int par_sum = Parallel_method_choose_num_proc(matrix, rows, columns, oper, 3);
+    int par_sum = Parallel_method(matrix, rows, columns, oper);
 
     if (mynode == 0) {
         int ref_sum = 0;
@@ -83,23 +83,23 @@ TEST(Parallel_Operations_MPI, Test_Diff_Num_Of_Proc_F) {
         ASSERT_EQ(ref_sum, par_sum);
     }
 }
-TEST(Parallel_Operations_MPI, Test_Diff_Num_Of_Proc_S) {
+TEST(Parallel_Operations_MPI, Test_Upper_Bound_P_S) {
     int mynode;
     MPI_Comm_rank(MPI_COMM_WORLD, &mynode);
-    const int rows = 100;
-    const int columns = 100;
-    std::string oper = "+";
+    const int rows = 10000;
+    const int columns = 500;
+    std::string oper = "max";
     std::vector<int> matrix(rows*columns);
     if (mynode == 0) {
         matrix = getRandomMatrix(rows, columns);
     }
 
-    int par_sum = Parallel_method_choose_num_proc(matrix, rows, columns, oper, 10);
+    int par_max_sum = Parallel_method(matrix, rows, columns, oper);
 
     if (mynode == 0) {
-        int ref_sum = 0;
-        ref_sum = Sequential_method(matrix, oper);
-        ASSERT_EQ(ref_sum, par_sum);
+        int ref_max_sum = 0;
+        ref_max_sum = Sequential_method(matrix, oper);
+        ASSERT_EQ(ref_max_sum, par_max_sum);
     }
 }
 int main(int argc, char **argv) {
