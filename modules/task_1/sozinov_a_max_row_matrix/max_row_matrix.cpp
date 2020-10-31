@@ -13,7 +13,7 @@ std::vector<int> GenerateMatrix(int sizeRow, int countRow, int min, int max) {
     std::mt19937 ger(dev());
     std::uniform_int_distribution<> dist(min, max);
 
-    for (int j = 0; j < vec.size(); ++j) {
+    for (int j = 0; j < sizeRow * countRow; ++j) {
         vec[j] = dist(ger);
     }
     return vec;
