@@ -1,13 +1,11 @@
 // Copyright 2020 Sozinov Alex
-#ifndef MODULES_TASKS_1_MAX_RAW_MATRIX_H
-#define MODULES_TASKS_1_MAX_RAW_MATRIX_H
+#ifndef MODULES_TASK_1_SOZINOV_A_MAX_ROW_MATRIX_MAX_ROW_MATRIX_H_
+#define MODULES_TASK_1_SOZINOV_A_MAX_ROW_MATRIX_MAX_ROW_MATRIX_H_
 
 #include <vector>
-#include <random>
-#include <mpi.h>
 
-std::vector<int> GenerateMatrix(int sizeRow, int countRow, int min, int max);
-std::vector<int> GetSequentialMax(std::vector<int> &vect, int sizeRow, int countRow);
-std::vector<int> GetParalMax(std::vector<int> &vect, int sizeRow, int countRow);
+std::vector<int> GenerateMatrix(const int sizeRow, int countRow, int min, int max);
+std::vector<int> GetSequentialMax(const std::vector<int> &vect, int sizeRow, int countRow);
+std::vector<int> GetParalMax(const std::vector<int> &vect, int sizeRow, int countRow);
 
-#endif //MODULES_TASKS_1_MAX_RAW_MATRIX_H
+#endif    // MODULES_TASK_1_SOZINOV_A_MAX_ROW_MATRIX_MAX_ROW_MATRIX_H_
