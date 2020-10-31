@@ -56,7 +56,6 @@ TEST(Parallel_Operations_MPI, find_max_3) {
     int sizeRow = 111;
     int countRow = 14;
     std::vector<int> vec = GenerateMatrix(sizeRow, countRow, -221, 121);
-
     std::vector<int> vecSeq = GetSequentialMax(vec, sizeRow, countRow);
     std::vector<int> vecPar = GetParalMax(vec, sizeRow, countRow);    
     int ProcessRank;
@@ -70,23 +69,8 @@ TEST(Parallel_Operations_MPI, find_max_4) {
     int sizeRow = 235;
     int countRow = 224;
     std::vector<int> vec = GenerateMatrix(sizeRow, countRow, -100, 100);
-
     std::vector<int> vecSeq = GetSequentialMax(vec, sizeRow, countRow);
-    std::vector<int> vecPar = GetParalMax(vec, sizeRow, countRow);    
-    int ProcessRank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &ProcessRank);
-    if (ProcessRank == 0) {
-        ASSERT_EQ(vecPar, vecSeq);
-     }
-}
-
-TEST(Parallel_Operations_MPI, find_max_5) {
-    int sizeRow = 123;
-    int countRow = 11;
-    std::vector<int> vec = GenerateMatrix(sizeRow, countRow, -100, 100);
-
-    std::vector<int> vecSeq = GetSequentialMax(vec, sizeRow, countRow);
-    std::vector<int> vecPar = GetParalMax(vec, sizeRow, countRow);    
+    std::vector<int> vecPar = GetParalMax(vec, sizeRow, countRow);
     int ProcessRank;
     MPI_Comm_rank(MPI_COMM_WORLD, &ProcessRank);
     if (ProcessRank == 0) {
@@ -94,8 +78,21 @@ TEST(Parallel_Operations_MPI, find_max_5) {
     }
 }
 
-int main(int argc, char** argv) {  
-  ::testing::InitGoogleTest(&argc, argv);
+TEST(Parallel_Operations_MPI, find_max_5) {
+    int sizeRow = 123;
+    int countRow = 11;
+    std::vector<int> vec = GenerateMatrix(sizeRow, countRow, -100, 100);
+    std::vector<int> vecSeq = GetSequentialMax(vec, sizeRow, countRow);
+    std::vector<int> vecPar = GetParalMax(vec, sizeRow, countRow);
+    int ProcessRank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &ProcessRank);
+    if (ProcessRank == 0) {
+        ASSERT_EQ(vecPar, vecSeq);
+    }
+}
+
+int main(int argc, char** argv) {
+    ::testing::InitGoogleTest(&argc, argv);
     MPI_Init(&argc, &argv);
 
     ::testing::AddGlobalTestEnvironment(new GTestMPIListener::MPIEnvironment);
