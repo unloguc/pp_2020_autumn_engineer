@@ -1,6 +1,6 @@
 // Copyright 2020 Avdeev Andrey
 #include <mpi.h>
-#include "modules/task_1/avdeev_a_rectangle_method/rectangle_method.h"
+#include "../../../modules/task_1/avdeev_a_rectangle_method/rectangle_method.h"
 
 double getSequentialIntegration(double(*func)(double), const double& a, const double& b, const int& n) {
     if (a > b) throw "border_exception";
