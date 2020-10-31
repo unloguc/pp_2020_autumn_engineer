@@ -1,8 +1,9 @@
 // Copyright 2020 Gavrilov Nikita
 #include <mpi.h>
 #include <utility>
+#include <algorithm>
 
-double getIntegral(double _min, double _max, int splitCount, double(*func)(double)){
+double getIntegral(double _min, double _max, int splitCount, double(*func)(double)) {
 	if (splitCount == 0)
 		throw "splitCount should be more than 0";
 
@@ -12,7 +13,7 @@ double getIntegral(double _min, double _max, int splitCount, double(*func)(doubl
 
 	double result = 0;
 	double delta = (_max - _min) / splitCount;
-	for (double i = _min; i < _max;){
+	for (double i = _min; i < _max;) {
 		double next = std::min(i + delta, _max);
 		double localDelta = (next - i);
 		result += localDelta * func(i + localDelta / 2);
@@ -24,7 +25,7 @@ double getIntegral(double _min, double _max, int splitCount, double(*func)(doubl
 	return result;
 }
 
-double getIntegralParallel(double _min, double _max, int splitCount, double(*func)(double)){
+double getIntegralParallel(double _min, double _max, int splitCount, double(*func)(double)) {
 	if (splitCount == 0)
 		throw "splitCount should be more than 0";
 
