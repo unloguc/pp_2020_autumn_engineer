@@ -19,9 +19,10 @@ int getSequentialMultiScalar(std::vector<int> v1, std::vector<int> v2) {
     if (v1.size() != v2.size()) {
         throw(1);
     }
-
+    
+    const int v_size = v1.size();
     int result = 0;
-    for (int i = 0; i < v1.size(); i++) {
+    for (int i = 0; i < v_size; i++) {
         result += v1[i] * v2[i];
     }
     return result;
