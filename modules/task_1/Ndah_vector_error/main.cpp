@@ -1,4 +1,4 @@
-// Copyright 2020 Ndah Rony
+// Copyright 2020 NDAH RONY
 #include <gtest-mpi-listener.hpp>
 #include <gtest/gtest.h>
 #include <vector>

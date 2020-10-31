@@ -1,4 +1,4 @@
-// Copyright 2020 Ndah Rony
+// Copyright 2020 NDAH RONY
 #include <mpi.h>
 #include <vector>
 #include <ctime>
