@@ -15,7 +15,7 @@ std::vector<int> createRandomVector(int v_size) {
     return vector;
 }
 
-int getSequentialMultiScalar(std::vector<int>& v1, std::vector<int>& v2) {
+int getSequentialMultiScalar(std::vector<int> v1, std::vector<int> v2) {
     if (v1.size() != v2.size()) {
         throw(1);
     }
@@ -27,7 +27,7 @@ int getSequentialMultiScalar(std::vector<int>& v1, std::vector<int>& v2) {
     return result;
 }
 
-int getParallelMultiScalar(std::vector<int>& v1, std::vector<int>& v2) {
+int getParallelMultiScalar(std::vector<int> v1, std::vector<int> v2) {
     int rank, size;
 
     if (v1.size() != v2.size()) {
