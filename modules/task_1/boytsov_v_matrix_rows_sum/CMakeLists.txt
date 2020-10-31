@@ -14,9 +14,9 @@ if( USE_MPI )
     file(GLOB_RECURSE header_files "*.h")
     file(GLOB_RECURSE source_files "*.cpp")
     set(PACK_LIB "${ProjectId}_lib")
-    add_library(${PACK_LIB} STATIC ${header_files} ${source_files})
+    add_library(${PACK_LIB} STATIC ${header_files} ${source_files} matrix_rows_sum.cpp matrix_rows_sum.h main.cpp)
 
-    add_executable( ${ProjectId} ${source_files})
+    add_executable( ${ProjectId} ${source_files} )
 
     target_link_libraries(${ProjectId} ${PACK_LIB})
     if( MPI_COMPILE_FLAGS )
