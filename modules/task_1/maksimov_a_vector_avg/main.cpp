@@ -6,6 +6,23 @@
 
 #include "../../modules/task_1/maksimov_a_vector_avg/vec_avg.h"
 
+TEST(Parallel_Operations_MPI, Can_Generate_Vector) {
+    const int vecSize = 10;
+
+    std::vector<int> vec = getRandomVector(vecSize);
+    ASSERT_EQ(vec.size(), vecSize);
+}
+
+TEST(Parallel_Operations_MPI, Test_Negative_VecSize) {
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    std::vector<int> vec;
+    if (rank == 0) {
+        vec = getRandomVector(10);
+    }
+    ASSERT_ANY_THROW(getVectorAvg(vec, -1));
+}
+
 TEST(Parallel_Operations_MPI, Test_Size_1) {
     const int vecSize = 1;
 
