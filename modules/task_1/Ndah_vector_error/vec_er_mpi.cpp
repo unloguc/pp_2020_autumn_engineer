@@ -64,3 +64,4 @@ int countErr(const std::vector<int>& a) {
     }
     return count;
 }
+
