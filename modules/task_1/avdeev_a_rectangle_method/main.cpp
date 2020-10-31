@@ -54,10 +54,7 @@ TEST(Parallel_Operations_MPI, Sequential_Segments_Test) {
     auto func = [](double _x) -> double {
         return _x;
     };
-
-    double par_sum = getSequentialIntegration(func, 0, 5, 0);
-    double error = pow(10.0, -2);
-    ASSERT_NEAR(2, par_sum, error);
+    ASSERT_ANY_THROW(getSequentialIntegration(func, 0, 5, 0));
 }
 
 TEST(Parallel_Operations_MPI, Parallel_Segments_Test) {
@@ -67,12 +64,8 @@ TEST(Parallel_Operations_MPI, Parallel_Segments_Test) {
     auto func = [](double _x) -> double {
         return _x;
     };
-
-    double par_sum = getParallelIntegration(func, 0, 5, 0);
-
     if (rank == 0) {
-        double error = pow(10.0, -2);
-        ASSERT_NEAR(2, par_sum, error);
+    ASSERT_ANY_THROW(getParallelIntegration(func, 0, 5, 0));
     }
 }
 
