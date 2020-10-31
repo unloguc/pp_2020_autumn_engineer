@@ -4,7 +4,7 @@
 #include <ctime>
 #include <random>
 #include <utility>
-#include "../../../modules/task_1/Ndah_vector_error/vec_er_mpi.h"
+#include "./vec_er_mpi.h"
 
 std::vector<int> RV(int s) {
     std::mt19937 rv;
@@ -37,16 +37,16 @@ int parallelVec(const std::vector<int>& a, int n) {
     if (r == 0) {
         for (int i = 1; i < s; i++) {
             if (i < s)
-                MPI_Send(&a[0] + i * res + rem - 1, res + 1, MPI_INT, i, 0, MPI_COMM_WORLD);
+                MPI_Send(&a[0] + i*res + rem - 1, res + 1, MPI_INT, i, 0, MPI_COMM_WORLD);
         }
     }
     std::vector<int> t;
     if (r == 0) {
-        t.resize(res + rem);
+        t.resize(res+rem);
         t = { a.begin(), a.begin() + res + rem };
     }
     else {
-        t.resize(res + 1);
+        t.resize(res+1);
         MPI_Status status;
         MPI_Recv(&t[0], res + 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
     }
@@ -64,4 +64,5 @@ int countErr(const std::vector<int>& a) {
     }
     return count;
 }
+
 
