@@ -2,60 +2,107 @@
 #include <gtest-mpi-listener.hpp>
 #include <gtest/gtest.h>
 #include <vector>
-#include "./ops_mpi.h"
+#include "./matrix_sum.h"
 
-TEST(Parallel_Operations_MPI, Test_Sum) {
+TEST(matrix_sum_test, sequential_test_casual) {  // casual test of sequential operaton
     int rank;
+    std::vector<int> vec{ 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+    int expect = 45, res;
+
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    std::vector<int> global_vec;
-    const int count_size_vector = 100;
-
     if (rank == 0) {
-        global_vec = getRandomVector(count_size_vector);
-    }
-
-    int global_sum = getParallelOperations(global_vec, count_size_vector, "+");
-
-    if (rank == 0) {
-        int reference_sum = getSequentialOperations(global_vec, "+");
-        ASSERT_EQ(reference_sum, global_sum);
+        res = getSequentialSum(vec);
+        ASSERT_EQ(res, expect);
     }
 }
 
-TEST(Parallel_Operations_MPI, Test_Diff) {
+TEST(matrix_sum_test, parallel_test_casual) {  // testing basics on small matrix
     int rank;
+    std::vector<int> vec{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+
+    int res = getParallelSum(vec, 10);
+
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    std::vector<int> global_vec;
-    const int count_size_vector = 100;
-
     if (rank == 0) {
-        global_vec = getRandomVector(count_size_vector);
-    }
-
-    int global_diff = getParallelOperations(global_vec, count_size_vector, "-");
-
-    if (rank == 0) {
-        int reference_diff = getSequentialOperations(global_vec, "-");
-        ASSERT_EQ(reference_diff, global_diff);
+        int expect = getSequentialSum(vec);  // we're assuming that it works fine
+        ASSERT_EQ(res, expect);
     }
 }
 
-TEST(Parallel_Operations_MPI, Test_Max) {
+TEST(matrix_sum_test, general_parallel_test) {  // general test of parallel summing of 10000 elements
     int rank;
+    std::vector<int> vec = getRandomVector(10000);
+
+    int res = getParallelSum(vec, 10000);
+
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    std::vector<int> global_vec;
-    const int count_size_vector = 100;
-
     if (rank == 0) {
-        global_vec = getRandomVector(count_size_vector);
+        int expect = getSequentialSum(vec);  // we're assuming that it works fine
+        ASSERT_EQ(res, expect);
     }
+}
 
-    int global_max;
-    global_max = getParallelOperations(global_vec, count_size_vector, "max");
+TEST(matrix_sum_test, general_parallel_test_large) {  // same test on 10000000 elements
+    int rank;
+    std::vector<int> vec = getRandomVector(10000000);
 
+    int res = getParallelSum(vec, 10000000);
+
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     if (rank == 0) {
-        int reference_max = getSequentialOperations(global_vec, "max");
-        ASSERT_EQ(reference_max, global_max);
+        int expect = getSequentialSum(vec);  // we're assuming that it works fine
+        ASSERT_EQ(res, expect);
+    }
+}
+
+/* TEST(matrix_sum_test, time_camparing_test) {  // test passed if parallel time < sequential time
+    int rank;
+    std::vector<int> vec = getRandomVector(10000);
+    double starttime, endtime, dif_parallel_time;
+
+    starttime = MPI_Wtime();
+    getParallelSum(vec, 10000);
+    endtime = MPI_Wtime();
+    dif_parallel_time = endtime - starttime;
+
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    if (rank == 0) {
+        clock_t start, end;
+        double dif_sequential_time;
+
+        start = clock();
+        getSequentialSum(vec);
+        end = clock();
+
+        dif_sequential_time = static_cast<double>(end - start);
+
+        ASSERT_TRUE(dif_sequential_time <= dif_parallel_time);
+    }
+} */
+
+TEST(matrix_sum_test, time_camparing_test_large) {  // test passed if parallel time < sequential time
+    int rank;
+    std::vector<int> vec = getRandomVector(10000000);
+    double starttime, endtime, dif_parallel_time;
+
+    starttime = MPI_Wtime();
+    getParallelSum(vec, 10000000);
+    endtime = MPI_Wtime();
+    dif_parallel_time = endtime - starttime;
+
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    if (rank == 0) {
+        clock_t start, end;
+        double dif_sequential_time;
+
+        start = clock();
+        getSequentialSum(vec);
+        end = clock();
+
+        dif_sequential_time = static_cast<double>(end - start);
+
+        ASSERT_TRUE(dif_sequential_time >= dif_parallel_time);
     }
 }
 

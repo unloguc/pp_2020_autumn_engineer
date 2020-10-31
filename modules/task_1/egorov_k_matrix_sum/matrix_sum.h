@@ -1,13 +1,13 @@
 // Copyright 2018 Nesterov Alexander
-#ifndef MODULES_TEST_TASKS_TEST_MPI_OPS_MPI_H_
-#define MODULES_TEST_TASKS_TEST_MPI_OPS_MPI_H_
+#ifndef MODULES_TASK_1_EGOROV_K_MATRIX_SUM_MATRIX_SUM_H_
+#define MODULES_TASK_1_EGOROV_K_MATRIX_SUM_MATRIX_SUM_H_
 
 #include <vector>
 #include <string>
 
 std::vector<int> getRandomVector(int  sz);
-int getParallelOperations(std::vector<int> global_vec,
-                          int count_size_vector, std::string ops);
-int getSequentialOperations(std::vector<int> vec, std::string ops);
+int getParallelSum(std::vector<int> global_vec,
+                          int count_size_vector);
+int getSequentialSum(std::vector<int> vec);
 
-#endif  // MODULES_TEST_TASKS_TEST_MPI_OPS_MPI_H_
+#endif  // MODULES_TASK_1_EGOROV_K_MATRIX_SUM_MATRIX_SUM_H_

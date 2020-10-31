@@ -4,9 +4,10 @@
 #include <string>
 #include <random>
 #include <ctime>
+#include <iostream>
+#include <numeric>
 #include <algorithm>
-#include "../../../modules/test_tasks/test_mpi/ops_mpi.h"
-
+#include "../../../modules/task_1/egorov_k_matrix_sum/matrix_sum.h"
 
 std::vector<int> getRandomVector(int sz) {
     std::mt19937 gen;
@@ -16,54 +17,39 @@ std::vector<int> getRandomVector(int sz) {
     return vec;
 }
 
-int getSequentialOperations(std::vector<int> vec, std::string ops) {
-    const int  sz = vec.size();
-    int reduction_elem = 0;
-    if (ops == "+") {
-        for (int  i = 0; i < sz; i++) {
-            reduction_elem += vec[i];
-        }
-    } else if (ops == "-") {
-        for (int  i = 0; i < sz; i++) {
-            reduction_elem -= vec[i];
-        }
-    } else if (ops == "max") {
-        reduction_elem = vec[0];
-        for (int  i = 1; i < sz; i++) {
-            reduction_elem = std::max(reduction_elem, vec[i]);
-        }
-    }
-    return reduction_elem;
+int getSequentialSum(std::vector<int> vec) {
+    return std::accumulate(vec.begin(), vec.end(), 0);
 }
 
-int getParallelOperations(std::vector<int> global_vec,
-                          int count_size_vector, std::string ops) {
-    int size, rank;
+int getParallelSum(std::vector<int> mat,
+                          int mat_size) {
+    int size, rank, local_sum;
+
+    int *Data;
+
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    const int delta = count_size_vector / size;
 
-    if (rank == 0) {
-        for (int proc = 1; proc < size; proc++) {
-            MPI_Send(&global_vec[0] + proc * delta, delta,
-                        MPI_INT, proc, 0, MPI_COMM_WORLD);
-        }
-    }
+    Data = mat.data();
+    MPI_Bcast(Data, mat_size, MPI_INT, 0, MPI_COMM_WORLD);
 
-    std::vector<int> local_vec(delta);
-    if (rank == 0) {
-        local_vec = std::vector<int>(global_vec.begin(),
-                                     global_vec.begin() + delta);
-    } else {
-        MPI_Status status;
-        MPI_Recv(&local_vec[0], delta, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
-    }
+    const int delta = mat_size / size;
+    const int rmPart = mat_size % size;
 
     int global_sum = 0;
-    int local_sum = getSequentialOperations(local_vec, ops);
-    MPI_Op op_code;
-    if (ops == "+" || ops == "-") { op_code = MPI_SUM; }
-    if (ops == "max") { op_code = MPI_MAX; }
-    MPI_Reduce(&local_sum, &global_sum, 1, MPI_INT, op_code, 0, MPI_COMM_WORLD);
+    // std::cout << "Calculating partial sums in rank " << rank << std::endl;
+    if (rank == 0) {
+        local_sum = std::accumulate(mat.begin(), (mat.begin() + delta + rmPart), 0);
+    } else {
+        local_sum = std::accumulate(mat.begin() + rank * delta + rmPart,
+           (mat.begin() + (rank + 1) * delta + rmPart), 0);
+    }
+    // std::cout << "In rank " << rank << " local sum is " << local_sum << std::endl;
+
+    // std::cout << "Executing MPI_Reduce: " << std::endl;
+    MPI_Reduce(&local_sum, &global_sum, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+
+    // std::cout << "Rank " << rank << " result: " << global_sum << std::endl;
     return global_sum;
 }
+
