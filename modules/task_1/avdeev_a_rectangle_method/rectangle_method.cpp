@@ -5,7 +5,7 @@
 double getSequentialIntegration(double(*func)(double), const double& a, const double& b, const int& n) {
     if (a > b) throw "border_exception";
     if (n < 1) throw "segments_exception";
-    const double h = (b - a) / (double)n;
+    const double h = (b - a) / static_cast<double>(n);
     double sum = 0;
 
     for (int i = 0; i < n; i++)
@@ -17,7 +17,7 @@ double getSequentialIntegration(double(*func)(double), const double& a, const do
 double getParallelIntegration(double(*func)(double), const double& a, const double& b, const int& n) {
     if (a > b) throw "border_exception";
     if (n < 1) throw "segments_exception";
-    const double h = (b - a) / (double)n;
+    const double h = (b - a) / static_cast<double>(n);
     int size, rank;
 
     MPI_Comm_size(MPI_COMM_WORLD, &size);
