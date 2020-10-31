@@ -1,9 +1,8 @@
 // Copyright 2020 Avdeev Andrey
 #include <mpi.h>
-#include "./rectangle_method.h"
+#include "modules/task_1/avdeev_a_rectangle_method/rectangle_method.h"
 
-double getSequentialIntegration(double(*func)(double), const double& a, const double& b, const int& n)
-{
+double getSequentialIntegration(double(*func)(double), const double& a, const double& b, const int& n){
     if (a > b) throw "border_exception";
     if (n < 1) throw "segments_exception";
     const double h = (b - a) / (double)n;
@@ -15,8 +14,7 @@ double getSequentialIntegration(double(*func)(double), const double& a, const do
     return (sum * h);
 }
 
-double getParallelIntegration(double(*func)(double), const double& a, const double& b, const int& n)
-{
+double getParallelIntegration(double(*func)(double), const double& a, const double& b, const int& n){
     if (a > b) throw "border_exception";
     if (n < 1) throw "segments_exception";
     const double h = (b - a) / (double)n;
