@@ -1,3 +1,4 @@
+// Copyright 2020 Novikov Danil
 #include <mpi.h>
 #include <string>
 #include <random>
@@ -53,8 +54,7 @@ int ParallelOperations(int* mat, int rows, int columns) {
 
     if (rank == 0) {
         local_mat = mat;
-    }
-    else {
+    } else {
         MPI_Status status;
         MPI_Recv(local_mat, delta * columns, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
     }
@@ -72,5 +72,5 @@ int ParallelOperations(int* mat, int rows, int columns) {
     MPI_Op op_code = MPI_MAX;
     MPI_Reduce(&local_max, &global_max, 1, MPI_INT, op_code, 0, MPI_COMM_WORLD);
     return global_max;
-
 }
+
