@@ -42,7 +42,7 @@ TEST(Parallel_Operations_MPI, Test_Sum_More_Min_Sum) {
     if (mynode == 0) {
         int ref_min_sum = 0;
         ref_min_sum = rows*columns * Sequential_method(matrix, oper);
-        ASSERT_GE(ref_min_sum, par_sum);
+        ASSERT_LE(ref_min_sum, par_sum);
     }
 }
 TEST(Parallel_Operations_MPI, Test_Sum_Less_Max_Sum) {
@@ -61,7 +61,7 @@ TEST(Parallel_Operations_MPI, Test_Sum_Less_Max_Sum) {
     if (mynode == 0) {
         int ref_max_sum = 0;
         ref_max_sum = rows * columns * Sequential_method(matrix, oper);
-        ASSERT_LE(ref_max_sum, par_sum);
+        ASSERT_GE(ref_max_sum, par_sum);
     }
 }
 TEST(Parallel_Operations_MPI, Test_Diff_Num_Of_Proc_F) {
