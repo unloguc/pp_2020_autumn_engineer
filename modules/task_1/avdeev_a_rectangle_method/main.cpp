@@ -34,10 +34,7 @@ TEST(Parallel_Operations_MPI, Sequental_Border_Test) {
     auto func = [](double _x) -> double {
         return _x;
     };
-
-    double error = pow(10.0, -2);
-    double seq_sum = getSequentialIntegration(func, 10, 5, 10);
-    ASSERT_NEAR(2, seq_sum, error);
+    ASSERT_ANY_THROW(getSequentialIntegration(func, 10, 5, 10));
 }
 
 TEST(Parallel_Operations_MPI, Parallel_Border_Test) {
@@ -48,11 +45,8 @@ TEST(Parallel_Operations_MPI, Parallel_Border_Test) {
         return _x;
     };
 
-    double par_sum = getParallelIntegration(func, 10, 5, 10);
-
     if (rank == 0) {
-        double error = pow(10.0, -2);
-        ASSERT_NEAR(2, par_sum, error);
+        ASSERT_ANY_THROW(getParallelIntegration(func, 10, 5, 10));
     }
 }
 
