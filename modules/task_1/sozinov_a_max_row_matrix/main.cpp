@@ -49,7 +49,7 @@ TEST(Parallel_Operations_MPI, find_max_2) {
     MPI_Comm_rank(MPI_COMM_WORLD, &ProcessRank);
     if (ProcessRank == 0) {
         ASSERT_EQ(vecPar, vecSeq);
-    }  
+    }
 }
 
 TEST(Parallel_Operations_MPI, find_max_3) {
@@ -57,7 +57,7 @@ TEST(Parallel_Operations_MPI, find_max_3) {
     int countRow = 14;
     std::vector<int> vec = GenerateMatrix(sizeRow, countRow, -221, 121);
     std::vector<int> vecSeq = GetSequentialMax(vec, sizeRow, countRow);
-    std::vector<int> vecPar = GetParalMax(vec, sizeRow, countRow); 
+    std::vector<int> vecPar = GetParalMax(vec, sizeRow, countRow);
     int ProcessRank;
     MPI_Comm_rank(MPI_COMM_WORLD, &ProcessRank);
     if (ProcessRank == 0) {
