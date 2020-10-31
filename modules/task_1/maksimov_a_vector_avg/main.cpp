@@ -15,7 +15,7 @@ TEST(Parallel_Operations_MPI, Can_Generate_Vector) {
 
 TEST(Parallel_Operations_MPI, Test_Negative_VecSize) {
     const int vecSize = -10;
-    
+
     ASSERT_ANY_THROW(getRandomVector(vecSize));
 }
 
