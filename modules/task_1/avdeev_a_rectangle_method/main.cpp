@@ -5,23 +5,20 @@
 #include "./rectangle_method.h"
 
 TEST(Parallel_Operations_MPI, Sequential_Test) {
-    auto func = [](double _x) -> double
-    {
+    auto func = [](double _x) -> double {
         return 5;
     };
 
     double error = pow(10.0, -8);
     double seq_sum = getSequentialIntegration(func, 0, 5, 10);
     ASSERT_NEAR(25, seq_sum, error);
-
 }
 
 TEST(Parallel_Operations_MPI, Parallel_Test) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    auto func = [](double _x) -> double
-    {
+    auto func = [](double _x) -> double {
         return 5;
     };
 
@@ -34,8 +31,7 @@ TEST(Parallel_Operations_MPI, Parallel_Test) {
 }
 
 TEST(Parallel_Operations_MPI, Sequental_Border_Test) {
-    auto func = [](double _x) -> double
-    {
+    auto func = [](double _x) -> double {
         return _x;
     };
 
@@ -49,8 +45,7 @@ TEST(Parallel_Operations_MPI, Parallel_Border_Test) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    auto func = [](double _x) -> double
-    {
+    auto func = [](double _x) -> double {
         return _x;
     };
 
@@ -63,8 +58,7 @@ TEST(Parallel_Operations_MPI, Parallel_Border_Test) {
 }
 
 TEST(Parallel_Operations_MPI, Sequential_Segments_Test) {
-    auto func = [](double _x) -> double
-    {
+    auto func = [](double _x) -> double {
         return _x;
     };
 
@@ -77,8 +71,7 @@ TEST(Parallel_Operations_MPI, Parallel_Segments_Test) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    auto func = [](double _x) -> double
-    {
+    auto func = [](double _x) -> double {
         return _x;
     };
 
@@ -95,8 +88,7 @@ TEST(Parallel_Operations_MPI, Equality_Time_Test) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    auto func = [](double _x) -> double
-    {
+    auto func = [](double _x) -> double {
         return _x * _x + _x;
     };
 
