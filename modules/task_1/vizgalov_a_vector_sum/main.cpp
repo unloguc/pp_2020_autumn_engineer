@@ -26,6 +26,10 @@ TEST(Vector_Sum_MPI, Test_Sum_10000) {
     createTestForSize(10000);
 }
 
+TEST(Vector_Sum_MPI, Test_Sum_333) {
+    createTestForSize(333);
+}
+
 void createTestForSize(int size) {
     int procRank;
     MPI_Comm_rank(MPI_COMM_WORLD, &procRank);
