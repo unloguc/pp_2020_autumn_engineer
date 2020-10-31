@@ -6,8 +6,7 @@
 #include <algorithm>
 #include "./monte_carlo.h"
 
-bool isAlmostEqual(double a, double b)
-{
+bool isAlmostEqual(double a, double b) {
     const double e = 0.01;
     return ((a - b) < e) || ((b - a) < e);
 }
