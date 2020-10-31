@@ -38,8 +38,8 @@ TEST(Parallel_Operations_MPI, Sequental_Border_Test) {
     double error = pow(10.0, -2);
     double seq_sum = getSequentialIntegration(func, 10, 5, 10);
     ASSERT_NEAR(2, seq_sum, error);
-
 }
+
 TEST(Parallel_Operations_MPI, Parallel_Border_Test) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
