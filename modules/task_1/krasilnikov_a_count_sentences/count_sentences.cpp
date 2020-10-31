@@ -14,7 +14,7 @@ std::string getRandomString(const size_t size) {
     if (generator() % 10 == 0) {
       symbol = '.';
     } else {
-      symbol = (char)(generator() % 128);
+      symbol = static_cast<char>(generator() % 128);
     }
   }
   return str;
