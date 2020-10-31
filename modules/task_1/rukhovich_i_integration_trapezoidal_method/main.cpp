@@ -1,6 +1,8 @@
+// Copyright 2020 Igor Rukhovich
 #include <gtest-mpi-listener.hpp>
 #include <gtest/gtest.h>
 #include <vector>
+#include <memory>
 #include "./integration_trapezoidal_method.h"
 
 double epsillon = 1e-8;

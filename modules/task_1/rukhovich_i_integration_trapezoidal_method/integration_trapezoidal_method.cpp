@@ -1,7 +1,8 @@
+// Copyright 2020 Igor Rukhovich
+#include "../../modules/task_1/rukhovich_i_integration_trapezoidal_method/integration_trapezoidal_method.h"
 #include <mpi.h>
+#include <memory>
 #include <stdexcept>
-#include <iostream>
-#include "./integration_trapezoidal_method.h"
 
 
 QuadraticPolynomial::QuadraticPolynomial(double a, double b, double c) : a(a), b(b), c(c) {}
@@ -48,7 +49,7 @@ double getIntegralParallel(std::shared_ptr<Function> func, double from, double t
     int rank, size;
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    double delta = (to - from) / double(size);
+    double delta = (to - from) / static_cast<double>(size);
     if (rank == 0) {
         if (to < from) {
             throw std::runtime_error("'from' must not be greater than 'to'");
@@ -58,11 +59,8 @@ double getIntegralParallel(std::shared_ptr<Function> func, double from, double t
         }
     }
     from += rank * delta;
-    // std::cout << "OK from " << rank << ", itervals are " << from << ' ' << from + delta << '\n';
     double local_result = getIntegralSequentional(func, from, from + delta, precision);
-    // std::cout << "OK calc from " << rank << ", result is " << local_result << '\n';
     double ans = 0;
     MPI_Reduce(&local_result, &ans, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-    // std::cout << "OK from" << rank << ", ans is " << ans << '\n';
     return ans;
 }

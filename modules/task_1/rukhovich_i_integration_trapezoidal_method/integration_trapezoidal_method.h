@@ -1,10 +1,11 @@
-#ifndef MODULES_TASK_1_RUKHOVICH_I_INTEGRATION_TRAPEZOIDAL_METHOD_
-#define MODULES_TASK_1_RUKHOVICH_I_INTEGRATION_TRAPEZOIDAL_METHOD_
+// Copyright 2020 Igor Rukhovich
+#ifndef MODULES_TASK_1_RUKHOVICH_I_INTEGRATION_TRAPEZOIDAL_METHOD_INTEGRATION_TRAPEZOIDAL_METHOD_H_
+#define MODULES_TASK_1_RUKHOVICH_I_INTEGRATION_TRAPEZOIDAL_METHOD_INTEGRATION_TRAPEZOIDAL_METHOD_H_
 
 #include <memory>
 
 class Function {
-public:
+ public:
     Function() = default;
 
     virtual ~Function() = default;
@@ -13,7 +14,7 @@ public:
 
 class QuadraticPolynomial : public Function{
     double a, b, c;
-public:
+ public:
     QuadraticPolynomial(double, double, double);
 
     virtual ~QuadraticPolynomial() = default;
@@ -24,4 +25,4 @@ double getIntegralSequentional(std::shared_ptr<Function>, double, double, double
 
 double getIntegralParallel(std::shared_ptr<Function>, double, double, double);
 
-#endif  // MODULES_TASK_1_RUKHOVICH_I_INTEGRATION_TRAPEZOIDAL_METHOD_
+#endif  // MODULES_TASK_1_RUKHOVICH_I_INTEGRATION_TRAPEZOIDAL_METHOD_INTEGRATION_TRAPEZOIDAL_METHOD_H_
