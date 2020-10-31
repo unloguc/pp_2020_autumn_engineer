@@ -23,14 +23,24 @@ std::vector<int> getRandomMatrix(int sz2, int sz1) {
     return matr;
 }
 
-int Sequential_method(std::vector<int> vect) {
+int Sequential_method(std::vector<int> vect, std::string op) {
     int siz = vect.size();
     int sum = 0;
-    for (int i = 0; i < siz; i++)
-        sum += vect[i];
+    if (op == "+") {
+        for (int i = 0; i < siz; i++)
+            sum += vect[i];
+    }
+    if (op == "min") {
+        std::sort(vect.begin(), vect.end());
+        sum = vect[0];
+    }
+    if (op == "max") {
+        std::sort(vect.begin(), vect.end());
+        sum = vect[siz - 1];
+    }
     return sum;
 }
-int Parallel_method(std::vector<int> matr, int n_lin, int n_col) {
+int Parallel_method(std::vector<int> matr, int n_lin, int n_col, std::string op) {
     int mynode, totnodes;
     int par_sum, inter;
 
@@ -54,7 +64,46 @@ int Parallel_method(std::vector<int> matr, int n_lin, int n_col) {
     } else {
         MPI_Recv(&local_vec[0], delta, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
     }
-    inter = Sequential_method(local_vec);
-    MPI_Reduce(&inter, &par_sum, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+    inter = Sequential_method(local_vec, op);
+    MPI_Op op_code;
+    if (op == "+")
+        MPI_Reduce(&inter, &par_sum, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+    if (op == "min")
+        MPI_Reduce(&inter, &par_sum, 1, MPI_INT, MPI_MIN, 0, MPI_COMM_WORLD);
+    if (op == "max")
+        MPI_Reduce(&inter, &par_sum, 1, MPI_INT, MPI_MAX, 0, MPI_COMM_WORLD);
+    return par_sum;
+}
+int Parallel_method_choose_num_proc(std::vector<int> matr, int n_lin, int n_col, std::string op, int total) {
+    int mynode;
+    int par_sum, inter;
+
+    MPI_Status status;
+
+    MPI_Comm_rank(MPI_COMM_WORLD, &mynode);
+    par_sum = 0;  // zero sum for accumulation
+    const int delta = (n_lin*n_col) / total;
+
+    if (mynode == 0) {
+        for (int proc = 1; proc < total; proc++) {
+            MPI_Send(&matr[0] + proc * delta, delta,
+                MPI_INT, proc, 0, MPI_COMM_WORLD);
+        }
+    }
+    std::vector<int> local_vec(delta);
+    if (mynode == 0) {
+        local_vec = std::vector<int>(matr.begin(),
+             matr.begin() + delta);
+    } else {
+        MPI_Recv(&local_vec[0], delta, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
+    }
+    inter = Sequential_method(local_vec, op);
+    MPI_Op op_code;
+    if (op == "+")
+        MPI_Reduce(&inter, &par_sum, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+    if (op == "min")
+        MPI_Reduce(&inter, &par_sum, 1, MPI_INT, MPI_MIN, 0, MPI_COMM_WORLD);
+    if (op == "max")
+        MPI_Reduce(&inter, &par_sum, 1, MPI_INT, MPI_MAX, 0, MPI_COMM_WORLD);
     return par_sum;
 }
