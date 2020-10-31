@@ -5,10 +5,10 @@
 #include <vector>
 
 
-std::vector <int> GetRandomVector(int size);
+std::vector <int> getRandomVector(int Size);
 
-int GetParallelSum(std::vector <int> vec, int size);
+int getParallelOperations(std::vector <int> vec, int Size);
 
-int GetSequentialSum(std::vector<int> vec);
+int getSequentialOperations(std::vector<int> vec);
 
 #endif  // MODULES_TASK_1_ZHAFYAROV_O_VECTOR_SUM_VECTOR_SUM_H_

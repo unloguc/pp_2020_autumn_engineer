@@ -5,118 +5,118 @@
 #include "./vector_sum.h"
 
 TEST(Parallel_Operations_MPI, Test_Sum) {
-    int size = 1001;
-    std::vector<int> vec(size);
-    int process_rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &process_rank);
+    int Size = 1000;
+    std::vector<int> vec(Size);
+    int ProcRank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
 
-    if (process_rank == 0) {
-      vec = GetRandomVector(size);
+    if (ProcRank == 0) {
+        vec = getRandomVector(Size);
     }
 
-    int parallel_sum = GetParallelSum(vec, size);
+    int parallel_sum = getParallelOperations(vec, Size);
 
-    if (process_rank == 0) {
-      int sequential_sum = GetSequentialSum(vec);
-      ASSERT_EQ(parallel_sum, sequential_sum);
+    if (ProcRank == 0) {
+        int sequential_sum = getSequentialOperations(vec);
+        ASSERT_EQ(parallel_sum, sequential_sum);
     }
 }
 
 TEST(Parallel_Operations_MPI, Test_Vector1) {
-    int size = 5;
+    int Size = 5;
     std::vector<int> vec = { 1, 2, 3, 4, 5 };
     int sum = 15;
-    int process_rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &process_rank);
+    int ProcRank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
 
-    int parallel_sum = GetParallelSum(vec, size);
+    int parallel_sum = getParallelOperations(vec, Size);
 
-    if (process_rank == 0) {
+    if (ProcRank == 0) {
         ASSERT_EQ(parallel_sum, sum);
     }
 }
 
 TEST(Parallel_Operations_MPI, Test_Vector2) {
-    int size = 5;
+    int Size = 5;
     std::vector<int> vec = { 0, 0, 0, 0, 0 };
     int sum = 0;
-    int process_rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &process_rank);
+    int ProcRank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
 
-    int parallel_sum = GetParallelSum(vec, size);
+    int parallel_sum = getParallelOperations(vec, Size);
 
-    if (process_rank == 0) {
+    if (ProcRank == 0) {
         ASSERT_EQ(parallel_sum, sum);
     }
 }
 
 TEST(Parallel_Operations_MPI, Test_Vector3) {
-    int size = 5;
+    int Size = 5;
     std::vector<int> vec = { -1, -2, -3, -4, -5 };
     int sum = -15;
-    int process_rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &process_rank);
+    int ProcRank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
 
-    int parallel_sum = GetParallelSum(vec, size);
+    int parallel_sum = getParallelOperations(vec, Size);
 
-    if (process_rank == 0) {
+    if (ProcRank == 0) {
         ASSERT_EQ(parallel_sum, sum);
     }
 }
 
 TEST(Parallel_Operations_MPI, Test_Vector4) {
-    int size = 10;
-    std::vector<int> vec(size);
+    int Size = 10;
+    std::vector<int> vec(Size);
     int sequential_sum = 0;
-    int process_rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &process_rank);
+    int ProcRank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
 
-    if (process_rank == 0) {
-        vec = GetRandomVector(size);
-        vec.at(size - 1) = 5;
+    if (ProcRank == 0) {
+        vec = getRandomVector(Size);
+        vec.at(Size - 1) = 5;
     }
 
-    int parallel_sum = GetParallelSum(vec, size);
+    int parallel_sum = getParallelOperations(vec, Size);
 
-    if (process_rank == 0) {
+    if (ProcRank == 0) {
         vec.pop_back();
-        sequential_sum = GetSequentialSum(vec);
+        sequential_sum = getSequentialOperations(vec);
         ASSERT_NE(parallel_sum, sequential_sum);
     }
 }
 
 TEST(Parallel_Operations_MPI, Test_Vector5) {
-    int size = 0;
-    std::vector<int> vec(size);
+    int Size = 0;
+    std::vector<int> vec(Size);
     int sum = 0;
-    int process_rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &process_rank);
+    int ProcRank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
 
-    if (process_rank == 0) {
-        vec = GetRandomVector(size);
+    if (ProcRank == 0) {
+        vec = getRandomVector(Size);
     }
 
-    int parallel_sum = GetParallelSum(vec, size);
+    int parallel_sum = getParallelOperations(vec, Size);
 
-    if (process_rank == 0) {
+    if (ProcRank == 0) {
         ASSERT_EQ(parallel_sum, sum);
     }
 }
 
 TEST(Parallel_Operations_MPI, Test_Vector6) {
-    int size = 1;
-    std::vector<int> vec(size);
+    int Size = 1;
+    std::vector<int> vec(Size);
     int sum = 5;
-    int process_rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &process_rank);
+    int ProcRank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
 
-    if (process_rank == 0) {
+    if (ProcRank == 0) {
         vec[0] = 5;
     }
 
-    int parallel_sum = GetParallelSum(vec, size);
+    int parallel_sum = getParallelOperations(vec, Size);
 
-    if (process_rank == 0) {
+    if (ProcRank == 0) {
         ASSERT_EQ(parallel_sum, sum);
     }
 }
