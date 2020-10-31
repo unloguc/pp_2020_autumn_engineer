@@ -2,7 +2,7 @@
 #include <gtest-mpi-listener.hpp>
 #include <gtest/gtest.h>
 #include <vector>
-#include "./multi_scalar.h"
+#include "../../../modules/task_1/kadnikov_d_multi_scalar/multi_scalar.h"
 
 TEST(multi_scalar, can_create_vector) {
     int rank;
