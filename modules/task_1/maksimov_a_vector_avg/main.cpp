@@ -10,7 +10,7 @@ TEST(Parallel_Operations_MPI, Can_Generate_Vector) {
     const int vecSize = 10;
 
     std::vector<int> vec = getRandomVector(vecSize);
-    ASSERT_EQ(vec.size(), vecSize);
+    ASSERT_EQ(static_cast<int>(vec.size()), vecSize);
 }
 
 TEST(Parallel_Operations_MPI, Test_Negative_VecSize) {
