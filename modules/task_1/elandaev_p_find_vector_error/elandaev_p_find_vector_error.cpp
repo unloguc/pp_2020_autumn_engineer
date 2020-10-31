@@ -18,8 +18,7 @@ std::vector<int> getRandomVector(int sz) {
 }
 
 int getSequentialOperations(std::vector<int> vec, int sz) {
-
-    if(sz == 0 || sz == 1) return 0;
+    if (sz == 0 || sz == 1) return 0;
 
     int count_error = 0;
     for (int i = 1; i < sz; i++) {
