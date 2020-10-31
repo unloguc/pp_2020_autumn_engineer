@@ -42,13 +42,13 @@ uint32_t getCountSentencesParallel(const std::string& str, const size_t size_str
     for (size_t process = 0; process < remain; ++process) {
       MPI_Send(&str[0] + process * (delta + 1), delta + 1, MPI_CHAR, process + 1, 0, MPI_COMM_WORLD);
     }
-    for (size_t process = remain; process < size - 1; ++process) {
+    for (size_t process = remain; static_cast<int>(process) < size - 1; ++process) {
       MPI_Send(&str[0] + process * delta + remain, delta, MPI_CHAR, process + 1, 0, MPI_COMM_WORLD);
     }
     local_str = str.substr((size - 1) * delta + remain);
   } else {
     MPI_Status status;
-    if (rank <= remain) {
+    if (rank <= static_cast<int>(remain)) {
       local_str.resize(delta + 1);
       MPI_Recv(&local_str[0], delta + 1, MPI_CHAR, 0, 0, MPI_COMM_WORLD, &status);
     } else {
