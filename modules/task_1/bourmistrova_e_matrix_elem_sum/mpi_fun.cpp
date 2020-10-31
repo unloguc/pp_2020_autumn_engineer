@@ -67,11 +67,12 @@ int Parallel_method(std::vector<int> matr, int n_lin, int n_col, std::string op)
     inter = Sequential_method(local_vec, op);
     MPI_Op op_code;
     if (op == "+")
-        MPI_Reduce(&inter, &par_sum, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+        op_code = MPI_SUM;
     if (op == "min")
-        MPI_Reduce(&inter, &par_sum, 1, MPI_INT, MPI_MIN, 0, MPI_COMM_WORLD);
+        op_code = MPI_MIN;
     if (op == "max")
-        MPI_Reduce(&inter, &par_sum, 1, MPI_INT, MPI_MAX, 0, MPI_COMM_WORLD);
+        op_code = MPI_MAX;
+    MPI_Reduce(&inter, &par_sum, 1, MPI_INT, op_code, 0, MPI_COMM_WORLD);
     return par_sum;
 }
 int Parallel_method_choose_num_proc(std::vector<int> matr, int n_lin, int n_col, std::string op, int total) {
@@ -100,10 +101,11 @@ int Parallel_method_choose_num_proc(std::vector<int> matr, int n_lin, int n_col,
     inter = Sequential_method(local_vec, op);
     MPI_Op op_code;
     if (op == "+")
-        MPI_Reduce(&inter, &par_sum, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+        op_code = MPI_SUM;
     if (op == "min")
-        MPI_Reduce(&inter, &par_sum, 1, MPI_INT, MPI_MIN, 0, MPI_COMM_WORLD);
+        op_code = MPI_MIN;
     if (op == "max")
-        MPI_Reduce(&inter, &par_sum, 1, MPI_INT, MPI_MAX, 0, MPI_COMM_WORLD);
+        op_code = MPI_MAX;
+    MPI_Reduce(&inter, &par_sum, 1, MPI_INT, op_code, 0, MPI_COMM_WORLD);
     return par_sum;
 }
