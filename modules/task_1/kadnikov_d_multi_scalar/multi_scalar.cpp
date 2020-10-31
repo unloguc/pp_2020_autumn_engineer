@@ -46,8 +46,7 @@ int getParallelMultiScalar(std::vector<int> v1, std::vector<int> v2) {
             if (proc == size - 1) {
                 MPI_Send(&v1[0] + proc * v_size, v_size + resize, MPI_INT, proc, 2, MPI_COMM_WORLD);
                 MPI_Send(&v2[0] + proc * v_size, v_size + resize, MPI_INT, proc, 3, MPI_COMM_WORLD);
-            }
-            else {
+            } else {
                 MPI_Send(&v1[0] + proc * v_size, v_size, MPI_INT, proc, 0, MPI_COMM_WORLD);
                 MPI_Send(&v2[0] + proc * v_size, v_size, MPI_INT, proc, 1, MPI_COMM_WORLD);
             }
@@ -61,16 +60,14 @@ int getParallelMultiScalar(std::vector<int> v1, std::vector<int> v2) {
     if (rank == 0) {
         local_v1 = std::vector<int>(v1.begin(), v1.begin() + v_size);
         local_v2 = std::vector<int>(v2.begin(), v2.begin() + v_size);
-    }
-    else if (rank == size - 1) {
+    } else if (rank == size - 1) {
         local_v1.resize(v_size + resize);
         local_v2.resize(v_size + resize);
 
         MPI_Status status;
         MPI_Recv(&local_v1[0], v_size + resize, MPI_INT, 0, 2, MPI_COMM_WORLD, &status);
         MPI_Recv(&local_v2[0], v_size + resize, MPI_INT, 0, 3, MPI_COMM_WORLD, &status);
-    }
-    else {
+    } else {
         MPI_Status status;
         MPI_Recv(&local_v1[0], v_size, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
         MPI_Recv(&local_v2[0], v_size, MPI_INT, 0, 1, MPI_COMM_WORLD, &status);
@@ -80,8 +77,7 @@ int getParallelMultiScalar(std::vector<int> v1, std::vector<int> v2) {
         for (int i = 0; i < v_size + resize; ++i) {
             local_result += local_v1[i] * local_v2[i];
         }
-    }
-    else {
+    } else {
         for (int i = 0; i < v_size; ++i) {
             local_result += local_v1[i] * local_v2[i];
         }
