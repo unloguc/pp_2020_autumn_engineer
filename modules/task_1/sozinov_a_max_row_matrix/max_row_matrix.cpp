@@ -1,6 +1,6 @@
 // Copyright 2020 Sozinov Alex
 
-#include "./max_row_matrix.h"
+#include "../../modules/task_1/sozinov_a_max_row_matrix.h"
 #include <mpi.h>
 #include <random>
 #include <vector>
@@ -33,7 +33,7 @@ std::vector<int> GetParalMax(const std::vector<int> &vect, int sizeRow, int coun
 	int ProcRank;
 	MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
 	MPI_Comm_size(MPI_COMM_WORLD, &ProcCount);
-	std::vector<int> vectMax(countRow);	
+	std::vector<int> vectMax(countRow);
 	int offset = countRow / ProcCount;
 	std::vector<int> sendSize(ProcCount, offset * sizeRow);
 	for (int i = 0; i < countRow % ProcCount; ++i)
