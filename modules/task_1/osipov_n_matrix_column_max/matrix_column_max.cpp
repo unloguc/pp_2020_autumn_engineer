@@ -86,26 +86,27 @@ int getColumnMaxParallel(std::vector<int> matrix, int line, int column) {
 
     int verySuperMax;
     int localMax = INT_MIN;
+    int max = INT_MIN;
     MPI_Op op_code = MPI_MAX;
     if (rank == 0) {
         for (int i = 0; i < delta + remainder; ++i) {
-            int max = INT_MIN;
             for (int j = 0; j < line; ++j) {
                 if (localVec[i * line + j] > max)
                 max = localVec[i * line + j];
             }
             if (max > localMax) localMax = max;
+            max = INT_MIN;
         }
         MPI_Reduce(&localMax, &verySuperMax, 1, MPI_INT, op_code, 0, MPI_COMM_WORLD);
     }
     else {
         for (int i = 0; i < delta; ++i) {
-            int max = MPI_INT;
             for (int j = 0; j < line; ++j) {
                 if (localVec[i * line + j] > max)
                     max = localVec[i * line + j];
             }
             if (max > localMax) localMax = max;
+            max = INT_MIN;
         }
         MPI_Reduce(&localMax, &verySuperMax, 1, MPI_INT, op_code, 0, MPI_COMM_WORLD);
     }
