@@ -1,9 +1,10 @@
 // Copyright 2020 Sozinov Alex
 
-#include "../../modules/task_1/sozinov_a_max_row_matrix/sozinov_a_max_row_matrix.h"
 #include <mpi.h>
 #include <random>
 #include <vector>
+
+#include "../../modules/task_1/sozinov_a_max_row_matrix/max_row_matrix.h"
 
 std::vector<int> GenerateMatrix(int sizeRow, int countRow, int min, int max) {
     std::vector<int> vec(sizeRow * countRow);
@@ -39,7 +40,7 @@ std::vector<int> GetParalMax(const std::vector<int> &vect, int sizeRow, int coun
     for (int i = 0; i < countRow % ProcCount; ++i)
         sendSize[i] += sizeRow;
 
-    if(countRow % ProcCount)
+    if (countRow % ProcCount)
         ++offset;
     std::vector<int> recVect(offset * sizeRow);
     std::vector<int> sendOffset(ProcCount);
@@ -48,7 +49,8 @@ std::vector<int> GetParalMax(const std::vector<int> &vect, int sizeRow, int coun
         pos += sendSize[i];
     }
 
-    MPI_Scatterv(&vect[0], &sendSize[0], &sendOffset[0], MPI_INT, &recVect[0], sendSize[ProcRank], MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Scatterv(&vect[0], &sendSize[0], &sendOffset[0], MPI_INT, 
+        &recVect[0], sendSize[ProcRank], MPI_INT, 0, MPI_COMM_WORLD);
     std::vector<int> recSize(ProcCount, countRow / ProcCount);
     std::vector<int> recOffset(ProcCount);
 
@@ -63,7 +65,8 @@ std::vector<int> GetParalMax(const std::vector<int> &vect, int sizeRow, int coun
         locMax[i] = *(std::max_element(recVect.begin() + i * sizeRow, recVect.begin() + (i + 1) * sizeRow));
     }
 
-    MPI_Gatherv(&locMax[0], recSize[ProcRank], MPI_INT, &vectMax[0], &recSize[0], &recOffset[0], MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Gatherv(&locMax[0], recSize[ProcRank], MPI_INT, 
+        &vectMax[0], &recSize[0], &recOffset[0], MPI_INT, 0, MPI_COMM_WORLD);
 
     return vectMax;
 }
