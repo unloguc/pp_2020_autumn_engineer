@@ -3,6 +3,7 @@
 #include <mpi.h>
 #include <random>
 #include <vector>
+#include <algorithm>
 
 #include "../../modules/task_1/sozinov_a_max_row_matrix/max_row_matrix.h"
 
