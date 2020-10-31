@@ -3,9 +3,9 @@
 #include <vector>
 #include <random>
 #include <ctime>
-#include "./multi_scalar.h"
+#include "../../../modules/task_1/kadnikov_d_multi_scalar/multi_scalar.h";
 
-std::vector<int> createRandomVector(const int v_size) {
+std::vector<int> createRandomVector(int v_size) {
     std::vector<int> vector(v_size);
     std::mt19937 gen;
     gen.seed(static_cast<unsigned int>(time(NULL)));
@@ -15,19 +15,19 @@ std::vector<int> createRandomVector(const int v_size) {
     return vector;
 }
 
-int getSequentialMultiScalar(const std::vector<int>& v1, const std::vector<int>& v2) {
+int getSequentialMultiScalar(std::vector<int>& v1, std::vector<int>& v2) {
     if (v1.size() != v2.size()) {
         throw(1);
     }
 
     int result = 0;
-    for (unsigned int i = 0; i < v1.size(); i++) {
+    for (int i = 0; i < v1.size(); i++) {
         result += v1[i] * v2[i];
     }
     return result;
 }
 
-int getParallelMultiScalar(const std::vector<int>& v1, const std::vector<int>& v2) {
+int getParallelMultiScalar(std::vector<int>& v1, std::vector<int>& v2) {
     int rank, size;
 
     if (v1.size() != v2.size()) {
