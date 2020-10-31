@@ -18,8 +18,7 @@ std::vector<int> getMatrix(int line, int column) {
     return matrix;
 }
 
-std::vector<int> transposedMatrix(std::vector<int> matrix, int line, int column)
-{
+std::vector<int> transposedMatrix(std::vector<int> matrix, int line, int column) {
     assert(matrix.size() != 0 && line != 0 && column != 0);
     std::vector<int> transMatrix(line * column);
     for (int i = 0; i < line; ++i) {
@@ -31,7 +30,6 @@ std::vector<int> transposedMatrix(std::vector<int> matrix, int line, int column)
 }
 
 int getColumnMaxSequential(std::vector<int> matrix, int line, int column) {
-
     std::vector<int> transMatrix = transposedMatrix(matrix, line, column);
     int currentMax = 0;
     int max = 0;
@@ -75,8 +73,7 @@ int getColumnMaxParallel(std::vector<int> matrix, int line, int column) {
     // receive from master proccess
     if (rank == 0) {
         localVec = &transMatrix[0];
-    }
-    else {
+    } else {
         if (delta > 0) {
             localVec = new int[delta * line];
             MPI_Status status;
@@ -98,8 +95,7 @@ int getColumnMaxParallel(std::vector<int> matrix, int line, int column) {
             max = INT_MIN;
         }
         MPI_Reduce(&localMax, &verySuperMax, 1, MPI_INT, op_code, 0, MPI_COMM_WORLD);
-    }
-    else {
+    } else {
         for (int i = 0; i < delta; ++i) {
             for (int j = 0; j < line; ++j) {
                 if (localVec[i * line + j] > max)
