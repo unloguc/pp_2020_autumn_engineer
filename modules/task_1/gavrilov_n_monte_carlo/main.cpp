@@ -26,8 +26,9 @@ TEST(Parallel_Operations_MPI, Parallel_Integral) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     double result;
     ASSERT_NO_THROW(result = getIntegralParallel(0, 4, 100, myFunc));
-    if (rank == 0)
+    if (rank == 0) {
         ASSERT_EQ(result, 8);
+    }
 }
 
 TEST(Parallel_Operations_MPI, Swaped_Min_Max) {
@@ -41,8 +42,9 @@ TEST(Parallel_Operations_MPI, Swaped_Min_Max) {
 
     double result;
     ASSERT_NO_THROW(result = getIntegralParallel(4, 0, 100, myFunc));
-    if (rank == 0)
+    if (rank == 0) {
         ASSERT_EQ(result, -8);
+    }
 }
 
 TEST(Parallel_Operations_MPI, Splits_Should_Be_More_Than_0) {
@@ -61,8 +63,9 @@ TEST(Parallel_Operations_MPI, Splits_Less_Than_MPI_Comm_Size) {
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     double result;
     ASSERT_NO_THROW(result = getIntegralParallel(4, 0, size-1, myFunc));
-    if (rank == 0)
+    if (rank == 0) {
         ASSERT_EQ(result, -8);
+    }
 }
 
 
