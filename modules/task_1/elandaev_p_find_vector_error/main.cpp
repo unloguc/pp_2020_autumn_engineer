@@ -1,3 +1,5 @@
+// Copyright 2020 Elandaev Pavel
+
 #include <gtest-mpi-listener.hpp>
 #include <gtest/gtest.h>
 #include <vector>
@@ -25,7 +27,7 @@ TEST(Parallel_Operations_MPI, Test_Parallel_sv_long) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     std::vector<int> global_vec(5);
-    if(rank == 0 ){
+    if(rank == 0 ) {
         global_vec[0] = 1;
         global_vec[1] = 3;
         global_vec[2] = 1;
@@ -33,7 +35,7 @@ TEST(Parallel_Operations_MPI, Test_Parallel_sv_long) {
         global_vec[4] = 10;
     }
     int count = getParallelOperations(global_vec, 5);
-    if(rank == 0){
+    if(rank == 0) {
         ASSERT_EQ(1, count);
     }
 }
@@ -41,12 +43,12 @@ TEST(Parallel_Operations_MPI, Test_Parallel_sv_short) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     std::vector<int> global_vec(2);
-    if(rank == 0 ){
+    if(rank == 0 ) {
         global_vec[0] = 1;
         global_vec[1] = 10;
     }
     int count = getParallelOperations(global_vec, 2);
-    if(rank == 0){
+    if(rank == 0) {
         ASSERT_EQ(0, count);
     }
 }
@@ -55,11 +57,11 @@ TEST(Parallel_Operations_MPI, Test_Parallel_sv_small) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     std::vector<int> global_vec(1);
-    if(rank == 0 ){
+    if(rank == 0 ) {
         global_vec[0] = 1;
     }
     int count = getParallelOperations(global_vec, 1);
-    if(rank == 0){
+    if(rank == 0) {
         ASSERT_EQ(0, count);
     }
 }
@@ -68,10 +70,10 @@ TEST(Parallel_Operations_MPI, Test_Parallel_sv_smallest) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     std::vector<int> global_vec(0);
-    if(rank == 0 ){
+    if(rank == 0 ) {
     }
     int count = getParallelOperations(global_vec, 0);
-    if(rank == 0){
+    if(rank == 0) {
         ASSERT_EQ(0, count);
     }
 }

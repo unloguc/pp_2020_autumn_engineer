@@ -1,4 +1,5 @@
 // Copyright 2020 Elandaev Pavel
+
 #include <mpi.h>
 #include <vector>
 #include <string>
@@ -17,12 +18,12 @@ std::vector<int> getRandomVector(int sz) {
 }
 
 int getSequentialOperations(std::vector<int> vec, int sz) {
-    
-    if(sz==0 || sz==1) return 0;
-    
+
+    if(sz == 0 || sz == 1) return 0;
+
     int count_error = 0;
-    for(int i = 1; i < sz; i++){
-        if(vec[i] <= vec[i-1]){
+    for (int i = 1; i < sz; i++) {
+        if (vec[i] <= vec[i-1]) {
             count_error++;
         }
     }
@@ -31,14 +32,14 @@ int getSequentialOperations(std::vector<int> vec, int sz) {
 
 int getParallelOperations(std::vector<int> global_vec,
                           int count_size_vector) {
-    if(count_size_vector == 0 || count_size_vector == 1)
+    if (count_size_vector == 0 || count_size_vector == 1)
         return 0;
     int size, rank;
     int Global_error = 0;
     int Local_error = 0;
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    
+
     const int delta = count_size_vector / size;
     int remainded = count_size_vector % size;
 
@@ -60,8 +61,8 @@ int getParallelOperations(std::vector<int> global_vec,
         MPI_Recv(&local_vec[0], delta + 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
         Local_error = getSequentialOperations(local_vec, static_cast<int>(local_vec.size()));
     }
-    
+
     MPI_Reduce(&Local_error, &Global_error, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
-    
+
     return Global_error;
 }

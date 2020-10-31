@@ -1,6 +1,7 @@
-// Copyright 2018 Nesterov Alexander
-#ifndef MODULES_TEST_TASKS_TEST_MPI_OPS_MPI_H_
-#define MODULES_TEST_TASKS_TEST_MPI_OPS_MPI_H_
+// Copyright 2020 Elandaev Pavel
+
+#ifndef MODULES_TASK_1_ELANDAEV_P_FIND_VECTOR_ERROR_ELANDAEV_P_FIND_VECTOR_ERROR_H_
+#define MODULES_TASK_1_ELANDAEV_P_FIND_VECTOR_ERROR_ELANDAEV_P_FIND_VECTOR_ERROR_H_
 
 #include <vector>
 #include <string>
@@ -10,4 +11,4 @@ int getParallelOperations(std::vector<int> global_vec,
                           int count_size_vector);
 int getSequentialOperations(std::vector<int> vec, int sz);
 
-#endif  // MODULES_TEST_TASKS_TEST_MPI_OPS_MPI_H_
+#endif  // MODULES_TASK_1_ELANDAEV_P_FIND_VECTOR_ERROR_ELANDAEV_P_FIND_VECTOR_ERROR_H_
