@@ -2,7 +2,7 @@
 #include <gtest-mpi-listener.hpp>
 #include <gtest/gtest.h>
 #include <vector>
-#include "./multi_scalar.h";
+#include "./multi_scalar.h"
 
 TEST(multi_scalar, can_create_vector) {
     int rank;
@@ -33,7 +33,7 @@ TEST(multi_scalar, can_multiply_vectors_with_100_range) {
     }
 }
 
-TEST(multi_scalar, can_throw_if_product_vectors_with_different_ranges) {
+TEST(multi_scalar, can_throw_if_multiply_vectors_with_different_ranges) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     std::vector<int> vec1 = createRandomVector(100);

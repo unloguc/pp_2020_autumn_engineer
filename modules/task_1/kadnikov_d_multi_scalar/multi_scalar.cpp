@@ -3,7 +3,7 @@
 #include <vector>
 #include <random>
 #include <ctime>
-#include "../../../modules/task_1/kadnikov_d_multi_scalar/multi_scalar.h"
+#include "./multi_scalar.h"
 
 std::vector<int> createRandomVector(int v_size) {
     std::vector<int> vector(v_size);
