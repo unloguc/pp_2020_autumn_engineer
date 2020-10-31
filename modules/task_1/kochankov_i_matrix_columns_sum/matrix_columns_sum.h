@@ -4,11 +4,12 @@
 #define MODULES_TASK_1_KOCHANKOV_I_MATRIX_COLUMNS_SUM_MATRIX_COLUMNS_SUM_H_
 
 #include <vector>
+#include "Matrix.h"
 
 using std::vector;
 
-vector<vector<int>> get_rand_matrix(int x, int y);
-vector<int> sequential_operations(const vector<vector<int>>& matrix);
-vector<int> parallel_sum(const vector<vector<int>>& matrix);
+Matrix get_rand_matrix(int x, int y);
+vector<int> sequential_operations(const Matrix& matrix);
+vector<int> parallel_sum(const Matrix& matrix);
 
 #endif  // MODULES_TASK_1_KOCHANKOV_I_MATRIX_COLUMNS_SUM_MATRIX_COLUMNS_SUM_H_
