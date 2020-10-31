@@ -38,7 +38,6 @@ uint32_t getCountSentencesParallel(const std::string& str, const size_t size_str
   std::string local_str;
   const uint32_t delta = size_str / size;
   const uint32_t remain = size_str % size;
-  uint32_t global_count;
   if (rank == 0) {
     for (size_t process = 0; process < remain; ++process) {
       MPI_Send(&str[0] + process * (delta + 1), delta + 1, MPI_CHAR, process + 1, 0, MPI_COMM_WORLD);
@@ -58,6 +57,6 @@ uint32_t getCountSentencesParallel(const std::string& str, const size_t size_str
     }
   }
   uint32_t local_count = getCountSentencesSequential(local_str);
-  MPI_Reduce(&local_count, &global_count, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
-  return global_count;
+  MPI_Reduce(&local_count, &total_count, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+  return total_count;
 }
