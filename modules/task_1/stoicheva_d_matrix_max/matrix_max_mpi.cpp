@@ -1,5 +1,5 @@
 // Copyright 2020 Stoicheva Darya
-#include "matrix_max_mpi.h"
+#include "../../../modules/task_1/stoicheva_d_matrix_max/matrix_max_mpi.h"
 #include <mpi.h>
 #include <iostream>
 #include <vector>
@@ -71,7 +71,7 @@ std::vector<int> get_max_elements_of_rows_parallel(const std::vector<int>& matri
     #ifdef DEBUG_PRINT
         printf("[%d] Rows per process: %d,  extra rows: %d\n", ProcRank, count_rows_per_process, count_extra_rows);
     #endif
-    
+
     if (ProcRank == 0) {
         print_matrix(matrix, rows, columns, "[" + std::to_string(ProcRank) + "] initial  ");
     }
@@ -86,7 +86,7 @@ std::vector<int> get_max_elements_of_rows_parallel(const std::vector<int>& matri
         print_matrix(sent_matrix_rows, count_rows_per_process, columns,
                      "[" + std::to_string(ProcRank) + "] sent_matrix_raws  ");
     #endif
-    
+
     std::vector<int> receive_elements_max = get_max_elements_of_rows(sent_matrix_rows, count_rows_per_process,
                                                                      columns);
     print_matrix(receive_elements_max, count_rows_per_process, 1,
