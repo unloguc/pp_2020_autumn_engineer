@@ -65,7 +65,7 @@ TEST(Parallel_Operations_MPI, Splits_Less_Than_MPI_Comm_Size) {
     int size;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
-    if(size>1) {
+    if (size > 1) {
         double result;
         ASSERT_NO_THROW(result = getIntegralParallel(0, 4, size-1, myFunc));
         if (rank == 0) {
