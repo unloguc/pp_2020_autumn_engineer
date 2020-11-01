@@ -16,28 +16,39 @@ TEST(Parallel_Operations_MPI, Test_manual_matrix_seq_max) {
 }
 
 TEST(Parallel_Operations_MPI, Test_random_matrix_parallel_max) {
-    std::vector<int> test = getRandomMatrix(12, 15);
     int rank;
+    std::vector<int> test;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     if (rank == 0) {
-        ASSERT_EQ(getParallelMaxOfClmns(test, 12, 15), getSequentialMaxOfClmns(test, 12, 15));
+        test = getRandomMatrix(12, 15);
+    }
+    std::vector<int> result = getParallelMaxOfClmns(test, 12, 15);
+    if (rank == 0) {
+        ASSERT_EQ(result, getSequentialMaxOfClmns(test, 12, 15));
     }
 }
 
 TEST(Parallel_Operations_MPI, Test_random_matrix_100x100_parallel_max) {
-    std::vector<int> test = getRandomMatrix(100, 100);
+    std::vector<int> test;
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     if (rank == 0) {
-        ASSERT_EQ(getParallelMaxOfClmns(test, 100, 100), getSequentialMaxOfClmns(test, 100, 100));
+        test = getRandomMatrix(100, 100);
+    }
+    std::vector<int> result = getParallelMaxOfClmns(test, 100, 100);
+    if (rank == 0) {
+        ASSERT_EQ(result, getSequentialMaxOfClmns(test, 100, 100));
     }
     }
 
 TEST(Parallel_Operations_MPI, Test_matrix_negative_size) {
-    std::vector<int> test = getRandomMatrix(-2, -2);
-    int rank;
+    std::vector<int> test;
     std::vector<int> clear;  // empty vector
+    int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    if (rank == 0) {
+        test = getRandomMatrix(-2, -2);
+    }
     if (rank == 0) {
         ASSERT_EQ(test, clear);
     }
@@ -45,11 +56,15 @@ TEST(Parallel_Operations_MPI, Test_matrix_negative_size) {
 
 
 TEST(Parallel_Operations_MPI, Test_matrix_1000x1000_size) {
-    std::vector<int> test = getRandomMatrix(1000, 1000);
+    std::vector<int> test;
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     if (rank == 0) {
-        ASSERT_EQ(getParallelMaxOfClmns(test, 1000, 1000), getSequentialMaxOfClmns(test, 1000, 1000));
+        test = getRandomMatrix(1000, 1000);
+    }
+    std::vector<int> result = getParallelMaxOfClmns(test, 1000, 1000);
+    if (rank == 0) {
+        ASSERT_EQ(result, getSequentialMaxOfClmns(test, 1000, 1000));
     }
 }
 
