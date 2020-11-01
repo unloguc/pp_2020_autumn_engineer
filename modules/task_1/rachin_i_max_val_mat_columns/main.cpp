@@ -10,8 +10,9 @@ TEST(Parallel_Operations_MPI, Test_manual_matrix_seq_max) {
     std::vector<int> result{ 100, 100, 100, 100, 100, 100};
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    if (rank == 0)
+    if (rank == 0) {
         ASSERT_EQ(getSequentialMaxOfClmns(test, 3, 6), result);
+    }
 }
 
 TEST(Parallel_Operations_MPI, Test_manual_matrix_parallel_max) {
@@ -21,24 +22,27 @@ TEST(Parallel_Operations_MPI, Test_manual_matrix_parallel_max) {
     std::vector<int> result{ 100, 100, 100, 100, 100, 100};
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    if (rank == 0)
+    if (rank == 0) {
         ASSERT_EQ(getParallelMaxOfClmns(test, 3, 6), result);
+    }
 }
 
 TEST(Parallel_Operations_MPI, Test_random_matrix_parallel_max) {
     std::vector<int> test = getRandomMatrix(12, 15);
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    if (rank == 0)
+    if (rank == 0) {
         ASSERT_EQ(getParallelMaxOfClmns(test, 12, 15), getSequentialMaxOfClmns(test, 12, 15));
+    }
 }
 
 TEST(Parallel_Operations_MPI, Test_random_matrix_100x100_parallel_max) {
     std::vector<int> test = getRandomMatrix(100, 100);
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    if (rank == 0)
+    if (rank == 0) {
         ASSERT_EQ(getParallelMaxOfClmns(test, 100, 100), getSequentialMaxOfClmns(test, 100, 100));
+    }
     }
 
 TEST(Parallel_Operations_MPI, Test_matrix_negative_size) {
@@ -46,8 +50,9 @@ TEST(Parallel_Operations_MPI, Test_matrix_negative_size) {
     int rank;
     std::vector<int> clear;  // empty vector
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    if (rank == 0)
+    if (rank == 0) {
         ASSERT_EQ(test, clear);
+    }
 }
 
 
@@ -55,8 +60,9 @@ TEST(Parallel_Operations_MPI, Test_matrix_1000x1000_size) {
     std::vector<int> test = getRandomMatrix(1000, 1000);
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    if (rank == 0)
+    if (rank == 0) {
         ASSERT_EQ(getParallelMaxOfClmns(test, 1000, 1000), getSequentialMaxOfClmns(test, 1000, 1000));
+    }
 }
 
 int main(int argc, char** argv) {
