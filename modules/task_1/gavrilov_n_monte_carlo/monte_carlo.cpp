@@ -5,7 +5,7 @@
 #include "../../modules/task_1/gavrilov_n_monte_carlo/monte_carlo.h"
 
 double getIntegral(double _min, double _max, int splitCount, double(*func)(double)) {
-    if (splitCount == 0)
+    if (splitCount <= 0)
         throw "splitCount should be more than 0";
 
     bool minMoreThanMax = _min > _max;
@@ -27,7 +27,7 @@ double getIntegral(double _min, double _max, int splitCount, double(*func)(doubl
 }
 
 double getIntegralParallel(double _min, double _max, int splitCount, double(*func)(double)) {
-    if (splitCount == 0)
+    if (splitCount <= 0)
         throw "splitCount should be more than 0";
 
     bool minMoreThanMax = _min > _max;
