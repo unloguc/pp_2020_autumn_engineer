@@ -66,7 +66,7 @@ std::vector<int> get_max_elements_of_rows_parallel(const std::vector<int>& matri
         printf("[%d] Process: %d of %d, Rows: %d, Columns: %d\n", ProcRank, ProcRank, ProcNum, rows, columns);
     #endif
 
-    size_t count_rows_per_process = rows / ProcNum;
+    size_t count_rows_per_process = std::min(size_t(1), rows / ProcNum);
     size_t count_extra_rows = rows % ProcNum;
 
     #ifdef DEBUG_PRINT
