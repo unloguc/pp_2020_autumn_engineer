@@ -35,6 +35,7 @@ std::vector<int> get_max_elements_of_rows(std::vector<int> matrix, const size_t 
 }
 
 void print_matrix(std::vector<int> matrix, const size_t rows, const size_t columns, std::string prefix) {
+    #ifdef DEBUG_PRINT
     std::cout << "\n" << prefix << "Matrix: {\n";
     for (size_t row = 0; row < rows; row++) {
         std::cout << prefix << "  ";
@@ -44,6 +45,7 @@ void print_matrix(std::vector<int> matrix, const size_t rows, const size_t colum
         std::cout << "\n";
     }
     std::cout << prefix << "}\n";
+    #endif
 }
 
 std::vector<int> get_max_elements_of_rows_sequentional(std::vector<int> matrix, const size_t rows,
@@ -59,13 +61,17 @@ std::vector<int> get_max_elements_of_rows_parallel(const std::vector<int>& matri
     MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
     MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
 
-    printf("[%d] Process: %d of %d, Rows: %d, Columns: %d\n", ProcRank, ProcRank, ProcNum, rows, columns);
+    #ifdef DEBUG_PRINT
+        printf("[%d] Process: %d of %d, Rows: %d, Columns: %d\n", ProcRank, ProcRank, ProcNum, rows, columns);
+    #endif
 
     size_t count_rows_per_process = rows / ProcNum;
     size_t count_extra_rows = rows % ProcNum;
 
-    printf("[%d] Rows per process: %d,  extra rows: %d\n", ProcRank, count_rows_per_process, count_extra_rows);
-
+    #ifdef DEBUG_PRINT
+        printf("[%d] Rows per process: %d,  extra rows: %d\n", ProcRank, count_rows_per_process, count_extra_rows);
+    #endif
+    
     if (ProcRank == 0) {
         print_matrix(matrix, rows, columns, "[" + std::to_string(ProcRank) + "] initial  ");
     }
@@ -75,10 +81,12 @@ std::vector<int> get_max_elements_of_rows_parallel(const std::vector<int>& matri
     MPI_Scatter(matrix.data(), count_rows_per_process * columns, MPI_INT,
                 sent_matrix_rows.data(), count_rows_per_process * columns, MPI_INT, 0, MPI_COMM_WORLD);
 
-    printf("[%d] Rows per process: %d,  extra rows: %d\n", ProcRank, count_rows_per_process, count_extra_rows);
-    print_matrix(sent_matrix_rows, count_rows_per_process, columns,
-        "[" + std::to_string(ProcRank) + "] sent_matrix_raws  ");
-
+    #ifdef DEBUG_PRINT
+        printf("[%d] Rows per process: %d,  extra rows: %d\n", ProcRank, count_rows_per_process, count_extra_rows);
+        print_matrix(sent_matrix_rows, count_rows_per_process, columns,
+                     "[" + std::to_string(ProcRank) + "] sent_matrix_raws  ");
+    #endif
+    
     std::vector<int> receive_elements_max = get_max_elements_of_rows(sent_matrix_rows, count_rows_per_process,
                                                                      columns);
     print_matrix(receive_elements_max, count_rows_per_process, 1,
