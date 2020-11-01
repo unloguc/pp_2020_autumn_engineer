@@ -1,4 +1,5 @@
 // Copyright 2018 Nesterov Alexander
+#include <vector>
 #ifdef __linux__
     #include "..\..\..\3rdparty\gtest-mpi\linux\gtest-mpi-listener.hpp"
 #elif _WIN32
@@ -6,7 +7,7 @@
 #else
 #endif
 #include "..\..\..\3rdparty\gtest\googletest\include\gtest\gtest.h"
-#include <vector>
+
 #include ".\matrix_max_mpi.h"
 
 
