@@ -19,7 +19,7 @@ TEST(Parallel_Operations_MPI, Test_Max) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     std::vector<int> vec;
-    const int len = 100;
+    const int len = 1001;
     if (rank == 0) {
         vec = generateVector(len);
     }
