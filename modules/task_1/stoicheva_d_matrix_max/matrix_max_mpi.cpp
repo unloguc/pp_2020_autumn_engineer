@@ -22,6 +22,9 @@ std::vector<int> create_random_matrix(const size_t rows, const size_t columns) {
 }
 
 std::vector<int> get_max_elements_of_rows(std::vector<int> matrix, const size_t rows, const size_t columns) {
+    if (!(rows && columns)) {
+        return std::vector<int>();
+    }
     std::vector<int> max_elements(rows);
     for (size_t row = 0; row < rows; row++) {
         int max_value = INT_MIN;
@@ -56,7 +59,10 @@ std::vector<int> get_max_elements_of_rows_sequentional(std::vector<int> matrix, 
 
 std::vector<int> get_max_elements_of_rows_parallel(const std::vector<int>& matrix, const size_t rows,
     const size_t columns) {
-    std::vector<int> max_elements(rows);
+
+    if (!(rows && columns)) {
+        return std::vector<int>();
+    }
 
     int ProcNum, ProcRank;
     MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
