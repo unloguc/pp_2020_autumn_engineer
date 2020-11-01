@@ -1,13 +1,12 @@
-// Copyright 2018 Nesterov Alexander
+// Copyright 2020 Stoicheva Darya
+#include "matrix_max_mpi.h"
+#include <mpi.h>
 #include <iostream>
 #include <vector>
 #include <string>
 #include <random>
 #include <ctime>
 #include <algorithm>
-#include <mpi.h>
-#include "matrix_max_mpi.h"
-
 
 std::vector<int> create_random_matrix(const size_t rows, const size_t columns) {
     size_t size = rows * columns;
@@ -47,12 +46,12 @@ void print_matrix(std::vector<int> matrix, const size_t rows, const size_t colum
     std::cout << prefix << "}\n";
 }
 
-std::vector<int> get_max_elements_of_rows_sequentional(std::vector<int> matrix, const size_t rows, 
+std::vector<int> get_max_elements_of_rows_sequentional(std::vector<int> matrix, const size_t rows,
     const size_t columns) {
     return get_max_elements_of_rows(matrix, rows, columns);
 }
 
-std::vector<int> get_max_elements_of_rows_parallel(const std::vector<int>& matrix, const size_t rows, 
+std::vector<int> get_max_elements_of_rows_parallel(const std::vector<int>& matrix, const size_t rows,
     const size_t columns) {
     std::vector<int> max_elements(rows);
 
@@ -77,12 +76,12 @@ std::vector<int> get_max_elements_of_rows_parallel(const std::vector<int>& matri
                 sent_matrix_rows.data(), count_rows_per_process * columns, MPI_INT, 0, MPI_COMM_WORLD);
 
     printf("[%d] Rows per process: %d,  extra rows: %d\n", ProcRank, count_rows_per_process, count_extra_rows);
-    print_matrix(sent_matrix_rows, count_rows_per_process, columns, 
+    print_matrix(sent_matrix_rows, count_rows_per_process, columns,
         "[" + std::to_string(ProcRank) + "] sent_matrix_raws  ");
 
-    std::vector<int> receive_elements_max = get_max_elements_of_rows(sent_matrix_rows, count_rows_per_process, 
+    std::vector<int> receive_elements_max = get_max_elements_of_rows(sent_matrix_rows, count_rows_per_process,
                                                                      columns);
-    print_matrix(receive_elements_max, count_rows_per_process, 1, 
+    print_matrix(receive_elements_max, count_rows_per_process, 1,
         "[" + std::to_string(ProcRank) + "] receive_elements_max  ");
 
     std::vector<int> max_values;
@@ -98,9 +97,9 @@ std::vector<int> get_max_elements_of_rows_parallel(const std::vector<int>& matri
             int count_base_rows = count_rows_per_process * ProcNum;
             std::vector<int> extra_elements_max = get_max_elements_of_rows(
                 std::vector<int>(&matrix[count_base_rows * columns],
-                                 &matrix[(count_base_rows + count_base_rows) * columns]), 
+                                 &matrix[(count_base_rows + count_base_rows) * columns]),
                                  count_extra_rows, columns);
-            print_matrix(extra_elements_max, 
+            print_matrix(extra_elements_max,
                 count_extra_rows, 1, "[" + std::to_string(ProcRank) + "] extra_elements_max  ");
             for (size_t extra_row = 0; extra_row < count_extra_rows; extra_row++) {
                 max_values[count_base_rows + extra_row] = extra_elements_max[extra_row];

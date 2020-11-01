@@ -1,4 +1,4 @@
-// Copyright 2018 Nesterov Alexander
+// Copyright 2020 Stoicheva Darya
 #include <vector>
 #ifdef __linux__
     #include "..\..\..\3rdparty\gtest-mpi\linux\gtest-mpi-listener.hpp"
@@ -53,13 +53,13 @@ TEST(Parallel_Operations_MPI, Test_Ten_Rows_Ten_Column) {
     test_with(10, 10);
 }
 
-//TEST(Parallel_Operations_MPI, Test_100_Rows_200_Columns) {
-//  test_with(100, 200);
-//}
-//
-//TEST(Parallel_Operations_MPI, Test_1000_Rows_2000_Columns) {
-//  test_with(1000, 2000);
-//}
+TEST(Parallel_Operations_MPI, Test_100_Rows_200_Columns) {
+  test_with(100, 200);
+}
+
+TEST(Parallel_Operations_MPI, Test_1000_Rows_2000_Columns) {
+  test_with(1000, 2000);
+}
 
 
 int main(int argc, char** argv) {
