@@ -44,7 +44,7 @@ TEST(Parallel_Operations_MPI, Test_random_matrix_100x100_parallel_max) {
 TEST(Parallel_Operations_MPI, Test_matrix_negative_size) {
     std::vector<int> test = getRandomMatrix(-2, -2);
     int rank;
-    std::vector<int> clear;  //empty vector
+    std::vector<int> clear;  // empty vector
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     if (rank == 0)
         ASSERT_EQ(test, clear);
@@ -71,6 +71,5 @@ int main(int argc, char** argv) {
     listeners.Release(listeners.default_xml_generator());
 
     listeners.Append(new GTestMPIListener::MPIMinimalistPrinter);
-    
     return RUN_ALL_TESTS();
 }
