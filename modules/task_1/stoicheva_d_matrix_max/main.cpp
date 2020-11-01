@@ -49,6 +49,10 @@ TEST(Parallel_Operations_MPI, Test_Two_Rows_One_Column) {
     test_with(2, 1);
 }
 
+TEST(Parallel_Operations_MPI, Test_Ten_Rows_One_Column) {
+    test_with(10, 1);
+}
+
 TEST(Parallel_Operations_MPI, Test_Ten_Rows_Ten_Column) {
     test_with(10, 10);
 }
