@@ -102,7 +102,7 @@ std::vector<int> get_max_elements_of_rows_parallel(const std::vector<int>& matri
                max_values.data(), count_rows_per_process, MPI_INT, 0, MPI_COMM_WORLD);
 
     if (ProcRank == 0) {
-        if (0 && count_extra_rows) {
+        if (count_extra_rows) {
             int count_base_rows = count_rows_per_process * ProcNum;
             std::vector<int> extra_elements_max = get_max_elements_of_rows(
                 std::vector<int>(&matrix[count_base_rows * columns],
