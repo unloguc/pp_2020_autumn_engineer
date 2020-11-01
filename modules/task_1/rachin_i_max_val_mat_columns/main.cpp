@@ -15,18 +15,6 @@ TEST(Parallel_Operations_MPI, Test_manual_matrix_seq_max) {
     }
 }
 
-TEST(Parallel_Operations_MPI, Test_manual_matrix_parallel_max) {
-    std::vector<int> test{ 23, 100, 59, 14, 25, 100,
-                          100, 29, 49, 100, 38, 15,
-                          25, 31, 100, 29, 100, 28 };
-    std::vector<int> result{ 100, 100, 100, 100, 100, 100};
-    int rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    if (rank == 0) {
-        ASSERT_EQ(getParallelMaxOfClmns(test, 3, 6), result);
-    }
-}
-
 TEST(Parallel_Operations_MPI, Test_random_matrix_parallel_max) {
     std::vector<int> test = getRandomMatrix(12, 15);
     int rank;
