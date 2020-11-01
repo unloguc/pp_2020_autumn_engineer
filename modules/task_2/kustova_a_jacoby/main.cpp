@@ -9,22 +9,24 @@
 #include <time.h>
 #define MAX_ITERATIONS 10
 using namespace std;
-double Distance(std::vector<double> X_Old, std::vector<double> X_New, int n);
+//double Distance(std::vector<double> X_Old, std::vector<double> X_New, int n);
+double Distance(double *X_Old, double *X_New, int n);
 int main(int argc, char** argv){
     int size,rank,n, amountRowBloc, GlobalRowNo;
 //    clock_t begin, finish;
 cout << 0;
+n = 3;
+double *Input_A, *Input_B, *ARecv, *BRecv, *Bloc_XX, *X_New, *X_Old, *Bloc_X;
 MPI_Init(&argc, &argv);
 MPI_Comm_size(MPI_COMM_WORLD, &size);
 MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 cout << 1;
-n = 2;
-
+X_New = (double *) malloc (sizeof(double) * n);
 
 double eps=0.00001;
 int index;
-std::vector<double> Input_A(n * n);
-std::vector<double> Input_B(n);
+/*std::vector<double> Input_A(n * n);
+std::vector<double> Input_B(n);*/
 if(rank==0)
 {
 
@@ -35,39 +37,53 @@ if(rank==0)
 //    Input_A = {115, -20, -75, 15, -50, -5, 6, 2, 20};
  //   Input_B = {20, -40, 28};
 /////
-    Input_A = {4, 2, 1, 3};
-    Input_B = {1, -1};
+Input_A = (double *) malloc (sizeof(double) * n * n);
+Input_B = (double *) malloc (sizeof(double) * n);
+//+++++
+//Input_A[0] = 4; Input_A[1] = 2; Input_A[2] = 1; Input_A[3] = 3;
+//Input_B[0] = 1; Input_B[1] = -1;
+Input_A[0] = 10; Input_A[1] = 1; Input_A[2] = -1; Input_A[3] = 1;
+Input_A[4] = 10; Input_A[5] = -1; Input_A[6] = -1; Input_A[7] = 1; Input_A[8] = 10;
+Input_B[0] = 11; Input_B[1] = 10; Input_B[2] = 10;
+//    Input_A = {4, 2, 1, 3};
+//    Input_B = {1, -1};
 cout << 2;
-    amountRowBloc = n / size;	//how much to each proc
+
 }
 //begin = clock();
 MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
-MPI_Barrier(MPI_COMM_WORLD);
-
-std::vector<double> ARecv(n * amountRowBloc);
-std::vector<double> BRecv(amountRowBloc);
+//MPI_Barrier(MPI_COMM_WORLD);
+    amountRowBloc = n / size;	//how much to each proc
+/*std::vector<double> ARecv(n * amountRowBloc);
+std::vector<double> BRecv(amountRowBloc);*/
+ARecv = (double *) malloc (sizeof(double) * amountRowBloc * n);
+BRecv = (double *) malloc (sizeof(double) * amountRowBloc);
 cout << 3;
-MPI_Scatter (&Input_A, amountRowBloc * n, MPI_DOUBLE, &ARecv, amountRowBloc * n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-MPI_Scatter (&Input_B, amountRowBloc, MPI_DOUBLE, &BRecv, amountRowBloc, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+MPI_Scatter (Input_A, amountRowBloc * n, MPI_DOUBLE, ARecv, amountRowBloc * n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+MPI_Scatter (Input_B, amountRowBloc, MPI_DOUBLE, BRecv, amountRowBloc, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
-std::vector<double> Bloc_X(n);
+/*std::vector<double> Bloc_X(n);
 std::vector<double> X_New(n);
 std::vector<double> X_Old(n);
-std::vector<double> Bloc_XX(n);
+std::vector<double> Bloc_XX(n);*/
+Bloc_X = (double *) malloc (sizeof(double) * n);
+X_New = (double *) malloc (sizeof(double) * n);
+X_Old = (double *) malloc (sizeof(double) * n);
 cout << 4;
 
 for (int irow=0; irow < amountRowBloc; irow ++){
     Bloc_X[irow] = BRecv[irow];
 }
 
-MPI_Allgather(&Bloc_X, amountRowBloc, MPI_DOUBLE, &X_New, amountRowBloc, MPI_DOUBLE, MPI_COMM_WORLD);
+MPI_Allgather(Bloc_X, amountRowBloc, MPI_DOUBLE, X_New, amountRowBloc, MPI_DOUBLE, MPI_COMM_WORLD);
 int Iteration = 0;
 cout << 5;
 for(int irow=amountRowBloc * size; irow<n; irow++){
 	MPI_Allgather(&Input_B[irow], 1, MPI_DOUBLE, &X_New[irow], 1, MPI_DOUBLE, MPI_COMM_WORLD);
 }
 
-std::vector<double> BlocXX(n);
+//std::vector<double> BlocXX(n);
+Bloc_XX = (double *) malloc (sizeof(double) * n);
 do{
     for(int irow = 0; irow < n;irow++){
 	X_Old[irow] = X_New[irow];
@@ -85,7 +101,7 @@ cout << 6;
 	}
 	Bloc_X[irow] = Bloc_X[irow] / ARecv[index + GlobalRowNo];
     }
-    MPI_Allgather(&Bloc_X, amountRowBloc, MPI_DOUBLE, &X_New, amountRowBloc, MPI_DOUBLE, MPI_COMM_WORLD);
+    MPI_Allgather(Bloc_X, amountRowBloc, MPI_DOUBLE, X_New, amountRowBloc, MPI_DOUBLE, MPI_COMM_WORLD);
 cout << 7;
     if (rank == 0){
 	for(int irow = amountRowBloc * size; irow < n; irow ++){
@@ -114,12 +130,12 @@ if (rank == 0) {
 	cout << X_New[irow] << endl;
     }
 }
-    MPI_Finalize();
+  //  MPI_Finalize();
 return 0;
 }
 
 
-double Distance(std::vector<double> X_Old, std::vector<double> X_New, int n)
+double Distance(double *X_Old, double *X_New, int n)
 {
     int index;
     double Sum;
