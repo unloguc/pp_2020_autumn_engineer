@@ -83,7 +83,7 @@ std::vector<int> get_max_elements_of_rows_parallel(const std::vector<int>& matri
     if (ProcRank == 0) {
         print_matrix(matrix, rows, columns, "[" + std::to_string(ProcRank) + "] initial  ");
     }
- 
+
     std::vector<int> sent_matrix_rows(count_rows_per_process * columns);
 
     MPI_Scatter(matrix.data(), count_rows_per_process * columns, MPI_INT,
