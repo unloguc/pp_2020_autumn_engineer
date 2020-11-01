@@ -20,11 +20,11 @@ TEST(Parallel_Operations_MPI, Test_random_matrix_parallel_max) {
     std::vector<int> test;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     if (rank == 0) {
-        test = getRandomMatrix(12, 15);
+        test = getRandomMatrix(5, 5);
     }
-    std::vector<int> result = getParallelMaxOfClmns(test, 12, 15);
+    std::vector<int> result = getParallelMaxOfClmns(test, 5, 5);
     if (rank == 0) {
-        ASSERT_EQ(result, getSequentialMaxOfClmns(test, 12, 15));
+        ASSERT_EQ(result, getSequentialMaxOfClmns(test, 5, 5));
     }
 }
 

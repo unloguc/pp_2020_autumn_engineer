@@ -73,7 +73,7 @@ std::vector<int> getParallelMaxOfClmns(std::vector<int> mx, int rows, int clmns)
     if (rank == 0 && tail != 0) {
         localTail = getSequentialMaxOfClmns(localTail, rows, tail);
     }
-    MPI_Reduce(&localMain[0], &maxValues[0], delta, MPI_INT, MPI_MAX, 0, MPI_COMM_WORLD);
+    MPI_Gather(&localMain[0], delta, MPI_INT, &maxValues[0], delta, MPI_INT, 0, MPI_COMM_WORLD);
     if (rank == 0 && tail != 0) {
         for (int i = 0; i < tail; i++) {
             maxValues[clmns - tail + i] = localTail[i];
