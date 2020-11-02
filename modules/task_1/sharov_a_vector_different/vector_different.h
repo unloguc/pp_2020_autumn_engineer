@@ -10,5 +10,5 @@ void Different(int* first, int* second, int* lenght, MPI_Datatype* dtype);
 void getSequentialOperations(std::vector<int> vector, int* elems);
 void getParallelOperations(std::vector<int> global_vec, int vector_size, int* diff_elem);
 
-#endif  //MODULES_TASK_1_SHAROV_A_VECTOR_DIFFERENT_VECTOR_DIFFERENT_H_
+#endif  // MODULES_TASK_1_SHAROV_A_VECTOR_DIFFERENT_VECTOR_DIFFERENT_H_
 
