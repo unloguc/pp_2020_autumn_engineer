@@ -35,7 +35,6 @@ TEST(Parallel_Operations_MPI, Test_Size_1) {
 
 TEST(Parallel_Operations_MPI, Test_Size_Low) {
     const int sizevec = 10;
-
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     std::vector<int> vec;
