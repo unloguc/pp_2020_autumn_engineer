@@ -4,7 +4,7 @@
 
 #include <vector>
 
-#include "../../modules/task_1/vorobjev_l_mid/mid.h"
+#include "./mid.h"
 
 TEST(Parallel_Operations_MPI, Can_Generate_Vector) {
     const int sizevec = 10;

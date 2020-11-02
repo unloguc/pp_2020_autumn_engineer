@@ -3,7 +3,7 @@
 #include <time.h>
 #include <vector>
 #include <random>
-#include "../../modules/task_1/vorobjev_l_mid/mid.h"
+#include "./mid.h"
 
 std::vector<int> randvector(int size) {
     std::mt19937 gen;
