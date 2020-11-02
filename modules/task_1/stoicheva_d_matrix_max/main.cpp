@@ -1,11 +1,13 @@
 // Copyright 2020 Stoicheva Darya
 #include <vector>
-#ifdef __linux__
-    #include "../../../3rdparty/gtest-mpi/linux/gtest-mpi-listener.hpp"
-#elif _WIN32
-    #include "../../../3rdparty/gtest-mpi/win/gtest-mpi-listener.hpp"
-#else
-#endif
+//#ifdef __linux__
+//    #include "../../../3rdparty/gtest-mpi/linux/gtest-mpi-listener.hpp"
+//#elif _WIN32
+//    #include "../../../3rdparty/gtest-mpi/win/gtest-mpi-listener.hpp"
+//#else
+//#endif
+#include <gtest-mpi-listener.hpp>
+#include <gtest/gtest.h>
 #include "../../../3rdparty/gtest/googletest/include/gtest/gtest.h"
 
 #include "../../../modules/task_1/stoicheva_d_matrix_max/matrix_max_mpi.h"
