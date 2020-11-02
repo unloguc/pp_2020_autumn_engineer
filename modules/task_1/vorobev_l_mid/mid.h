@@ -3,11 +3,10 @@
 #define MODULES_TASK_1_VOROBEV_L_MID_H_
 
 #include <vector>
-#include <string>
 
-std::vector<int> RandVector(int size);
-double AvgVector(std::vector<int> Vec, int SizeVec);
-double AvgVectorPar(std::vector<int> Vec, int SizeVec);
+std::vector<int> randvector(int size);
+double avgvector(std::vector<int> vec, int sizevec);
+double avgvectorpar(std::vector<int> vec, int sizevec);
 
 
 #endif  // MODULES_TASK_1_VOROBEV_L_MID_H_

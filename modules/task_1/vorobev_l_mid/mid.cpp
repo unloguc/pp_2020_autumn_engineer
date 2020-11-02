@@ -37,7 +37,7 @@ double avgvectorpar(std::vector<int> vec, int sizevec) {
     else {
         size = sizevec / num + sizevec % num;
     }
-
+    
     if (rank == 0) {
         for (int i = 1; i < num - 1; i++) {
             MPI_Send(&vec[0] + sizevec / num * i, size, MPI_INT, i, 0, MPI_COMM_WORLD);

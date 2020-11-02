@@ -6,15 +6,15 @@
 
 #include "./mid.h"
 
-TEST(Parallel_Operations_MPI, Can_Generate_Vector) {
+TEST(Parallel_Operations_MPI, Vector) {
     const int sizevec = 10;
 
     std::vector<int> vec = randvector(sizevec);
     ASSERT_EQ(static_cast<int>(vec.size()), sizevec);
 }
 
-TEST(Parallel_Operations_MPI, Test_Minus_Sizevec) {
-    const int sizevec = -8;
+TEST(Parallel_Operations_MPI, Test_Minus_SizeVec) {
+    const int sizevec = -10;
 
     ASSERT_ANY_THROW(randvector(sizevec));
 }
@@ -35,8 +35,8 @@ TEST(Parallel_Operations_MPI, Test_Size_1) {
     }
 }
 
-TEST(Parallel_Operations_MPI, Test_Size_low) {
-    const int sizevec = 8;
+TEST(Parallel_Operations_MPI, Test_Size_Low) {
+    const int sizevec = 10;
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -50,8 +50,8 @@ TEST(Parallel_Operations_MPI, Test_Size_low) {
         ASSERT_EQ(avgvec, avg);
     }
 }
-TEST(Parallel_Operations_MPI, Test_Size_mid) {
-    const int sizevec = 80;
+TEST(Parallel_Operations_MPI, Test_Size_Mid) {
+    const int sizevec = 100;
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -66,7 +66,7 @@ TEST(Parallel_Operations_MPI, Test_Size_mid) {
     }
 }
 
-TEST(Parallel_Operations_MPI, Test_Size_many) {
+TEST(Parallel_Operations_MPI, Test_Size_Many) {
     const int sizevec = 1000;
 
     int rank;
