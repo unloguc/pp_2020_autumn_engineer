@@ -6,9 +6,8 @@
 #include "../../../modules/task_1/kucheryavykh_y_matrix_column_sum/matrix_columns_sum.h"
 
 std::vector<int> createRandomMatrix(const int rows, const int cols) {
-    if (rows < 1 || cols < 1) {
-        throw(1);
-    }  
+    if (rows < 1 || cols < 1)
+        throw(1);  
     std::vector<int> Matrix(rows * cols);
     std::mt19937 gen;
     gen.seed(static_cast<unsigned int>(time(0)));
@@ -42,9 +41,8 @@ std::vector<int> getParallelColumnsSum(const std::vector<int> Matrix_1, int rows
         throw(1);
     }
 
-    if (rows == 1) {
+    if (rows == 1)
         return Matrix_1;
-    }      
 
     std::vector <int> Matrix_2(delta * rows, 0);
 
