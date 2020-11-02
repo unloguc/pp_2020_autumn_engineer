@@ -3,7 +3,7 @@
 #include <time.h>
 #include <vector>
 #include <random>
-#include "./mid.h"
+#include "../../modules/task_1/vorobev_l_mid/mid.h"
 
 std::vector<int> randvector(int size) {
     std::mt19937 gen;
@@ -33,8 +33,7 @@ int avgvectorpar(std::vector<int> vec, int sizevec) {
     MPI_Bcast(&sizevec, 1, MPI_INT, 0, MPI_COMM_WORLD);
     if (rank != num - 1) {
         size = sizevec / num;
-    }
-    else {
+    } else {
         size = sizevec / num + sizevec % num;
     }
     

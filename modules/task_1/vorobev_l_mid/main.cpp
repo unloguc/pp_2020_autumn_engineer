@@ -2,7 +2,7 @@
 #include <gtest-mpi-listener.hpp>
 #include <gtest/gtest.h>
 #include <vector>
-#include "./mid.h"
+#include "../../modules/task_1/vorobev_l_mid/mid.h"
 
 TEST(Parallel_Operations_MPI, Vector) {
     const int sizevec = 10;
