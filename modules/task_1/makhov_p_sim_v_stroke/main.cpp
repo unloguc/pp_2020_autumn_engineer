@@ -3,7 +3,7 @@
 #include <gtest/gtest.h>
 #include <iostream>
 #include <string>
-#include "../../../modules/task_1/Makhov_p_sim_v_stroke/sim_v_stroke.h"
+#include "../../../modules/task_1/makhov_p_sim_v_stroke/sim_v_stroke.h"
 
 
 TEST(Parallel_Operations_MPI, create_random_string_small) {
