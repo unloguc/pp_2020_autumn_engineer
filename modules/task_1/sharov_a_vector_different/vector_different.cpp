@@ -1,11 +1,11 @@
 // Copyright 2020 Sharov Alexander
 #include <mpi.h>
+#include <math.h>
 #include <vector>
 #include <string>
 #include <random>
 #include <ctime>
 #include <algorithm>
-#include <math.h>
 #include <iostream>
 #include "../../../modules/task_1/sharov_a_vector_different/vector_different.h"
 
