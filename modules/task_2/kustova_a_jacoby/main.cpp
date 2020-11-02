@@ -1,81 +1,146 @@
 // Copyright 2020 Kustova Anastasiya
 #include <gtest-mpi-listener.hpp>
 #include <gtest/gtest.h>
+#include <math.h>
 #include <vector>
 #include <iostream>
-#include <math.h>
-#include <stdio.h> 
 #include "./Jacoby.h"
-#include <time.h>
+#define MAX_ITERATIONS 10
+// using namespace std;
 
-using namespace std;
-//double Distance(std::vector<double> X_Old, std::vector<double> X_New, int n);
-
-int main(int argc, char** argv){
-    int size,rank,n;
-//    clock_t begin, finish;
-
-n = 2;
-MPI_Init(&argc, &argv);
-MPI_Comm_size(MPI_COMM_WORLD, &size);
-MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-
-double eps=0.00001;
-double *X_New = new double[n];
-
-X_New = Parallel_Jacoby(n, eps);
-//Output vector
-if (rank == 0) {
-    for(int irow = 0; irow < n; irow ++){
-	cout << X_New[irow] << endl;
-    }
-}
-  //  MPI_Finalize();
-return 0;
-}
-
-/*
-TEST(Parallel_Operations_MPI, Test_Max) {
-    int rank;
+TEST(Jacoby_Method, Test_solve_1_system) {
+    int size, rank, n, amountRowBloc, GlobalRowNo;
+    n = 2;
+    double *Input_A, *Input_B, *ARecv, *BRecv, *Bloc_XX, *X_New, *X_Old, *Bloc_X;
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    std::vector<int> vec;
-    const int len = 1001;
+    double eps = 0.001;
+    double sum = 0;
     if (rank == 0) {
-        vec = generateVector(len);
+        Input_A = new double[n * n];
+        Input_B = new double[n];
+        Input_A[0] = 4; Input_A[1] = 2; Input_A[2] = 1; Input_A[3] = 3;
+        Input_B[0] = 1; Input_B[1] = -1;
+// Input_A[0] = 115; Input_A[1] = -20; Input_A[2] = -75; Input_A[3] = 15;
+// Input_A[4] = -50; Input_A[5] = -5; Input_A[6] = 6; Input_A[7] = 2; Input_A[8] = 20;
+// Input_B[0] = 20; Input_B[1] = -40; Input_B[2] = 28;
     }
-    int parallel_max = getParallelMax(vec, len);
+    MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Barrier(MPI_COMM_WORLD);
+    amountRowBloc = n / size;    // how much to each proc
+    ARecv = new double[amountRowBloc * n];
+    BRecv = new double[amountRowBloc];
+
+    MPI_Scatter(Input_A, amountRowBloc * n, MPI_DOUBLE, ARecv, amountRowBloc * n, MPI_DOUBLE, 0,     MPI_COMM_WORLD);
+    MPI_Scatter(Input_B, amountRowBloc, MPI_DOUBLE, BRecv, amountRowBloc, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+
+    Bloc_X = new double[n];
+    X_New = new double[n];
+    X_Old = new double[n];
+
+    for (int irow=0; irow < amountRowBloc; irow ++) {
+        Bloc_X[irow] = BRecv[irow];
+    }
+
+    MPI_Allgather(Bloc_X, amountRowBloc, MPI_DOUBLE, X_New, amountRowBloc, MPI_DOUBLE, MPI_COMM_WORLD);
+    int Iteration = 0;
+
+    for (int irow = amountRowBloc * size; irow < n; irow++) {
+        MPI_Allgather(&Input_B[irow], 1, MPI_DOUBLE, &X_New[irow], 1, MPI_DOUBLE, MPI_COMM_WORLD);
+    }
+
+    Bloc_XX = new double[n];
+    do {
+        Bloc_X = Iterations(n, X_Old, X_New, Bloc_X, BRecv, ARecv, GlobalRowNo, amountRowBloc, rank);
+        MPI_Allgather(Bloc_X, amountRowBloc, MPI_DOUBLE, X_New, amountRowBloc, MPI_DOUBLE, MPI_COMM_WORLD);
+
+        if (rank == 0) {
+            Bloc_XX = Iteration_for_0_rank(n, X_Old, Input_B, Bloc_XX, Input_A, GlobalRowNo,  amountRowBloc, size);
+        }
+
+        for (int irow = amountRowBloc * size; irow < n; irow ++) {
+            MPI_Allgather(&Bloc_XX[irow], 1, MPI_DOUBLE, &X_New[irow], 1, MPI_DOUBLE, MPI_COMM_WORLD);
+        }
+        Iteration++;
+    }while((Iteration < MAX_ITERATIONS) && (Distance(X_Old, X_New, n) >= eps));
+
+// Output vector
     if (rank == 0) {
-        int usual_max = getLocalMax(vec);
-        ASSERT_EQ(usual_max, parallel_max);
+        for (int i = 0; i < n; i ++) {
+            sum = 0;
+            for (int irow = 0; irow < n; irow ++) {
+                // cout << X_New[irow] << endl;
+                sum+=X_New[irow] * Input_A[i * n + irow];
+            }
+            ASSERT_LE(abs(sum - Input_B[i]), 0.1);
+        }
     }
 }
 
-TEST(Parallel_Operations_MPI, Test_can_find_local_max) {
-    int rank;
+TEST(Jacoby_Method, Test_solve_2_system) {
+    int size, rank, n, amountRowBloc, GlobalRowNo;
+    n = 3;
+    double *Input_A, *Input_B, *ARecv, *BRecv, *Bloc_XX, *X_New, *X_Old, *Bloc_X;
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    std::vector<int> vec = {3, 4, 9, -6};
+    double eps = 0.001;
+    double sum = 0;
     if (rank == 0) {
-        int usual_max = getLocalMax(vec);
-        ASSERT_EQ(9, usual_max);
+        Input_A = new double[n * n];
+        Input_B = new double[n];
+        Input_A[0] = 10; Input_A[1] = 1; Input_A[2] = -1; Input_A[3] = 1;
+        Input_A[4] = 10; Input_A[5] = -1; Input_A[6] = -1; Input_A[7] = 1; Input_A[8] = 10;
+        Input_B[0] = 11; Input_B[1] = 10; Input_B[2] = 10;
     }
-}
+MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Barrier(MPI_COMM_WORLD);
+    amountRowBloc = n / size;    // how much to each proc
+    ARecv = new double[amountRowBloc * n];
+    BRecv = new double[amountRowBloc];
 
-TEST(Parallel_Operations_MPI, Test_can_gen_random_vector) {
-    int rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    const int len = 100;
-    if (rank == 0) {
-        ASSERT_NO_THROW(generateVector(len));
+    MPI_Scatter(Input_A, amountRowBloc * n, MPI_DOUBLE, ARecv, amountRowBloc * n, MPI_DOUBLE, 0,     MPI_COMM_WORLD);
+    MPI_Scatter(Input_B, amountRowBloc, MPI_DOUBLE, BRecv, amountRowBloc, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+
+    Bloc_X = new double[n];
+    X_New = new double[n];
+    X_Old = new double[n];
+
+    for (int irow=0; irow < amountRowBloc; irow ++) {
+        Bloc_X[irow] = BRecv[irow];
     }
-}
 
-TEST(Parallel_Operations_MPI, Test_throw_gen_vector_with_negative_length) {
-    int rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    std::vector<int> vec;
-    const int len = -20;
+    MPI_Allgather(Bloc_X, amountRowBloc, MPI_DOUBLE, X_New, amountRowBloc, MPI_DOUBLE, MPI_COMM_WORLD);
+    int Iteration = 0;
+
+    for (int irow = amountRowBloc * size; irow < n; irow++) {
+        MPI_Allgather(&Input_B[irow], 1, MPI_DOUBLE, &X_New[irow], 1, MPI_DOUBLE, MPI_COMM_WORLD);
+    }
+
+    Bloc_XX = new double[n];
+    do {
+        Bloc_X = Iterations(n, X_Old, X_New, Bloc_X, BRecv, ARecv, GlobalRowNo, amountRowBloc, rank);
+        MPI_Allgather(Bloc_X, amountRowBloc, MPI_DOUBLE, X_New, amountRowBloc, MPI_DOUBLE, MPI_COMM_WORLD);
+
+        if (rank == 0) {
+            Bloc_XX = Iteration_for_0_rank(n, X_Old, Input_B, Bloc_XX, Input_A, GlobalRowNo,  amountRowBloc, size);
+        }
+
+        for (int irow = amountRowBloc * size; irow < n; irow ++) {
+            MPI_Allgather(&Bloc_XX[irow], 1, MPI_DOUBLE, &X_New[irow], 1, MPI_DOUBLE, MPI_COMM_WORLD);
+        }
+        Iteration++;
+    }while((Iteration < MAX_ITERATIONS) && (Distance(X_Old, X_New, n) >= eps));
+
+// Output vector
     if (rank == 0) {
-        ASSERT_ANY_THROW(generateVector(len));
+        for (int i = 0; i < n; i ++) {
+            sum = 0;
+            for (int irow = 0; irow < n; irow ++) {
+                // cout << X_New[irow] << endl;
+                sum+=X_New[irow] * Input_A[i * n + irow];
+            }
+            ASSERT_LE(abs(sum - Input_B[i]), 0.1);
+        }
     }
 }
 
@@ -92,4 +157,4 @@ int main(int argc, char** argv) {
 
     listeners.Append(new GTestMPIListener::MPIMinimalistPrinter);
     return RUN_ALL_TESTS();
-}*/
+}
