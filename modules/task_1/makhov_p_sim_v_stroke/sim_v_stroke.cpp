@@ -4,10 +4,10 @@
 #include <iostream>
 #include <ctime>
 #include <random>
-#include "../../../modules/task_1/Makhov_p_sim_v_stroke/sim_v_stroke.h"
+#include "../../../modules/task_1/makhov_p_sim_v_stroke/sim_v_stroke.h"
 
 
-std::string RanStr(int string){
+std::string RanStr(int string) {
     std::mt19937 gen;
     gen.seed(static_cast<unsigned int>(time(0)));
     std::string ret_string;
@@ -58,8 +58,7 @@ int FrequencyParallel(const std::string& gen_str, char sim, int string) {
     local_string.resize(delta);
     if (rank == 0) {
         local_sum = FrequencySec(gen_str, sim, delta);
-    }
-    else {
+    } else {
         MPI_Status status;
         MPI_Recv(&local_string[0], real_size, MPI_CHAR, 0, 0, MPI_COMM_WORLD, &status);
         local_sum = FrequencySec(local_string, sim, real_size);
