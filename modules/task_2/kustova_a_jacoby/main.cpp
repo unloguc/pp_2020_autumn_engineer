@@ -138,6 +138,7 @@ MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
     }while((Iteration < MAX_ITERATIONS) && (Distance(X_Old, X_New, n) >= eps));
 
 // Output vector
+    double s;
     if (rank == 0) {
         for (int i = 0; i < n; i ++) {
             sum = 0;
@@ -145,11 +146,15 @@ MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
                 // cout << X_New[irow] << endl;
                 sum+=X_New[irow] * Input_A[i * n + irow];
             }
-            ASSERT_LE(abs(sum - Input_B[i]), 0.1);
+            if (sum - Input_B[i] > 0) {
+                s = sum - Input_B[i];
+            } else {
+                s = -(sum - Input_B[i]);
+            }
+            ASSERT_LE(s, 0.1);
         }
     }
 }
-
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     MPI_Init(&argc, &argv);
