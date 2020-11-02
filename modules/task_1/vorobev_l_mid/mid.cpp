@@ -16,15 +16,15 @@ std::vector<int> randvector(int size) {
     return vec;
 }
 
-double avgvector(std::vector<int> vec, int sizevec) {
+int avgvector(std::vector<int> vec, int sizevec) {
     int sum = 0;
     for (int i = 0; i < sizevec; i++) {
         sum += vec[i];
     }
-    return static_cast<double>(sum) / sizevec;
+    return static_cast<int>(sum) / sizevec;
 }
 
-double avgvectorpar(std::vector<int> vec, int sizevec) {
+int avgvectorpar(std::vector<int> vec, int sizevec) {
     int sum, allsum, num, rank, size;
 
     MPI_Comm_size(MPI_COMM_WORLD, &num);
@@ -63,5 +63,5 @@ double avgvectorpar(std::vector<int> vec, int sizevec) {
     }
     MPI_Reduce(&sum, &allsum, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
 
-    return static_cast<double>(allsum) / sizevec;
+    return static_cast<int>(allsum) / sizevec;
 }

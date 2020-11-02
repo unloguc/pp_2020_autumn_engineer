@@ -1,9 +1,7 @@
 // Copyright 2020 Vorobev Leonid
 #include <gtest-mpi-listener.hpp>
 #include <gtest/gtest.h>
-
 #include <vector>
-
 #include "./mid.h"
 
 TEST(Parallel_Operations_MPI, Vector) {
