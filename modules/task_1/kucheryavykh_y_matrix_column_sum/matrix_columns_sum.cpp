@@ -7,7 +7,7 @@
 
 std::vector<int> createRandomMatrix(const int rows, const int cols) {
     if (rows < 1 || cols < 1)
-        throw(1);  
+        throw(1);
     std::vector<int> Matrix(rows * cols);
     std::mt19937 gen;
     gen.seed(static_cast<unsigned int>(time(0)));
