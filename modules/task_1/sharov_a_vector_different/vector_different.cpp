@@ -1,12 +1,12 @@
 // Copyright 2020 Sharov Alexander
-#include <math.h>
-#include <iostream>
 #include <mpi.h>
 #include <vector>
 #include <string>
 #include <random>
 #include <ctime>
 #include <algorithm>
+#include <math.h>
+#include <iostream>
 #include "../../../modules/task_1/sharov_a_vector_different/vector_different.h"
 
 
@@ -18,10 +18,8 @@ std::vector<int> getRandomVector(int sz) {
     return vec;
 }
 
-void Different(int* first, int* second, int* lenght, MPI_Datatype* dtype)
-{
-    if (abs(first[0] - first[1]) > abs(second[0] - second[1]))
-    {
+void Different(int* first, int* second, int* lenght, MPI_Datatype* dtype) {
+    if (abs(first[0] - first[1]) > abs(second[0] - second[1])) {
         second[0] = first[0];
         second[1] = first[1];
     }
@@ -51,8 +49,7 @@ void getParallelOperations(std::vector<int> global_vec, int vector_size, int* di
         if (ProcRank == 0) {
             getSequentialOperations(global_vec, diff_elem);
         }
-    }
-    else {
+    } else {
         delta = vector_size / ProcNum + 1;
         if (vector_size % ProcNum > ProcNum / 2) {
             delta++;
@@ -65,8 +62,7 @@ void getParallelOperations(std::vector<int> global_vec, int vector_size, int* di
                 MPI_Send(&global_vec[start + ((delta - 1) * (proc - 1))], delta, MPI_INT, proc, 0, MPI_COMM_WORLD);
             }
             local_vec = std::vector<int>(global_vec.begin(), global_vec.begin() + start + 1);
-        }
-        else {
+        } else {
             MPI_Status status;
             MPI_Recv(&local_vec[0], delta, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
         }
