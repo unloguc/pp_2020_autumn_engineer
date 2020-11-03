@@ -5,6 +5,7 @@
 #include <ctime>
 #include <algorithm>
 #include <iostream>
+#include<vector>
 
 
 Matrix getRandomMatrix(int c, int r) {
@@ -88,7 +89,6 @@ vector<int> ParColumnSum(const Matrix & gm) {
     delete subMat;
     return res;
 }
-
 Matrix::Matrix(int c, int r, int* data) : columns(c), rows(r) { 
     if (c <= 0 || r <= 0) throw "Negative dimension";
     this->data = new int[c * r];
