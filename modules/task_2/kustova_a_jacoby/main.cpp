@@ -83,6 +83,64 @@ TEST(Jacoby_Method, Test_solve_1_system) {
     }
 }
 
+TEST(Jacoby_Method, Test_solve_2_system_not_parallel_version) {
+    int size, rank, n, GlobalRowNo;
+    n = 3;
+    double *Input_A, *Input_B, *X_New, *X_Old;
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    double eps = 0.001;
+    int index;
+    int Iteration = 0;
+    double sum = 0;
+    if (rank == 0) {
+        Input_A = new double[n * n];
+        Input_B = new double[n];
+        Input_A[0] = 10; Input_A[1] = 1; Input_A[2] = -1; Input_A[3] = 1;
+        Input_A[4] = 10; Input_A[5] = -1; Input_A[6] = -1; Input_A[7] = 1; Input_A[8] = 10;
+        Input_B[0] = 11; Input_B[1] = 10; Input_B[2] = 10;
+    X_New = new double[n];
+    X_Old = new double[n];
+
+    do {
+        for (int irow = 0; irow < n; irow++) {
+            X_Old[irow] = X_New[irow];
+        }
+        for (int irow = 0; irow < n; irow ++) {
+            GlobalRowNo = irow;
+            X_New[irow] = Input_B[irow];
+            index = irow * n;
+            for (int icol = 0; icol < n; icol++) {
+                if (icol != GlobalRowNo) {
+                   X_New[irow] -= X_Old[icol] * Input_A[index + icol];
+                }
+            }
+        X_New[irow] = X_New[irow] / Input_A[index + GlobalRowNo];
+        }
+        Iteration++;
+    }while((Iteration < MAX_ITERATIONS) && (Distance(X_Old, X_New, n) >= eps));
+
+// Output vector
+    double s;
+    if (rank == 0) {
+        for (int i = 0; i < n; i ++) {
+            sum = 0;
+            for (int irow = 0; irow < n; irow ++) {
+                // cout << X_New[irow] << endl;
+                sum+=X_New[irow] * Input_A[i * n + irow];
+            }
+            if (sum - Input_B[i] > 0) {
+                s = sum - Input_B[i];
+            } else {
+                s = -(sum - Input_B[i]);
+            }
+            ASSERT_LE(s, 0.1);
+        }
+    }
+}
+}
+
+
 TEST(Jacoby_Method, Test_solve_2_system) {
     int size, rank, n, amountRowBloc, GlobalRowNo;
     n = 3;
