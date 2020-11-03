@@ -23,9 +23,9 @@ Matrix getRandomMatrix(int c, int r) {
 vector<int> SeqColumnSum(const Matrix & matrix) {
     std::vector<int> v(matrix.columns);
 
-    for (size_t i = 0; i < matrix.columns; i++) {
+    for (int i = 0; i < matrix.columns; i++) {
         v[i] = 0;
-        for (size_t j = 0; j < matrix.rows; j++) {
+        for (int j = 0; j < matrix.rows; j++) {
             v[i] += matrix.data[i*matrix.rows + j];
         }
     }
