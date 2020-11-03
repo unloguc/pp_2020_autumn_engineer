@@ -8,7 +8,7 @@ TEST(Parallel_Operations_MPI, Test_num_altern) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     std::vector<int> general_vec;
-    const int size_vector = 10;
+    const int size_vector = 17870;
     if (rank == 0) {
         general_vec = getRandomVector(size_vector);
     }
@@ -23,7 +23,7 @@ TEST(Parallel_Operations_MPI, Test_create_vector_with_correct_size) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     std::vector<int> general_vec;
-    const int size_vector = 10;
+    const int size_vector = 186740;
     general_vec = getRandomVector(size_vector);
     if (rank == 0) {
         ASSERT_EQ((int)general_vec.size(), size_vector);
