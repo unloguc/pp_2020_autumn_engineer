@@ -64,11 +64,14 @@ std::vector<int> getParallelMaxOfClmns(std::vector<int> localMtrx, int rows, int
                 }
             }
             for (int i = 0; i < rows; i++) {
-                localMain.insert(localMain.begin() + i * delta, localMtrx.begin() + i * clmns, localMtrx.begin() + i * clmns + delta);
+                localMain.insert(localMain.begin() + i * delta,
+                    localMtrx.begin() + i * clmns, localMtrx.begin() + i * clmns + delta);
             }
             if (tail != 0) {
                 for (int i = 0; i < rows; i++) {
-                    localTail.insert(localTail.begin() + i * tail, localMtrx.begin() + delta * size + clmns * i, localMtrx.begin() + delta * size + clmns * i + tail);
+                    localTail.insert(localTail.begin() + i * tail,
+                        localMtrx.begin() + delta * size + clmns * i,
+                        localMtrx.begin() + delta * size + clmns * i + tail);
                 }
                 localTail = getSequentialMaxOfClmns(localTail, rows, tail);
                 for (int i = 0; i < tail; i++) {
