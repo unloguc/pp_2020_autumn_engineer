@@ -89,7 +89,7 @@ vector<int> ParColumnSum(const Matrix & gm) {
     delete subMat;
     return res;
 }
-Matrix::Matrix(int c, int r, int* data) : columns(c), rows(r){
+Matrix::Matrix(int c, int r, int* data) : columns(c), rows(r) {
     if (c <= 0 || r <= 0) throw "Negative dimension";
     this->data = new int[c * r];
     for (int i = 0; i < c * r; i++) {
