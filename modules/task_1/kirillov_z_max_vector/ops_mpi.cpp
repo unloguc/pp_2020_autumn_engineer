@@ -38,8 +38,7 @@ int parallelMax(std::vector<int> vec, int len_vector) {
     std::vector<int> local(delta);
     if (grade == 0) {
         local = std::vector<int>(vec.begin(), vec.begin() + delta);
-    }
-    else {
+    } else {
         MPI_Status status;
         MPI_Recv(&local[0], delta, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
     }
