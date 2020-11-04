@@ -133,7 +133,7 @@ X_New = Parallel_Jacoby(Input_A, Input_B, n);
         for (int i = 0; i < n; i ++) {
             sum = 0;
             for (int irow = 0; irow < n; irow ++) {
-                 cout << X_New[irow] << endl;
+               //  cout << X_New[irow] << endl;
                 sum+=X_New[irow] * Input_A[i * n + irow];
             }
             if (sum - Input_B[i] > 0) {

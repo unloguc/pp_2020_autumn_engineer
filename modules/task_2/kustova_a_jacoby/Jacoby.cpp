@@ -123,6 +123,9 @@ double* Parallel_Jacoby(double Input_A[], double Input_B[], int n) {
 // finish = clock();
     delete [] ARecv;
     delete [] BRecv;
+    delete [] Bloc_X;
+    delete [] Bloc_XX;
+    delete [] X_Old;
     return X_New;
 }
 
