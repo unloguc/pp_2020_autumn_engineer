@@ -7,7 +7,7 @@
 #include "./Jacoby.h"
 #define MAX_ITERATIONS 10
 // using namespace std;
-
+/*
 TEST(Jacoby_Method, Test_solve_1_system) {
     int size, rank, n;
     n = 2;
@@ -111,7 +111,7 @@ TEST(Jacoby_Method, Test_solve_2_system_not_parallel_version) {
         }
     delete [] X_New;
     }
-}
+}*/
 
 TEST(Jacoby_Method, Test_solve_3_system) {
     int size, rank, n;
@@ -133,7 +133,7 @@ X_New = Parallel_Jacoby(Input_A, Input_B, n);
         for (int i = 0; i < n; i ++) {
             sum = 0;
             for (int irow = 0; irow < n; irow ++) {
-                // cout << X_New[irow] << endl;
+                 cout << X_New[irow] << endl;
                 sum+=X_New[irow] * Input_A[i * n + irow];
             }
             if (sum - Input_B[i] > 0) {

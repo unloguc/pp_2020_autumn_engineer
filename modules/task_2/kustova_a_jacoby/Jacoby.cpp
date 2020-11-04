@@ -121,7 +121,8 @@ double* Parallel_Jacoby(double Input_A[], double Input_B[], int n) {
         Iteration++;
     } while ((Iteration < MAX_ITERATIONS) && (Distance(X_Old, X_New, n) >= 0.0001));
 // finish = clock();
-
+    delete [] ARecv;
+    delete [] BRecv;
     return X_New;
 }
 
