@@ -5,7 +5,7 @@
 #include <vector>
 #include <iostream>
 #include "./Jacoby.h"
-#define MAX_ITERATIONS 10
+#define MAX_ITERATIONS 100000
 // using namespace std;
 double my_abs(double x);
 TEST(Jacoby_Method, Test_solve_1_system) {
@@ -207,7 +207,7 @@ TEST(Jacoby_Method, Test_solve_2seq_system) {
                 // cout << X_New[irow] << endl;
                 sum += X_New[irow] * Input_A[i * n + irow];
             }
-            ASSERT_LE(abs(sum - Input_B[i]), 0.1);
+            ASSERT_LE(my_abs(sum - Input_B[i]), 0.1);
         }
         delete[] TempX;
     }
