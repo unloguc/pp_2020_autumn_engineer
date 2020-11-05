@@ -11,5 +11,7 @@ double *Iterations(int n, double *X_Old, double *X_New, double *Bloc_X,
     double *BRecv, double *ARecv, int GlobalRowNo, int amountRowBloc, int rank);
 double *Iteration_for_0_rank(int n, double *X_Old, double *Input_B, double *Bloc_XX,
     double *Input_A, int GlobalRowNo, int amountRowBloc, int size);
-
+double my_abs(double x);
+double* Parallel_Jacoby(double Input_A[], double Input_B[], int n);
+double* Sequential_Jacoby(double Input_A[], double Input_B[], int n);
 #endif  // MODULES_TASK_2_KUSTOVA_A_JACOBY_JACOBY_H_
