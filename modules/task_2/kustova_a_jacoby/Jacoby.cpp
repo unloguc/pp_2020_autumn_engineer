@@ -52,6 +52,31 @@ double *Iteration_for_0_rank(int n, double *X_Old, double *Input_B, double *Bloc
     return Bloc_XX;
 }
 
+double* Sequential_Jacoby(double Input_A[], double Input_B[], int n) {
+    double *X_New, *X_Old;
+    int index = 0, Iteration = 0, GlobalRowNo;
+    X_New = new double[n];
+    X_Old = new double[n];
+
+    do {
+        for (int irow = 0; irow < n; irow++) {
+            X_Old[irow] = X_New[irow];
+        }
+        for (int irow = 0; irow < n; irow ++) {
+            GlobalRowNo = irow;
+            X_New[irow] = Input_B[irow];
+            index = irow * n;
+            for (int icol = 0; icol < n; icol++) {
+                if (icol != GlobalRowNo) {
+                   X_New[irow] -= X_Old[icol] * Input_A[index + icol];
+                }
+            }
+        X_New[irow] = X_New[irow] / Input_A[index + GlobalRowNo];
+        }
+        Iteration++;
+    }while((Iteration < MAX_ITERATIONS) && (Distance(X_Old, X_New, n) >= 0.0001));
+    return X_New;
+}
 /*
 
 double* Parallel_Jacoby(int n, double eps)

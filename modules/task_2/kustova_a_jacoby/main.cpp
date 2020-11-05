@@ -16,8 +16,8 @@ TEST(Jacoby_Method, Test_solve_1_system) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     double eps = 0.001;
     double sum = 0;
-        Input_A = new double[n * n];
-        Input_B = new double[n];
+    Input_A = new double[n * n];
+    Input_B = new double[n];
 
     if (rank == 0) {
         Input_A[0] = 4; Input_A[1] = 2; Input_A[2] = 1; Input_A[3] = 3;
@@ -89,7 +89,7 @@ TEST(Jacoby_Method, Test_solve_1_system) {
     delete [] ARecv;
     delete [] BRecv;
 }
-/*
+
 TEST(Jacoby_Method, Test_solve_2_system) {
     int size, rank, n, amountRowBloc, GlobalRowNo;
     n = 3;
@@ -98,9 +98,9 @@ TEST(Jacoby_Method, Test_solve_2_system) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     double eps = 0.001;
     double sum = 0;
+    Input_A = new double[n * n];
+    Input_B = new double[n];
     if (rank == 0) {
-        Input_A = new double[n * n];
-        Input_B = new double[n];
         Input_A[0] = 10; Input_A[1] = 1; Input_A[2] = -1; Input_A[3] = 1;
         Input_A[4] = 10; Input_A[5] = -1; Input_A[6] = -1; Input_A[7] = 1; Input_A[8] = 10;
         Input_B[0] = 11; Input_B[1] = 10; Input_B[2] = 10;
@@ -161,7 +161,54 @@ MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
             ASSERT_LE(s, 0.1);
         }
     }
-}*/
+    delete [] Input_A;
+    delete [] Input_B;
+    delete [] Bloc_X;
+    delete [] Bloc_XX;
+    delete [] X_New;
+    delete [] X_Old;
+    delete [] ARecv;
+    delete [] BRecv;
+}
+
+TEST(Jacoby_Method, Test_solve_2_system_not_parallel_version) {
+    int rank, n;
+    n = 3;
+    double *Input_A, *Input_B, *X_New;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    double sum = 0;
+    Input_A = new double[n * n];
+    Input_B = new double[n];
+    if (rank == 0) {
+        Input_A[0] = 10; Input_A[1] = 1; Input_A[2] = -1; Input_A[3] = 1;
+        Input_A[4] = 10; Input_A[5] = -1; Input_A[6] = -1; Input_A[7] = 1; Input_A[8] = 10;
+        Input_B[0] = 11; Input_B[1] = 10; Input_B[2] = 10;
+        X_New = new double[n];
+        X_New = Sequential_Jacoby(Input_A, Input_B, n);
+// Output vector
+        double s;
+        if (rank == 0) {
+            for (int i = 0; i < n; i ++) {
+                sum = 0;
+                for (int irow = 0; irow < n; irow ++) {
+                    // cout << X_New[irow] << endl;
+                    sum+=X_New[irow] * Input_A[i * n + irow];
+                }
+                if (sum - Input_B[i] > 0) {
+                    s = sum - Input_B[i];
+                } else {
+                    s = -(sum - Input_B[i]);
+                }
+                ASSERT_LE(s, 0.1);
+            }
+        }
+    delete [] X_New;
+    delete [] Input_A;
+    delete [] Input_B;
+    }
+}
+
+
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     MPI_Init(&argc, &argv);
