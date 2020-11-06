@@ -68,8 +68,6 @@ double* Parallel_Jacoby(double Input_A[], double Input_B[], int n) {
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     X_New = new double[n];
-    MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
-    MPI_Barrier(MPI_COMM_WORLD);
     amountRowBloc = n / size;
     ARecv = new double[amountRowBloc * n];
     BRecv = new double[amountRowBloc];

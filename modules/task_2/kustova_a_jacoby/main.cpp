@@ -7,7 +7,7 @@
 #include "./Jacoby.h"
 #define MAX_ITERATIONS 100000
 // using namespace std;
-/*
+
 TEST(Jacoby_Method, Test_solve_1_system) {
     int size, rank, n;
     n = 2;
@@ -22,6 +22,8 @@ TEST(Jacoby_Method, Test_solve_1_system) {
         Input_B[0] = 1; Input_B[1] = -1;
     }
     X_New = new double[n];
+    MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Barrier(MPI_COMM_WORLD);
     X_New = Parallel_Jacoby(Input_A, Input_B, n);
 // Output vector
     if (rank == 0) {
@@ -35,7 +37,7 @@ TEST(Jacoby_Method, Test_solve_1_system) {
         }
     }
 }
-*/
+
 TEST(Jacoby_Method, Test_solve_2_system) {
     int size, rank, n;
     n = 3;
@@ -51,6 +53,8 @@ TEST(Jacoby_Method, Test_solve_2_system) {
         Input_B[0] = 11; Input_B[1] = 10; Input_B[2] = 10;
     }
     X_New = new double[n];
+    MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Barrier(MPI_COMM_WORLD);
     X_New = Parallel_Jacoby(Input_A, Input_B, n);
 // Output vector
     if (rank == 0) {
