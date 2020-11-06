@@ -160,7 +160,7 @@ TEST(Jacoby_Method, Test_solve_2_system) {
 
         if (rank == 0) {
             Bloc_XX = Iteration_for_0_rank(n, X_Old, Input_B, Bloc_XX, Input_A, GlobalRowNo,  amountRowBloc, size);
-            for (int h = 0; h < n; h++) {
+            for (int h = amountRowBloc * size; h < n; h++) {
                 if (my_abs(X_New[h] - Bloc_XX[h]) > norm) {
                     norm = my_abs(X_New[h] - Bloc_XX[h]);
                 }
