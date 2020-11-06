@@ -116,3 +116,47 @@ std::vector<double> Parallel_Jacoby(std::vector<double> A, std::vector<double> B
     }
     return res;
 }
+
+std::vector<double> Sequential_Jacoby(std::vector<double> A, std::vector<double> B, int n, double eps) {
+    double *Input_A, *Input_B, *X_New, *X_Old;
+    Input_A = new double[n * n];
+    Input_B = new double[n];
+    std::vector<double> res(n);
+    for (int i = 0; i < n * n; i++) {
+        Input_A[i] = A[i];
+        if (i < n) {
+            Input_B[i] = B[i];
+        }
+    }
+    X_New = new double[n];
+    X_Old = new double[n];
+    double norm;
+    for (int k = 0; k < n; k++) {
+        X_Old[k] = X_New[k];
+    }
+    int Iteration = 0;
+    do {
+        for (int i = 0; i < n; i++) {
+            X_Old[i] = Input_B[i];
+            for (int j = 0; j < n; j++) {
+                if (i != j) {
+                    X_Old[i] -= Input_A[i * n + j] * X_New[j];
+                }
+            }
+            X_Old[i] /= Input_A[i * n + i];
+        }
+        norm = my_abs(X_New[0] - X_Old[0]);
+        for (int h = 0; h < n; h++) {
+            if (my_abs(X_New[h] - X_Old[h]) > norm) {
+                norm = my_abs(X_New[h] - X_Old[h]);
+            }
+            X_New[h] = X_Old[h];
+        }
+        Iteration++;
+    } while ((Iteration < MAX_ITERATIONS) && (norm >= eps));
+// finish = clock();
+    for (int i = 0; i < n; i++) {
+        res[i] = X_New[i];
+    }
+    return res;
+}

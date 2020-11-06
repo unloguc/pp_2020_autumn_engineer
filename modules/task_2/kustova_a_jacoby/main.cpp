@@ -9,9 +9,9 @@
 // using namespace std;
 
 TEST(Jacoby_Method, Test_solve_1_system) {
-    int rank, n;
+    int rank, n, size;
     n = 8;
-
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     double eps = 0.001;
     double sum = 0;
@@ -43,7 +43,11 @@ Input_B[4] = 124; Input_B[5] = 127; Input_B[6] = 127; Input_B[7] = 125;
 // Input_B[0] = 20; Input_B[1] = -40; Input_B[2] = 28;
     }
     std::vector<double> X_New(n);
-    X_New = Parallel_Jacoby(Input_A, Input_B, n, eps);
+    if (size <= 8) {
+        X_New = Parallel_Jacoby(Input_A, Input_B, n, eps);
+    } else {
+        X_New = Sequential_Jacoby(Input_A, Input_B, n, eps);
+    }
     if (rank == 0) {
         for (int i = 0; i < n; i ++) {
             sum = 0;
@@ -56,9 +60,9 @@ Input_B[4] = 124; Input_B[5] = 127; Input_B[6] = 127; Input_B[7] = 125;
 }
 
 TEST(Jacoby_Method, Test_solve_2_system) {
-    int rank, n;
+    int rank, n, size;
     n = 3;
-
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     double eps = 0.001;
     double sum = 0;
@@ -70,7 +74,11 @@ TEST(Jacoby_Method, Test_solve_2_system) {
         Input_B[0] = 11; Input_B[1] = 10; Input_B[2] = 10;
     }
     std::vector<double> X_New(n);
-    X_New = Parallel_Jacoby(Input_A, Input_B, n, eps);
+    if (size <= 3) {
+        X_New = Parallel_Jacoby(Input_A, Input_B, n, eps);
+    } else {
+        X_New = Sequential_Jacoby(Input_A, Input_B, n, eps);
+    }
     if (rank == 0) {
         for (int i = 0; i < n; i ++) {
             sum = 0;
@@ -88,54 +96,29 @@ TEST(Jacoby_Method, Test_solve_2seq_system) {
     n = 3;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     if (rank == 0) {
-        double *Input_A, *Input_B, *X_New;
-        double sum = 0;
-        Input_A = new double[n * n];
-        Input_B = new double[n];
+        double eps = 0.001;
+        double sum;
+        std::vector<double> Input_A(n*n);
+        std::vector<double> Input_B(n);
         Input_A[0] = 10; Input_A[1] = 1; Input_A[2] = -1; Input_A[3] = 1;
         Input_A[4] = 10; Input_A[5] = -1; Input_A[6] = -1; Input_A[7] = 1; Input_A[8] = 10;
         Input_B[0] = 11; Input_B[1] = 10; Input_B[2] = 10;
-        X_New = new double[n];
-        double eps = 0.001, norm, * TempX = new double[n];
-        for (int k = 0; k < n; k++) {
-            TempX[k] = X_New[k];
-        }
-        int cnt = 0;
-        do {
-            for (int i = 0; i < n; i++) {
-                TempX[i] = Input_B[i];
-                for (int g = 0; g < n; g++) {
-                    if (i != g) {
-                        TempX[i] -= Input_A[i * n + g] * X_New[g];
-                    }
-                }
-                TempX[i] /= Input_A[i * n + i];
-            }
-            norm = my_abs(X_New[0] - TempX[0]);
-            for (int h = 0; h < n; h++) {
-                if (my_abs(X_New[h] - TempX[h]) > norm) {
-                    norm = my_abs(X_New[h] - TempX[h]);
-                }
-                X_New[h] = TempX[h];
-            }
-            cnt++;
-        } while (norm > eps);
+        std::vector<double> X_New(n);
+        X_New = Sequential_Jacoby(Input_A, Input_B, n, eps);
         for (int i = 0; i < n; i ++) {
             sum = 0;
             for (int irow = 0; irow < n; irow ++) {
-                // cout << X_New[irow] << endl;
                 sum += X_New[irow] * Input_A[i * n + irow];
             }
             ASSERT_LE(my_abs(sum - Input_B[i]), 0.1);
         }
-        delete[] TempX;
     }
 }
 
 TEST(Jacoby_Method, Test_solve_3_system) {
-    int rank, n;
+    int rank, n, size;
     n = 2;
-
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     double eps = 0.001;
     double sum = 0;
@@ -146,7 +129,42 @@ TEST(Jacoby_Method, Test_solve_3_system) {
         Input_B[0] = 1; Input_B[1] = -1;
     }
     std::vector<double> X_New(n);
-    X_New = Parallel_Jacoby(Input_A, Input_B, n, eps);
+    if (size <= 2) {
+        X_New = Parallel_Jacoby(Input_A, Input_B, n, eps);
+    } else {
+        X_New = Sequential_Jacoby(Input_A, Input_B, n, eps);
+    }
+    if (rank == 0) {
+        for (int i = 0; i < n; i ++) {
+            sum = 0;
+            for (int irow = 0; irow < n; irow ++) {
+                sum+=X_New[irow] * Input_A[i * n + irow];
+            }
+            ASSERT_LE(my_abs(sum - Input_B[i]), 0.1);
+        }
+    }
+}
+
+TEST(Jacoby_Method, Test_solve_4_system) {
+    int rank, n, size;
+    n = 3;
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    double eps = 0.001;
+    double sum = 0;
+    std::vector<double>Input_A(n*n);
+    std::vector<double>Input_B(n);
+    if (rank == 0) {
+    Input_A[0] = 115; Input_A[1] = -20; Input_A[2] = -75; Input_A[3] = 15;
+    Input_A[4] = -50; Input_A[5] = -5; Input_A[6] = 6; Input_A[7] = 2; Input_A[8] = 20;
+    Input_B[0] = 20; Input_B[1] = -40; Input_B[2] = 28;
+    }
+    std::vector<double> X_New(n);
+    if (size <= 3) {
+        X_New = Parallel_Jacoby(Input_A, Input_B, n, eps);
+    } else {
+        X_New = Sequential_Jacoby(Input_A, Input_B, n, eps);
+    }
     if (rank == 0) {
         for (int i = 0; i < n; i ++) {
             sum = 0;
