@@ -7,7 +7,7 @@
 #include "./Jacoby.h"
 #define MAX_ITERATIONS 100000
 // using namespace std;
-
+double my_abs(double x);
 TEST(Jacoby_Method, Test_solve_1_system) {
     int size, rank, n, amountRowBloc, GlobalRowNo;
     n = 2;
@@ -21,6 +21,9 @@ TEST(Jacoby_Method, Test_solve_1_system) {
         Input_B = new double[n];
         Input_A[0] = 4; Input_A[1] = 2; Input_A[2] = 1; Input_A[3] = 3;
         Input_B[0] = 1; Input_B[1] = -1;
+// Input_A[0] = 115; Input_A[1] = -20; Input_A[2] = -75; Input_A[3] = 15;
+// Input_A[4] = -50; Input_A[5] = -5; Input_A[6] = 6; Input_A[7] = 2; Input_A[8] = 20;
+// Input_B[0] = 20; Input_B[1] = -40; Input_B[2] = 28;
     }
     MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Barrier(MPI_COMM_WORLD);
@@ -62,6 +65,7 @@ TEST(Jacoby_Method, Test_solve_1_system) {
     }while((Iteration < MAX_ITERATIONS) && (Distance(X_Old, X_New, n) >= eps));
 
 // Output vector
+    double s;
     if (rank == 0) {
         for (int i = 0; i < n; i ++) {
             sum = 0;
@@ -69,7 +73,12 @@ TEST(Jacoby_Method, Test_solve_1_system) {
                 // cout << X_New[irow] << endl;
                 sum+=X_New[irow] * Input_A[i * n + irow];
             }
-            ASSERT_LE(my_abs(sum - Input_B[i]), 0.1);
+            if (sum - Input_B[i] > 0) {
+                s = sum - Input_B[i];
+            } else {
+                s = -(sum - Input_B[i]);
+            }
+            ASSERT_LE(s, 0.1);
         }
     }
 }
@@ -129,6 +138,7 @@ TEST(Jacoby_Method, Test_solve_2_system) {
     }while((Iteration < MAX_ITERATIONS) && (Distance(X_Old, X_New, n) >= eps));
 
 // Output vector
+    double s;
     if (rank == 0) {
         for (int i = 0; i < n; i ++) {
             sum = 0;
@@ -136,11 +146,23 @@ TEST(Jacoby_Method, Test_solve_2_system) {
                 // cout << X_New[irow] << endl;
                 sum+=X_New[irow] * Input_A[i * n + irow];
             }
-            ASSERT_LE(my_abs(sum - Input_B[i]), 0.1);
+            if (sum - Input_B[i] > 0) {
+                s = sum - Input_B[i];
+            } else {
+                s = -(sum - Input_B[i]);
+            }
+            ASSERT_LE(s, 0.1);
         }
     }
 }
 
+double my_abs(double x) {
+    if (x > 0) {
+        return x;
+    } else {
+        return -x;
+    }
+}
 
 TEST(Jacoby_Method, Test_solve_2seq_system) {
     int rank, n;

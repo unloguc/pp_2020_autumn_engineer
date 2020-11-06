@@ -6,7 +6,7 @@
 #include <string>
 
 double Distance(double *X_Old, double *X_New, int n);
-double my_abs(double x);
+
 double *Iterations(int n, double *X_Old, double *X_New, double *Bloc_X,
     double *BRecv, double *ARecv, int GlobalRowNo, int amountRowBloc, int rank);
 double *Iteration_for_0_rank(int n, double *X_Old, double *Input_B, double *Bloc_XX,
