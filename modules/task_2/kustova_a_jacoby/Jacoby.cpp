@@ -4,15 +4,21 @@
 #include <math.h>
 #define MAX_ITERATIONS 100
 double Distance(double *X_Old, double *X_New, int n) {
-    int index;
-    double Sum;
-    Sum = 0.0;
-    for (index = 0; index < n; index++) {
-        Sum += (X_New[index] - X_Old[index]) * (X_New[index] - X_Old[index]);
+    int i;
+    double max = 0;
+    for (i = 0; i < n; i++) {
+        if (my_abs(X_Old[i] - X_New[i]) > max)
+        max = my_abs(X_Old[i] - X_New[i]);
     }
-    return(Sum);
+    return(max);
 }
-
+double my_abs(double x) {
+    if (x > 0) {
+        return x;
+    } else {
+        return -x;
+    }
+}
 double *Iterations(int n, double *X_Old, double *X_New, double *Bloc_X, double *BRecv,
         double *ARecv, int GlobalRowNo, int amountRowBloc, int rank) {
     int index;
