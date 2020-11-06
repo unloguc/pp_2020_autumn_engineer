@@ -44,7 +44,7 @@ int parallelVec(const std::vector<int>& a, int n) {
     if (r == 0) {
         t.resize(res+rem);
         t = { a.begin(), a.begin() + res + rem };
-    }else{
+    } else {
         t.resize(res+1);
         MPI_Status status;
         MPI_Recv(&t[0], res + 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
