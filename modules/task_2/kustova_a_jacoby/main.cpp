@@ -7,7 +7,7 @@
 #include "./Jacoby.h"
 #define MAX_ITERATIONS 100000
 // using namespace std;
-
+/*
 TEST(Jacoby_Method, Test_solve_1_system) {
     int size, rank, n;
     n = 2;
@@ -35,7 +35,7 @@ TEST(Jacoby_Method, Test_solve_1_system) {
         }
     }
 }
-
+*/
 TEST(Jacoby_Method, Test_solve_2_system) {
     int size, rank, n;
     n = 3;
