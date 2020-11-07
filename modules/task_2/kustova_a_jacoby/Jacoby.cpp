@@ -109,7 +109,7 @@ std::vector<double> Parallel_Jacoby(std::vector<double> A, std::vector<double> B
             MPI_Allgather(&Bloc_XX[irow], 1, MPI_DOUBLE, &X_New[irow], 1, MPI_DOUBLE, MPI_COMM_WORLD);
         }
         Iteration++;
-    }while((Iteration < MAX_ITERATIONS) && (Distance(X_Old, X_New, n) >= eps));
+    } while ((Iteration < MAX_ITERATIONS) && (Distance(X_Old, X_New, n) >= eps));
 // finish = clock();
     for (int i = 0; i < n; i++) {
         res[i] = X_New[i];
@@ -122,38 +122,31 @@ std::vector<double> Sequential_Jacoby(std::vector<double> A, std::vector<double>
     Input_A = new double[n * n];
     Input_B = new double[n];
     std::vector<double> res(n);
+    X_New = new double[n];
+    X_Old = new double[n];
     for (int i = 0; i < n * n; i++) {
         Input_A[i] = A[i];
         if (i < n) {
             Input_B[i] = B[i];
+            X_New[i] = B[i];
         }
-    }
-    X_New = new double[n];
-    X_Old = new double[n];
-    double norm;
-    for (int k = 0; k < n; k++) {
-        X_Old[k] = X_New[k];
     }
     int Iteration = 0;
     do {
+        for (int k = 0; k < n; k++) {
+            X_Old[k] = X_New[k];
+        }
         for (int i = 0; i < n; i++) {
-            X_Old[i] = Input_B[i];
+            X_New[i] = Input_B[i];
             for (int j = 0; j < n; j++) {
                 if (i != j) {
-                    X_Old[i] -= Input_A[i * n + j] * X_New[j];
+                    X_New[i] -= Input_A[i * n + j] * X_Old[j];
                 }
             }
-            X_Old[i] /= Input_A[i * n + i];
-        }
-        norm = my_abs(X_New[0] - X_Old[0]);
-        for (int h = 0; h < n; h++) {
-            if (my_abs(X_New[h] - X_Old[h]) > norm) {
-                norm = my_abs(X_New[h] - X_Old[h]);
-            }
-            X_New[h] = X_Old[h];
+            X_New[i] /= Input_A[i * n + i];
         }
         Iteration++;
-    } while ((Iteration < MAX_ITERATIONS) && (norm >= eps));
+    } while ((Iteration < MAX_ITERATIONS) && (Distance(X_Old, X_New, n) >= eps));
 // finish = clock();
     for (int i = 0; i < n; i++) {
         res[i] = X_New[i];

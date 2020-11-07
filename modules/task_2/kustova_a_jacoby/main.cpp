@@ -91,29 +91,29 @@ TEST(Jacoby_Method, Test_solve_2_system) {
 }
 
 
-// TEST(Jacoby_Method, Test_solve_2seq_system) {
-//     int rank, n;
-//     n = 3;
-//     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-//     if (rank == 0) {
-//         double eps = 0.001;
-//         double sum;
-//         std::vector<double> Input_A(n*n);
-//         std::vector<double> Input_B(n);
-//         Input_A[0] = 10; Input_A[1] = 1; Input_A[2] = -1; Input_A[3] = 1;
-//         Input_A[4] = 10; Input_A[5] = -1; Input_A[6] = -1; Input_A[7] = 1; Input_A[8] = 10;
-//         Input_B[0] = 11; Input_B[1] = 10; Input_B[2] = 10;
-//         std::vector<double> X_New(n);
-//         X_New = Sequential_Jacoby(Input_A, Input_B, n, eps);
-//         for (int i = 0; i < n; i ++) {
-//             sum = 0;
-//             for (int irow = 0; irow < n; irow ++) {
-//                 sum += X_New[irow] * Input_A[i * n + irow];
-//             }
-//             ASSERT_LE(my_abs(sum - Input_B[i]), 0.1);
-//         }
-//     }
-// }
+TEST(Jacoby_Method, Test_solve_2seq_system) {
+    int rank, n;
+    n = 3;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    if (rank == 0) {
+        double eps = 0.001;
+        double sum;
+        std::vector<double> Input_A(n*n);
+        std::vector<double> Input_B(n);
+        Input_A[0] = 10; Input_A[1] = 1; Input_A[2] = -1; Input_A[3] = 1;
+        Input_A[4] = 10; Input_A[5] = -1; Input_A[6] = -1; Input_A[7] = 1; Input_A[8] = 10;
+        Input_B[0] = 11; Input_B[1] = 10; Input_B[2] = 10;
+        std::vector<double> X_New(n);
+        X_New = Sequential_Jacoby(Input_A, Input_B, n, eps);
+        for (int i = 0; i < n; i ++) {
+            sum = 0;
+            for (int irow = 0; irow < n; irow ++) {
+                sum += X_New[irow] * Input_A[i * n + irow];
+            }
+            ASSERT_LE(my_abs(sum - Input_B[i]), 0.1);
+        }
+    }
+}
 
 TEST(Jacoby_Method, Test_solve_3_system) {
     int rank, n, size;
