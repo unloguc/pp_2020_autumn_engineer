@@ -7,7 +7,8 @@
 
 std::vector<int> fillMatrixRandom(int rows, int columns) {
     std::mt19937 gen;
-    gen.seed(static_cast<unsigned int>(time(0)));
+    std::random_device seed;
+    gen.seed(static_cast<unsigned int>(seed()));
     std::vector<int> matrix(rows * columns);
     for (int i = 0; i < rows * columns; i++) {
         matrix[i] = gen() % 100;
