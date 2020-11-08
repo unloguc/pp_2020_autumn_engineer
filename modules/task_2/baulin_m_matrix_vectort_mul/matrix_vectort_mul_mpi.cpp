@@ -9,11 +9,11 @@
 std::vector<int> getMatrixWithRandomNumbers(int rows, int cols) {
     std::mt19937 gen;
     gen.seed(static_cast<unsigned int>(time(0)));
-    std::uniform_int_distribution<> dist(0, 1000);
+    std::uniform_int_distribution<> dist(0, 100);
     std::vector<int> mat(rows * cols);
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
-            mat[i * cols + j] = dist(gen) % 10000;
+            mat[i * cols + j] = dist(gen);
         }
     }
 
