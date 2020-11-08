@@ -2,6 +2,8 @@
 #include "../../../modules/task_2/kustova_a_jacoby/Jacoby.h"
 #include <mpi.h>
 #include <vector>
+#include <random>
+#include <ctime>
 #define MAX_ITERATIONS 100
 double Distance(double *X_Old, double *X_New, int n) {
     int i;
@@ -56,6 +58,38 @@ double *Iteration_for_0_rank(int n, double *X_Old, double *Input_B, double *Bloc
         Bloc_XX[irow] = Bloc_XX[irow] / Input_A[index + GlobalRowNo];
     }
     return Bloc_XX;
+}
+
+std::vector<double> Gen_Matrix(int n) {
+    std::mt19937 gen;
+    gen.seed(static_cast<unsigned int>(time(0)));
+    std::vector<double> matrix(n*n + n);
+    double modul_sum;
+    for (int i = 0; i < n; i++) {
+        while (1) {
+            modul_sum = 0;
+            for (int j = 0; j < n; j++) {
+                matrix[i * n + j] = gen() % 100;
+            }
+            if (matrix[i * n + i] == 0) {
+                do {
+                    matrix[i * n + i] = gen() % 100;
+                } while (matrix[i * n + i] == 0);
+            }
+            for (int j = 0; j < n; j++) {
+                if (j != i) {
+                    modul_sum += my_abs(matrix[i * n + j] / matrix[i * n + i]);
+                }
+            }
+            if (modul_sum < 1) {
+                break;
+            }
+        }
+    }
+    for (int i = n * n; i < n * n + n; i++) {
+        matrix[i] = gen() % 100;
+    }
+    return matrix;
 }
 
 std::vector<double> Parallel_Jacoby(std::vector<double> A, std::vector<double> B, int n, double eps) {
