@@ -196,6 +196,7 @@ TEST(Jacoby_Method, Test_gen_matrix) {
         matrix = Gen_Matrix(n);
         for (int i = 0; i < n * n; i++) {
             Input_A[i] = matrix[i];
+            std::cout << Input_A[i] << "  ";
         }
         for (int i = 0; i < n; i++) {
             Input_B[i] = matrix[n * n + i];
