@@ -198,13 +198,16 @@ TEST(Jacoby_Method, Test_gen_matrix) {
             Input_A[i] = matrix[i];
             std::cout << Input_A[i] << "  ";
         }
+        std::cout << std::endl;
         for (int i = 0; i < n; i++) {
             Input_B[i] = matrix[n * n + i];
+            std::cout << Input_B[i] << "  ";
         }
     }
     std::vector<double> X_New(n);
     if (size <= 3) {
         X_New = Parallel_Jacoby(Input_A, Input_B, n, eps);
+        std::cout << 1;
     } else {
         X_New = Sequential_Jacoby(Input_A, Input_B, n, eps);
     }
