@@ -59,41 +59,40 @@
 //     }
 // }
 
-// TEST(Jacoby_Method, Test_solve_2_system) {
-//     int rank, n, size;
-//     n = 3;
-//     MPI_Comm_size(MPI_COMM_WORLD, &size);
-//     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-//     double eps = 0.001;
-//     double sum = 0;
-//     double start_time = 0, end_time = 0;
-//     std::vector<double>Input_A(n*n);
-//     std::vector<double>Input_B(n);
-//     if (rank == 0) {
-//       //  Input_A = {10, 1, -1, 1, 10, -1, -1, 1, 10};
-//        // Input_B = {11, 10, 10};
-//         Input_A = {286, 18, 29, 35, 90, 7, 38, 2, 72};
-//         Input_B = {64, 22, 89};
-//     }
-//     std::vector<double> X_New(n);
-//     if (size <= 3) {
-//         start_time = MPI_Wtime();
-//         X_New = Parallel_Jacoby(Input_A, Input_B, n, eps);
-//         end_time = MPI_Wtime();
-//     } else {
-//         X_New = Sequential_Jacoby(Input_A, Input_B, n, eps);
-//     }
-//     if (rank == 0) {
-//         std::cout << "Parallel time = " << end_time - start_time << std::endl;
-//         for (int i = 0; i < n; i ++) {
-//             sum = 0;
-//             for (int irow = 0; irow < n; irow ++) {
-//                 sum+=X_New[irow] * Input_A[i * n + irow];
-//             }
-//             ASSERT_LE(my_abs(sum - Input_B[i]), 0.1);
-//         }
-//     }
-// }
+TEST(Jacoby_Method, Test_solve_2_system) {
+    int rank, n, size;
+    n = 3;
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    double eps = 0.001;
+    double sum = 0;
+    double start_time = 0, end_time = 0;
+    std::vector<double>Input_A(n*n);
+    std::vector<double>Input_B(n);
+    if (rank == 0) {
+        Input_A = {10, 1, -1, 1, 10, -1, -1, 1, 10};
+        Input_B = {11, 10, 10};
+        Input_A = {286, 18, 29, 35, 90, 7, 38, 2, 72};
+    }
+    std::vector<double> X_New(n);
+    if (size <= 3) {
+        start_time = MPI_Wtime();
+        X_New = Parallel_Jacoby(Input_A, Input_B, n, eps);
+        end_time = MPI_Wtime();
+    } else {
+        X_New = Sequential_Jacoby(Input_A, Input_B, n, eps);
+    }
+    if (rank == 0) {
+        std::cout << "Parallel time = " << end_time - start_time << std::endl;
+        for (int i = 0; i < n; i ++) {
+            sum = 0;
+            for (int irow = 0; irow < n; irow ++) {
+                sum+=X_New[irow] * Input_A[i * n + irow];
+            }
+            ASSERT_LE(my_abs(sum - Input_B[i]), 0.1);
+        }
+    }
+}
 
 
 TEST(Jacoby_Method, Test_solve_2seq_system) {
