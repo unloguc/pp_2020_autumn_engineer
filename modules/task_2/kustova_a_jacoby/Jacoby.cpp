@@ -104,6 +104,7 @@ std::vector<double> Parallel_Jacoby(std::vector<double> A, std::vector<double> B
     Bloc_X = new double[n];
     X_New = new double[n];
     X_Old = new double[n];
+            std::cout << 2;
     for (int i = 0; i < n * n; i++) {
         Input_A[i] = A[i];
         if (i < n) {
@@ -113,27 +114,29 @@ std::vector<double> Parallel_Jacoby(std::vector<double> A, std::vector<double> B
     }
     ARecv = new double[amountRowBloc * n];
     BRecv = new double[amountRowBloc];
-
+        std::cout << 3;
     MPI_Scatter(Input_A, amountRowBloc * n, MPI_DOUBLE, ARecv, amountRowBloc * n, MPI_DOUBLE, 0,     MPI_COMM_WORLD);
     MPI_Scatter(Input_B, amountRowBloc, MPI_DOUBLE, BRecv, amountRowBloc, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-
+        std::cout << 4;
     for (int irow=0; irow < amountRowBloc; irow ++) {
         Bloc_X[irow] = BRecv[irow];
     }
 
     Bloc_XX = new double[n];
     do {
+                std::cout << 5;
         Bloc_X = Iterations(n, X_Old, X_New, Bloc_X, BRecv, ARecv, GlobalRowNo, amountRowBloc, rank);
         MPI_Allgather(Bloc_X, amountRowBloc, MPI_DOUBLE, X_New, amountRowBloc, MPI_DOUBLE, MPI_COMM_WORLD);
-
+        std::cout << 6;
         if (rank == 0) {
             Bloc_XX = Iteration_for_0_rank(n, X_Old, Input_B, Bloc_XX, Input_A, GlobalRowNo,  amountRowBloc, size);
         }
-
+        std::cout << 7;
         for (int irow = amountRowBloc * size; irow < n; irow ++) {
             MPI_Allgather(&Bloc_XX[irow], 1, MPI_DOUBLE, &X_New[irow], 1, MPI_DOUBLE, MPI_COMM_WORLD);
         }
         Iteration++;
+                std::cout << 8;
     } while ((Iteration < MAX_ITERATIONS) && (Distance(X_Old, X_New, n) >= eps));
 // finish = clock();
     for (int i = 0; i < n; i++) {
