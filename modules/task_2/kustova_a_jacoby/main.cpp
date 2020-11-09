@@ -96,32 +96,32 @@
 // }
 
 
-// TEST(Jacoby_Method, Test_solve_2seq_system) {
-//     int rank, n;
-//     n = 3;
-//     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-//     if (rank == 0) {
-//         double eps = 0.001;
-//         double sum;
-//         double start_time = 0, end_time = 0;
-//         std::vector<double> Input_A(n*n);
-//         std::vector<double> Input_B(n);
-//         Input_A = {10, 1, -1, 1, 10, -1, -1, 1, 10};
-//         Input_B = {11, 10, 10};
-//         std::vector<double> X_New(n);
-//         start_time = MPI_Wtime();
-//         X_New = Sequential_Jacoby(Input_A, Input_B, n, eps);
-//         end_time = MPI_Wtime();
-//         std::cout << "Sequential time = " << end_time - start_time << std::endl;
-//         for (int i = 0; i < n; i ++) {
-//             sum = 0;
-//             for (int irow = 0; irow < n; irow ++) {
-//                 sum += X_New[irow] * Input_A[i * n + irow];
-//             }
-//             ASSERT_LE(my_abs(sum - Input_B[i]), 0.1);
-//         }
-//     }
-// }
+TEST(Jacoby_Method, Test_solve_2seq_system) {
+    int rank, n;
+    n = 3;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    if (rank == 0) {
+        double eps = 0.001;
+        double sum;
+        double start_time = 0, end_time = 0;
+        std::vector<double> Input_A(n*n);
+        std::vector<double> Input_B(n);
+        Input_A = {10, 1, -1, 1, 10, -1, -1, 1, 10};
+        Input_B = {11, 10, 10};
+        std::vector<double> X_New(n);
+        start_time = MPI_Wtime();
+        X_New = Sequential_Jacoby(Input_A, Input_B, n, eps);
+        end_time = MPI_Wtime();
+        std::cout << "Sequential time = " << end_time - start_time << std::endl;
+        for (int i = 0; i < n; i ++) {
+            sum = 0;
+            for (int irow = 0; irow < n; irow ++) {
+                sum += X_New[irow] * Input_A[i * n + irow];
+            }
+            ASSERT_LE(my_abs(sum - Input_B[i]), 0.1);
+        }
+    }
+}
 
 // TEST(Jacoby_Method, Test_solve_3_system) {
 //     int rank, n, size;
