@@ -152,36 +152,36 @@ TEST(Jacoby_Method, Test_solve_3_system) {
     }
 }
 
-// TEST(Jacoby_Method, Test_solve_4_system) {
-//     int rank, n, size;
-//     n = 3;
-//     MPI_Comm_size(MPI_COMM_WORLD, &size);
-//     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-//     double eps = 0.001;
-//     double sum = 0;
-//     std::vector<double>Input_A(n*n);
-//     std::vector<double>Input_B(n);
-//     if (rank == 0) {
-//     Input_A[0] = 115; Input_A[1] = -20; Input_A[2] = -75; Input_A[3] = 15;
-//     Input_A[4] = -50; Input_A[5] = -5; Input_A[6] = 6; Input_A[7] = 2; Input_A[8] = 20;
-//     Input_B[0] = 20; Input_B[1] = -40; Input_B[2] = 28;
-//     }
-//     std::vector<double> X_New(n);
-//     if (size <= 3) {
-//         X_New = Parallel_Jacoby(Input_A, Input_B, n, eps);
-//     } else {
-//         X_New = Sequential_Jacoby(Input_A, Input_B, n, eps);
-//     }
-//     if (rank == 0) {
-//         for (int i = 0; i < n; i ++) {
-//             sum = 0;
-//             for (int irow = 0; irow < n; irow ++) {
-//                 sum+=X_New[irow] * Input_A[i * n + irow];
-//             }
-//             ASSERT_LE(my_abs(sum - Input_B[i]), 0.1);
-//         }
-//     }
-// }
+TEST(Jacoby_Method, Test_solve_4_system) {
+    int rank, n, size;
+    n = 3;
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    double eps = 0.001;
+    double sum = 0;
+    std::vector<double>Input_A(n*n);
+    std::vector<double>Input_B(n);
+    if (rank == 0) {
+    Input_A[0] = 115; Input_A[1] = -20; Input_A[2] = -75; Input_A[3] = 15;
+    Input_A[4] = -50; Input_A[5] = -5; Input_A[6] = 6; Input_A[7] = 2; Input_A[8] = 20;
+    Input_B[0] = 20; Input_B[1] = -40; Input_B[2] = 28;
+    }
+    std::vector<double> X_New(n);
+    if (size <= 3) {
+        X_New = Parallel_Jacoby(Input_A, Input_B, n, eps);
+    } else {
+        X_New = Sequential_Jacoby(Input_A, Input_B, n, eps);
+    }
+    if (rank == 0) {
+        for (int i = 0; i < n; i ++) {
+            sum = 0;
+            for (int irow = 0; irow < n; irow ++) {
+                sum+=X_New[irow] * Input_A[i * n + irow];
+            }
+            ASSERT_LE(my_abs(sum - Input_B[i]), 0.1);
+        }
+    }
+}
 
 TEST(Jacoby_Method, Test_gen_matrix) {
     int rank, n, size;
