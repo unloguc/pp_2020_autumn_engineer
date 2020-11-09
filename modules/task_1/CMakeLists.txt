@@ -1,4 +1,4 @@
-message(STATUS "Task ")
+message(STATUS "Task 1")
 
 SUBDIRLIST(subdirs ${CMAKE_CURRENT_SOURCE_DIR})
 
