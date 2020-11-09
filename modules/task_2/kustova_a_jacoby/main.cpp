@@ -122,35 +122,35 @@ TEST(Jacoby_Method, Test_solve_2seq_system) {
     }
 }
 
-// TEST(Jacoby_Method, Test_solve_3_system) {
-//     int rank, n, size;
-//     n = 2;
-//     MPI_Comm_size(MPI_COMM_WORLD, &size);
-//     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-//     double eps = 0.001;
-//     double sum = 0;
-//     std::vector<double>Input_A(n*n);
-//     std::vector<double>Input_B(n);
-//     if (rank == 0) {
-//         Input_A[0] = 4; Input_A[1] = 2; Input_A[2] = 1; Input_A[3] = 3;
-//         Input_B[0] = 1; Input_B[1] = -1;
-//     }
-//     std::vector<double> X_New(n);
-//     if (size <= 2) {
-//         X_New = Parallel_Jacoby(Input_A, Input_B, n, eps);
-//     } else {
-//         X_New = Sequential_Jacoby(Input_A, Input_B, n, eps);
-//     }
-//     if (rank == 0) {
-//         for (int i = 0; i < n; i ++) {
-//             sum = 0;
-//             for (int irow = 0; irow < n; irow ++) {
-//                 sum+=X_New[irow] * Input_A[i * n + irow];
-//             }
-//             ASSERT_LE(my_abs(sum - Input_B[i]), 0.1);
-//         }
-//     }
-// }
+TEST(Jacoby_Method, Test_solve_3_system) {
+    int rank, n, size;
+    n = 2;
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    double eps = 0.001;
+    double sum = 0;
+    std::vector<double>Input_A(n*n);
+    std::vector<double>Input_B(n);
+    if (rank == 0) {
+        Input_A[0] = 4; Input_A[1] = 2; Input_A[2] = 1; Input_A[3] = 3;
+        Input_B[0] = 1; Input_B[1] = -1;
+    }
+    std::vector<double> X_New(n);
+    if (size <= 2) {
+        X_New = Parallel_Jacoby(Input_A, Input_B, n, eps);
+    } else {
+        X_New = Sequential_Jacoby(Input_A, Input_B, n, eps);
+    }
+    if (rank == 0) {
+        for (int i = 0; i < n; i ++) {
+            sum = 0;
+            for (int irow = 0; irow < n; irow ++) {
+                sum+=X_New[irow] * Input_A[i * n + irow];
+            }
+            ASSERT_LE(my_abs(sum - Input_B[i]), 0.1);
+        }
+    }
+}
 
 // TEST(Jacoby_Method, Test_solve_4_system) {
 //     int rank, n, size;
