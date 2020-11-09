@@ -3,6 +3,7 @@
 #include <mpi.h>
 #include <vector>
 #include <random>
+#include <iostream>
 #include <ctime>
 #define MAX_ITERATIONS 100
 double Distance(double *X_Old, double *X_New, int n) {
