@@ -1,0 +1,10 @@
+// Copyright 2020 Kryukov Sergey
+#ifndef MODULES_TASK_2_KRYUKOV_S_TOPOLOGY_STAR_TOPOLOGY_STAR_H_
+#define MODULES_TASK_2_KRYUKOV_S_TOPOLOGY_STAR_TOPOLOGY_STAR_H_
+
+#include <vector>
+#include <string>
+
+
+
+#endif  // MODULES_TASK_2_KRYUKOV_S_TOPOLOGY_STAR_TOPOLOGY_STAR_H_
