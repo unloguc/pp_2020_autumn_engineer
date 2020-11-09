@@ -61,37 +61,6 @@ double *Iteration_for_0_rank(int n, double *X_Old, double *Input_B, double *Bloc
     return Bloc_XX;
 }
 
-// std::vector<double> Gen_Matrix(int n) {
-//     std::mt19937 gen;
-//     gen.seed(static_cast<unsigned int>(time(0)));
-//     std::vector<double> matrix(n*n + n);
-//     double modul_sum;
-//     for (int i = 0; i < n; i++) {
-//         while (1) {
-//             modul_sum = 0;
-//             for (int j = 0; j < n; j++) {
-//                 matrix[i * n + j] = gen() % 100;
-//             }
-//             if (matrix[i * n + i] == 0) {
-//                 do {
-//                     matrix[i * n + i] = gen() % 100;
-//                 } while (matrix[i * n + i] == 0);
-//             }
-//             for (int j = 0; j < n; j++) {
-//                 if (j != i) {
-//                     modul_sum += my_abs(matrix[i * n + j] / matrix[i * n + i]);
-//                 }
-//             }
-//             if (modul_sum < 1) {
-//                 break;
-//             }
-//         }
-//     }
-//     for (int i = n * n; i < n * n + n; i++) {
-//         matrix[i] = gen() % 100;
-//     }
-//     return matrix;
-// }
 
 bool Check_Correct_Matrix(std::vector<double> matrix, int n) {
     double modul_sum;
@@ -152,7 +121,6 @@ std::vector<double> Parallel_Jacoby(std::vector<double> A, std::vector<double> B
         }
         Iteration++;
     } while ((Iteration < MAX_ITERATIONS) && (Distance(X_Old, X_New, n) >= eps));
-// finish = clock();
     for (int i = 0; i < n; i++) {
         res[i] = X_New[i];
     }
@@ -189,7 +157,6 @@ std::vector<double> Sequential_Jacoby(std::vector<double> A, std::vector<double>
         }
         Iteration++;
     } while ((Iteration < MAX_ITERATIONS) && (Distance(X_Old, X_New, n) >= eps));
-// finish = clock();
     for (int i = 0; i < n; i++) {
         res[i] = X_New[i];
     }
