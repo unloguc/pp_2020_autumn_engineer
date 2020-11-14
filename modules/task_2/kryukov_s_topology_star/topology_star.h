@@ -2,9 +2,9 @@
 #ifndef MODULES_TASK_2_KRYUKOV_S_TOPOLOGY_STAR_TOPOLOGY_STAR_H_
 #define MODULES_TASK_2_KRYUKOV_S_TOPOLOGY_STAR_TOPOLOGY_STAR_H_
 
+#include <mpi.h>
 #include <vector>
 #include <string>
-#include <mpi.h>
 
 void initialVectorNodes(std::vector<int>&const inputV);
 MPI_Comm createTopologyStar(std::vector<int> MasNodes);
