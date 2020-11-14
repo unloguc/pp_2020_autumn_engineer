@@ -1,10 +1,10 @@
 // Copyright 2020 Kryukov Sergey
-#include "../../../modules/task_2/kryukov_s_topology_star/topology_star.h"
 #include <mpi.h>
 #include <random>
 #include <ctime>
 #include <vector>
 #include <algorithm>
+#include "../../../modules/task_2/kryukov_s_topology_star/topology_star.h"
 
 void initialVectorNodes(std::vector<int>&const inputV) {
     for (int j = 0; j < inputV.size(); ++j)
