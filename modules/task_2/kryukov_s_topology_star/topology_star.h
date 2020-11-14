@@ -6,9 +6,10 @@
 #include <vector>
 #include <string>
 
-void initialVectorNodes(std::vector<int>&const inputV);
+std::vector<int> initialVectorNodes(std::vector<int> inputV);
 MPI_Comm createTopologyStar(std::vector<int> MasNodes);
-void createMasEdges(std::vector<int> inputV, std::vector<int>&const edges, std::vector<int>&const index);
+std::vector<int> createMasEdges(std::vector<int> inputV);
+std::vector<int> createMasIndex(std::vector<int> inputV);
 int starSend(void *buf, int count, MPI_Datatype datatype, int dest, int send_tag, MPI_Comm comm);
 int starRecv(void *buf, int count, MPI_Datatype datatype, int source, int tag, MPI_Comm comm, MPI_Status *status);
 

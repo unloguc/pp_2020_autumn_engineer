@@ -84,9 +84,9 @@ TEST(topology_star, random_message_exchange) {
     int source, dest;
     std::mt19937 generator;
     generator.seed(static_cast<unsigned int>(time(0)));
-    source = generator() % size;
+    source = generator() % (size-1);
     do {
-        dest = generator() % size;
+        dest = generator() % (size-1);
     } while (source == dest);
     MPI_Comm star = createTopologyStar(nodes);
     MPI_Comm_rank(star, &rank);
