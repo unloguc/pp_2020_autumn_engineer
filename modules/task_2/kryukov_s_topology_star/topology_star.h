@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <string>
+#include <mpi.h>
 
 void initialVectorNodes(std::vector<int>&const inputV);
 MPI_Comm createTopologyStar(std::vector<int> MasNodes);

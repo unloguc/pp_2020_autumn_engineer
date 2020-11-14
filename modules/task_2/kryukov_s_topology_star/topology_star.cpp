@@ -5,7 +5,6 @@
 #include <ctime>
 #include <vector>
 #include <algorithm>
-#include "windows.h"
 
 void initialVectorNodes(std::vector<int>&const inputV) {
     for (int j = 0; j < inputV.size(); ++j)
