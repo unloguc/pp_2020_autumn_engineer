@@ -19,7 +19,8 @@ std::vector<int> createMasEdges(std::vector<int> inputV) {
         if (j != inputV.size())
             edges[j - 1] = j;
     }
-    for (int i = static_cast<unsigned int>(inputV.size()); i < (static_cast<unsigned int>(inputV.size()) - 1) * 2; i++) {
+    for (int i = static_cast<unsigned int>(inputV.size());
+        i < (static_cast<unsigned int>(inputV.size()) - 1) * 2; i++) {
         edges[i] = 0;
     }
     return edges;
