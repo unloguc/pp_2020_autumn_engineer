@@ -39,7 +39,7 @@ std::vector<int> createMasIndex(std::vector<int> inputV) {
 
 MPI_Comm createTopologyStar(std::vector<int> MasNodes) {
     int rank;
-    int size = MasNodes.size();
+    int size;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     std::vector<int> nodes;
@@ -58,7 +58,7 @@ MPI_Comm createTopologyStar(std::vector<int> MasNodes) {
         edges[i] = listEdges[i];
     }
     MPI_Comm StarComm;
-    MPI_Graph_create(MPI_COMM_WORLD, MasNodes.size(), index, edges, 1, &StarComm);
+    MPI_Graph_create(MPI_COMM_WORLD, size, index, edges, 1, &StarComm);
 
     delete[] index;
     delete[] edges;
