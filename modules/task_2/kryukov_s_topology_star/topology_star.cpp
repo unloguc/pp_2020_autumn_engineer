@@ -39,7 +39,7 @@ std::vector<int> createMasIndex(std::vector<int> inputV) {
 
 MPI_Comm createTopologyStar(std::vector<int> MasNodes) {
     int rank;
-    int size;
+    int size = MasNodes.size();
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     std::vector<int> nodes;
