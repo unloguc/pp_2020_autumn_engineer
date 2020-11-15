@@ -32,7 +32,7 @@ void barbershop(const int chairs) {
             continue;
         }
         if (mpi_status.MPI_TAG == 2) {
-            if (visitors.size() == 0) {
+            if (visitors.empty()) {
                 if (barber == 0) {
                     barber = 1;
 //                    std::cout << "The queue is empty and the Barber is free! "
