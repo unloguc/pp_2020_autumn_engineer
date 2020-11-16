@@ -14,6 +14,7 @@ std::vector<int> initialVectorNodes(std::vector<int> inputV) {
 
 std::vector<int> createMasEdges(std::vector<int> inputV) {
     std::vector<int> edges;
+    //if(size>1)
     edges.resize((inputV.size() - 1) * 2);
     for (int j = 1; j < inputV.size(); ++j) {
         if (j != inputV.size())
@@ -23,6 +24,7 @@ std::vector<int> createMasEdges(std::vector<int> inputV) {
         i < (static_cast<unsigned int>(inputV.size()) - 1) * 2; i++) {
         edges[i] = 0;
     }
+	//else(
     return edges;
 }
 
@@ -30,6 +32,7 @@ std::vector<int> createMasIndex(std::vector<int> inputV) {
     std::vector<int> index;
     index.resize(inputV.size());
     index[0] = inputV.size() - 1;
+    //if(size > 1)
     for (int j = 1; j < static_cast<unsigned int>(inputV.size()); ++j) {
         index[j] = index[0] + j;
     }
