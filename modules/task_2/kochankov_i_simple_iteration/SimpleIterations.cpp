@@ -131,7 +131,7 @@ vector<double> parallel_simple_iteration(const Matrix& matrix, double accuracy) 
         throw std::runtime_error("There is null element on main diagonal!");
     }
 
-    if ((len < size) or (size == 1)) {
+    if ( (len < size) || (size == 1) ) {
         if (rank == 0) {
             return linear_simple_iteration(matrix, accuracy);
         } else {
