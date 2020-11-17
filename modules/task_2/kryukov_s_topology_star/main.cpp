@@ -113,31 +113,6 @@ TEST(topology_star, message_exchange1) {
     }
 }
 
-TEST(topology_star, message_exchange3) {
-    std::vector<int> nodes;
-    int size, procrank;
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
-    if (size == 1) {
-        ASSERT_EQ(true, true);
-        return;
-    }
-
-    MPI_Comm star = createTopologyStar(MPI_COMM_WORLD, nodes);
-
-    MPI_Comm_rank(star, &procrank);
-    int size_vec = 10;
-    int source = 1, dest = 3;
-    int* sendMessage = new int[size_vec];
-    sendMessage = getRandomVector(size_vec);
-    int* result_message = SendRecvStar(sendMessage, size_vec, MPI_INT, dest, 0, star, source, procrank);
-
-    if (procrank == dest) {
-        for (int i = 0; i < size_vec; i++) {
-            ASSERT_EQ(sendMessage[i], result_message[i]);
-        }
-    }
-}
-
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     MPI_Init(&argc, &argv);
