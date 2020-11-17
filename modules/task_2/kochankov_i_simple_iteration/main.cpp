@@ -1,23 +1,20 @@
+// Copyright 2020 Kochankov Ilya
+
 #include <gtest-mpi-listener.hpp>
 #include <gtest/gtest.h>
 
 #include "iostream"
 #include "vector"
-#include "math.h"
-#include "Matrix.h"
-#include "SimpleIterations.h"
+#include "../../../modules/task_2/kochankov_i_simple_iteration/Matrix.h"
+#include "../../../modules/task_2/kochankov_i_simple_iteration/SimpleIterations.h"
 
-using namespace std;
-
-TEST(Linear_simple_method_works, Matrix_1x1)
-{
+TEST(Linear_simple_method_works, Matrix_1x1) {
     Matrix matrix;
     double eps = 0.0;
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    if (rank == 0)
-    {
+    if (rank == 0) {
         matrix = Matrix(1, 2);
         matrix[0][0] = 5;
         matrix[0][1] = 5;
@@ -30,15 +27,13 @@ TEST(Linear_simple_method_works, Matrix_1x1)
     }
 }
 
-TEST(Linear_simple_method_works, Matrix_2x2)
-{
+TEST(Linear_simple_method_works, Matrix_2x2) {
     Matrix matrix;
     double eps = 0.0;
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    if (rank == 0)
-    {
+    if (rank == 0) {
         matrix = Matrix(2, 3);
         matrix[0][0] = 2;
         matrix[0][1] = 1;
@@ -57,15 +52,13 @@ TEST(Linear_simple_method_works, Matrix_2x2)
     }
 }
 
-TEST(Linear_simple_method_works, Matrix_3x3)
-{
+TEST(Linear_simple_method_works, Matrix_3x3) {
     Matrix matrix;
     double eps = 0.0;
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    if (rank == 0)
-    {
+    if (rank == 0) {
         matrix = Matrix(3, 4);
         matrix[0][0] = 4.5;
         matrix[0][1] = -1.7;
@@ -92,15 +85,13 @@ TEST(Linear_simple_method_works, Matrix_3x3)
     }
 }
 
-TEST(Linear_simple_method_works, Wrong_matrix)
-{
+TEST(Linear_simple_method_works, Wrong_matrix) {
     Matrix matrix;
     double eps = 0.0;
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    if (rank == 0)
-    {
+    if (rank == 0) {
         matrix = Matrix(3, 4);
         matrix[0][0] = 0;
         matrix[0][1] = -1.7;
@@ -123,15 +114,13 @@ TEST(Linear_simple_method_works, Wrong_matrix)
     }
 }
 
-TEST(Parallel_simple_method_works, Matrix_1x1)
-{
+TEST(Parallel_simple_method_works, Matrix_1x1) {
     Matrix matrix;
     double eps = 0.0;
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    if (rank == 0)
-    {
+    if (rank == 0) {
         matrix = Matrix(1, 2);
         matrix[0][0] = 5;
         matrix[0][1] = 5;
@@ -140,21 +129,18 @@ TEST(Parallel_simple_method_works, Matrix_1x1)
 
     auto result = parallel_simple_iteration(matrix, eps);
 
-    if (rank == 0)
-    {
+    if (rank == 0) {
         EXPECT_TRUE(abs(result[0] - 1) < 0.0001);
     }
 }
 
-TEST(Parallel_simple_method_works, Matrix_2x2)
-{
+TEST(Parallel_simple_method_works, Matrix_2x2) {
     Matrix matrix(2, 3);
     double eps = 0.0;
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    if (rank == 0)
-    {
+    if (rank == 0) {
         matrix = Matrix(2, 3);
         matrix[0][0] = 2;
         matrix[0][1] = 1;
@@ -168,22 +154,19 @@ TEST(Parallel_simple_method_works, Matrix_2x2)
 
     auto result = parallel_simple_iteration(matrix, eps);
 
-    if (rank == 0)
-    {
+    if (rank == 0) {
         EXPECT_TRUE(abs(result[0] - 0) < eps);
         EXPECT_TRUE(abs(result[1] - 3) < eps);
     }
 }
 
-TEST(Parallel_simple_method_works, Matrix_3x3)
-{
+TEST(Parallel_simple_method_works, Matrix_3x3) {
     Matrix matrix(3, 4);
     double eps = 0.0;
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    if (rank == 0)
-    {
+    if (rank == 0) {
         matrix = Matrix(3, 4);
         matrix[0][0] = 4.5;
         matrix[0][1] = -1.7;
@@ -204,23 +187,20 @@ TEST(Parallel_simple_method_works, Matrix_3x3)
 
     auto result = parallel_simple_iteration(matrix, eps);
 
-    if (rank == 0)
-    {
+    if (rank == 0) {
         EXPECT_TRUE(abs(result[0] - 0.188038) < eps);
         EXPECT_TRUE(abs(result[1] - 0.441589) < eps);
         EXPECT_TRUE(abs(result[2] - 0.544157) < eps);
     }
 }
 
-TEST(Parallel_simple_method_works, Wrong_matrix)
-{
+TEST(Parallel_simple_method_works, Wrong_matrix) {
     Matrix matrix(3, 4);
     double eps = 0.0;
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    if (rank == 0)
-    {
+    if (rank == 0) {
         matrix = Matrix(3, 4);
         matrix[0][0] = 0;
         matrix[0][1] = -1.7;
@@ -241,27 +221,25 @@ TEST(Parallel_simple_method_works, Wrong_matrix)
     EXPECT_ANY_THROW(parallel_simple_iteration(matrix, eps));
 }
 
-TEST(Parallel_simple_method_works, random_matrix){
+TEST(Parallel_simple_method_works, random_matrix) {
     Matrix matrix(500, 500);
     double eps = 0.001;
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    if (rank == 0)
-    {
+    if (rank == 0) {
         matrix = get_rand_matrix(500, 500);
     }
 
     auto result = parallel_simple_iteration(matrix, eps);
 
-    if (rank == 0){
+    if (rank == 0) {
         auto lin_result = linear_simple_iteration(matrix, eps);
         EXPECT_EQ(lin_result, result);
     }
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     MPI_Init(&argc, &argv);
 

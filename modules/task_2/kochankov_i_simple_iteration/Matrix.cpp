@@ -1,6 +1,6 @@
 // Copyright 2020 Kochankov Ilya
 
-#include "./Matrix.h"
+#include "../../../modules/task_2/kochankov_i_simple_iteration/Matrix.h"
 #include "stdexcept"
 
 Matrix::Matrix() : _rows(1), _columns(1) {
