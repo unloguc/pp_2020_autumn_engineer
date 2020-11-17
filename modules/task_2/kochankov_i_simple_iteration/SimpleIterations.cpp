@@ -45,7 +45,7 @@ double get_input_accuracy() {
 
 void print_result(const vector<double>& result) {
     cout << "Results: " << endl;
-    for (int i = 0; i < result.size(); i++) {
+    for (int i = 0; i < int(result.size()); i++) {
         cout << "X(" << i << ")=" << result[i] << endl;
     }
 }
