@@ -131,7 +131,7 @@ vector<double> parallel_simple_iteration(const Matrix& matrix, double accuracy) 
         throw std::runtime_error("There is null element on main diagonal!");
     }
 
-    if ((len < size) or (size == 0)) {
+    if ((len < size) or (size == 1)) {
         if (rank == 0) {
             return linear_simple_iteration(matrix, accuracy);
         } else {
@@ -247,7 +247,6 @@ vector<double> parallel_simple_iteration(const Matrix& matrix, double accuracy) 
         }
 
         // cout << "Process " << rank << " send " << count << " rows" << std::flush << endl;
-
         MPI_Allgatherv(&curent_vars_values[0], count, MPI_DOUBLE, &prev_vars_values[0],
                        &resive_counts[0], &dips[0], MPI_DOUBLE, MPI_COMM_WORLD);
 
