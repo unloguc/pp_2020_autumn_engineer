@@ -238,7 +238,7 @@ vector<double> parallel_simple_iteration(const Matrix& matrix, double accuracy) 
             error += std::abs(curent_vars_values[i] - prev_vars_values[i + rank * delta]);
         }
 
-        MPI_Allreduce(&error, &error, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+        MPI_Allreduce(MPI_IN_PLACE, &error, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
 
         // cout << "Process " << rank << " has error=" << error << endl;
 
