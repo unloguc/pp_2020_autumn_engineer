@@ -71,37 +71,4 @@ int main(int argc, char** argv) {
 
   listeners.Append(new GTestMPIListener::MPIMinimalistPrinter);
   return RUN_ALL_TESTS();
-  /*MPI_Init(&argc, &argv);
-  int rows = 400000, columns = 100, vectorSize = columns, matrixSize = rows * columns;
-
-  int* matrix = getRandomMatrix(rows, columns);
-  int* vector = getRandomVector(vectorSize);
-  int* emptyMatrix = nullptr;
-
-  double start_time, end_time;
-
-  start_time = MPI_Wtime();
-  int* resultVector = sequentialMultiplication1(matrix, vector, rows, columns, vectorSize);
-  end_time = MPI_Wtime();
-  std::cout << "Sequential1 time = " << end_time - start_time << " sec." << std::endl;
-
-  start_time = MPI_Wtime();
-  int* resultVector1 = sequentialMultiplication2(matrix, vector, rows, columns, vectorSize);
-  end_time = MPI_Wtime();
-  std::cout << "Sequential2 time = " << end_time - start_time << " sec." << std::endl;
-
-  start_time = MPI_Wtime();
-  int* resultVector2 = sequentialMultiplication3(matrix, vector, rows, columns, vectorSize);
-  end_time = MPI_Wtime();
-  std::cout << "Sequential3 time = " << end_time - start_time << " sec." << "\n\n";
-
-  start_time = MPI_Wtime();
-  int* parallelResult = parallelMultiplication(matrix, vector, rows, columns, vectorSize);
-  end_time = MPI_Wtime();
-  std::cout << "Parallel time = " << end_time - start_time << " sec." << std::endl;
-
-
-  MPI_Finalize();*/
-
-  return 0;
 }
