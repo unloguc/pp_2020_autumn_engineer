@@ -6,65 +6,66 @@
 #include <algorithm>
 #include "../../../modules/task_2/kryukov_s_topology_star/topology_star.h"
 
-std::vector<int> initialVectorNodes(std::vector<int> inputV) {
-    for (int j = 0; j < static_cast<unsigned int>(inputV.size()); ++j)
+std::vector<int> initialVectorNodes(std::vector<int> inputV, int Size) {
+    for (int j = 0; j < Size; ++j)
         inputV[j] = j;
     return inputV;
 }
 
-std::vector<int> createMasEdges(std::vector<int> inputV) {
+std::vector<int> createMasEdges(std::vector<int> inputV, int Size) {
     std::vector<int> edges;
     //if(size>1)
-    edges.resize((inputV.size() - 1) * 2);
-    for (int j = 1; j < inputV.size(); ++j) {
-        if (j != inputV.size())
+    edges.resize((Size - 1) * 2);
+    for (int j = 1; j < Size; ++j) {
+        if (j != Size)
             edges[j - 1] = j;
     }
-    for (int i = static_cast<unsigned int>(inputV.size());
-        i < (static_cast<unsigned int>(inputV.size()) - 1) * 2; i++) {
+    for (int i = Size;
+        i < (Size - 1) * 2; i++) {
         edges[i] = 0;
     }
 	//else(
     return edges;
 }
 
-std::vector<int> createMasIndex(std::vector<int> inputV) {
+std::vector<int> createMasIndex(std::vector<int> inputV, int Size) {
     std::vector<int> index;
-    index.resize(inputV.size());
-    index[0] = inputV.size() - 1;
+    index.resize(Size);
+    index[0] = Size - 1;
     //if(size > 1)
-    for (int j = 1; j < static_cast<unsigned int>(inputV.size()); ++j) {
+    for (int j = 1; j < Size; ++j) {
         index[j] = index[0] + j;
     }
     return index;
 }
 
 
-MPI_Comm createTopologyStar(std::vector<int> MasNodes) {
+MPI_Comm createTopologyStar(MPI_Comm comm, std::vector<int> MasNodes) {
     int rank;
     int size;
+	int reorder = 0;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     std::vector<int> nodes;
     std::vector<int> listEdges;
     std::vector<int> outArc;
-    nodes = initialVectorNodes(MasNodes);
-    listEdges = createMasEdges(nodes);
-    outArc = createMasIndex(nodes);
+    nodes = initialVectorNodes(MasNodes, size);
+    listEdges = createMasEdges(nodes, size);
+    outArc = createMasIndex(nodes, size);
 
-    int * index = new int[outArc.size()];
-    int * edges = new int[listEdges.size()];
-    for (int i = 0; i < static_cast<unsigned int>(outArc.size()); ++i) {
+    int * index = new int[size];
+    int * edges = new int[(size - 1) * 2];
+    for (int i = 0; i < size; ++i) {
         index[i] = outArc[i];
     }
     for (int i = 0; i < static_cast<unsigned int>(listEdges.size()); ++i) {
         edges[i] = listEdges[i];
     }
     MPI_Comm StarComm;
-    MPI_Graph_create(MPI_COMM_WORLD, size, index, edges, 1, &StarComm);
+    MPI_Graph_create(comm, size, index, edges, reorder, &StarComm);
 
-    delete[] index;
-    delete[] edges;
+    //delete[] index;
+    //delete[] edges;
     return StarComm;
 }
 
