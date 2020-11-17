@@ -102,7 +102,7 @@ vector<double> linear_simple_iteration(const Matrix& matrix, double accuracy) {
         double error = 0.0;
 
         for (int i = 0; i < matrix_size; i++) {
-            error += abs(curent_vars_values[i] - prev_vars_values[i]);
+            error += std::abs(curent_vars_values[i] - prev_vars_values[i]);
         }
 
         if (error < accuracy) {
@@ -235,7 +235,7 @@ vector<double> parallel_simple_iteration(const Matrix& matrix, double accuracy) 
         double error = 0.0;
 
         for (int i = 0; i < local_matrix.get_rows(); i++) {
-            error += abs(curent_vars_values[i] - prev_vars_values[i + rank * delta]);
+            error += std::abs(curent_vars_values[i] - prev_vars_values[i + rank * delta]);
         }
 
         MPI_Allreduce(&error, &error, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);

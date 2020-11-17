@@ -23,7 +23,7 @@ TEST(Linear_simple_method_works, Matrix_1x1) {
 
         auto result = linear_simple_iteration(matrix, eps);
 
-        EXPECT_TRUE(abs(result[0] - 1) < 0.0001);
+        EXPECT_TRUE(std::abs(result[0] - 1) < 0.0001);
     }
 }
 
@@ -47,8 +47,8 @@ TEST(Linear_simple_method_works, Matrix_2x2) {
 
         auto result = linear_simple_iteration(matrix, eps);
 
-        EXPECT_TRUE(abs(result[0] - 0) < eps);
-        EXPECT_TRUE(abs(result[1] - 3) < eps);
+        EXPECT_TRUE(std::abs(result[0] - 0) < eps);
+        EXPECT_TRUE(std::abs(result[1] - 3) < eps);
     }
 }
 
@@ -79,9 +79,9 @@ TEST(Linear_simple_method_works, Matrix_3x3) {
 
         auto result = linear_simple_iteration(matrix, eps);
 
-        EXPECT_TRUE(abs(result[0] - 0.188038) < eps);
-        EXPECT_TRUE(abs(result[1] - 0.441589) < eps);
-        EXPECT_TRUE(abs(result[2] - 0.544157) < eps);
+        EXPECT_TRUE(std::abs(result[0] - 0.188038) < eps);
+        EXPECT_TRUE(std::abs(result[1] - 0.441589) < eps);
+        EXPECT_TRUE(std::abs(result[2] - 0.544157) < eps);
     }
 }
 
@@ -130,7 +130,7 @@ TEST(Parallel_simple_method_works, Matrix_1x1) {
     auto result = parallel_simple_iteration(matrix, eps);
 
     if (rank == 0) {
-        EXPECT_TRUE(abs(result[0] - 1) < 0.0001);
+        EXPECT_TRUE(std::abs(result[0] - 1) < 0.0001);
     }
 }
 
@@ -155,8 +155,8 @@ TEST(Parallel_simple_method_works, Matrix_2x2) {
     auto result = parallel_simple_iteration(matrix, eps);
 
     if (rank == 0) {
-        EXPECT_TRUE(abs(result[0] - 0) < eps);
-        EXPECT_TRUE(abs(result[1] - 3) < eps);
+        EXPECT_TRUE(std::abs(result[0] - 0) < eps);
+        EXPECT_TRUE(std::abs(result[1] - 3) < eps);
     }
 }
 
@@ -188,9 +188,9 @@ TEST(Parallel_simple_method_works, Matrix_3x3) {
     auto result = parallel_simple_iteration(matrix, eps);
 
     if (rank == 0) {
-        EXPECT_TRUE(abs(result[0] - 0.188038) < eps);
-        EXPECT_TRUE(abs(result[1] - 0.441589) < eps);
-        EXPECT_TRUE(abs(result[2] - 0.544157) < eps);
+        EXPECT_TRUE(std::abs(result[0] - 0.188038) < eps);
+        EXPECT_TRUE(std::abs(result[1] - 0.441589) < eps);
+        EXPECT_TRUE(std::abs(result[2] - 0.544157) < eps);
     }
 }
 
