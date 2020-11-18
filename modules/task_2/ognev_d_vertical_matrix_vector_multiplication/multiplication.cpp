@@ -9,7 +9,7 @@ int* getRandomMatrix(int rows, int columns) {
   std::mt19937 gen;
   std::uniform_int_distribution<> uid(0, 10);
   int* matrix = new int[rows * columns];
-  gen.seed(time(0));
+  gen.seed(static_cast<unsigned int>(time(0)));
   for (int i = 0; i < rows * columns; i++) {
     matrix[i] = uid(gen);
   }
@@ -20,7 +20,7 @@ int* getRandomVector(int size) {
   std::mt19937 gen;
   std::uniform_int_distribution<> uid(0, 10);
   int* vector = new int[size];
-  gen.seed(time(0) + 1);
+  gen.seed(static_cast<unsigned int>(time(0)) + 1);
   for (int i = 0; i < size; i++) {
     vector[i] = uid(gen);
   }

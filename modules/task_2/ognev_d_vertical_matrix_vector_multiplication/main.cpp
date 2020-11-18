@@ -61,7 +61,6 @@ int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);
   MPI_Init(&argc, &argv);
 
-
   ::testing::AddGlobalTestEnvironment(new GTestMPIListener::MPIEnvironment);
   ::testing::TestEventListeners& listeners =
     ::testing::UnitTest::GetInstance()->listeners();
