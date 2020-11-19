@@ -5,6 +5,7 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
+#include <cstring>
 #include <utility>
 
 int My_Scatter_By_Tree(const void* sendbuf, int sendcount,
@@ -19,7 +20,7 @@ int My_Scatter_By_Tree(const void* sendbuf, int sendcount,
     void * temp_buf = nullptr;
     // just memory move for root process
     if (rank == root) {
-        switch (sendtype) {
+        switch (static_cast<int>(sendtype)) {
         case MPI_INT:
             temp_buf = new int[sendcount * size];
             // cpy own data first
@@ -80,7 +81,7 @@ int My_Scatter_By_Tree(const void* sendbuf, int sendcount,
             O[i].resize(half);
             if (rank == i) {
                 // sending
-                switch (sendtype) {
+                switch (static_cast<int>(sendtype)) {
                 case MPI_INT:
                     MPI_Send(reinterpret_cast<int*>(temp_buf) + half * sendcount,
                         sendcount * static_cast<int>(O[recipient].size()),
@@ -100,7 +101,7 @@ int My_Scatter_By_Tree(const void* sendbuf, int sendcount,
             } else if (rank == recipient) {
                 // recieving
                 if (temp_buf == nullptr) {
-                    switch (sendtype) {
+                    switch (static_cast<int>(sendtype)) {
                     case MPI_INT:
                         temp_buf = new int[sendcount * O[recipient].size()];
                         break;
@@ -124,7 +125,17 @@ int My_Scatter_By_Tree(const void* sendbuf, int sendcount,
     MPI_Type_size(recvtype, &Size);
     memcpy(recvbuf, temp_buf, static_cast<size_t>(Size * recvcount));
 
-    delete[] temp_buf;
+    switch (static_cast<int>(sendtype)) {
+    case MPI_INT:
+        delete[] static_cast<int*>(temp_buf);
+        break;
+    case MPI_FLOAT:
+        delete[] static_cast<float*>(temp_buf);
+        break;
+    case MPI_DOUBLE:
+        delete[] static_cast<double*>(temp_buf);
+        break;
+    }
     delete[] O;
     return MPI_SUCCESS;
 }
