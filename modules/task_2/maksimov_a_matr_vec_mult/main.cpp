@@ -78,10 +78,18 @@ TEST(Parallel_Operations_MPI, Test_MultiplyNonParall) {
     int* vec;
     if (rank == 0) {
         matr = new int*[rows];
-        matr[0] = new int[] { 1, 2 };
-        matr[1] = new int[] { 2, 3 };
-        matr[2] = new int[] { 3, 4 };
-        vec = new int[] {3, 4};
+        for (int i = 0; i < rows; i++) {
+            matr[i] = new int[columns];
+        }
+        matr[0][0] = 1;
+        matr[0][1] = 2;
+        matr[1][0] = 2;
+        matr[1][1] = 3;
+        matr[2][0] = 3;
+        matr[2][1] = 4;
+        vec = new int[2];
+        vec[0] = 3;
+        vec[1] = 4;
 
         int* multiplyNotParall
             = multiplyMatrixByVectorNotParall(matr, rows, columns, vec, columns);
