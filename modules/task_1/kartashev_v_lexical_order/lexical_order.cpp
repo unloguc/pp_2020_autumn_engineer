@@ -35,7 +35,7 @@ int get_parallel_operations(const char* str_1, const char* str_2, int length_1, 
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    // std::cout << std::endl << "rank: " << rank << " lenght: " << length << std::flush;
+    std::cout << std::endl << "rank: " << rank << " lenght: " << length << std::flush;
 
     if (length < size) {
         if (rank == 0) {
@@ -94,7 +94,7 @@ int get_parallel_operations(const char* str_1, const char* str_2, int length_1, 
 
     std::cout << "process rank=" << rank << " get batch: " << batch[0] << ',' << batch[1] << std::flush << std::endl;
 
-    MPI_Gather(&batch, 2, MPI_INT, globalResult + rank * 2, 2, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Gather(batch, 2, MPI_INT, globalResult + rank * 2, 2, MPI_INT, 0, MPI_COMM_WORLD);
 
     delete [] local_str_1;
     delete [] local_str_2;

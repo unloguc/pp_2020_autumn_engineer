@@ -31,7 +31,7 @@ TEST(Parallel_Operations_MPI, parallel_works) {
 
     int parallel_result = get_parallel_operations(str_1, str_2, 6, 6);
     if (rank == 0) {
-        EXPECT_EQ(parallel_result, true);
+        EXPECT_EQ(parallel_result, 2);
         delete [] str_1;
         delete [] str_2;
     }
