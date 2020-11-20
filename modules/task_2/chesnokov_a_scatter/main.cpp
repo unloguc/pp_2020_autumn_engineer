@@ -68,7 +68,7 @@ TEST(Task_2, Test_Scatter_By_Tree_Works_With_Root_Neq_0) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     int test_data[1000];
-    if (rank == 0) {
+    if (rank == size/2) {
         std::mt19937 gen;
         gen.seed(static_cast<unsigned int>(time(0)));
         for (int i = 0; i < 1000; i++) {
@@ -99,7 +99,7 @@ TEST(Task_2, Test_Scatter_By_Tree_Works_With_Double) {
     double test_data[1000];
     if (rank == 0) {
         for (int i = 0; i < 1000; i++) {
-            test_data[i] = 2.3;
+            test_data[i] = 2.3 + i;
         }
     }
     int delta = 1000 / size;
@@ -107,9 +107,9 @@ TEST(Task_2, Test_Scatter_By_Tree_Works_With_Double) {
     recv1 = new double[delta];
     recv2 = new double[delta];
 
-    MPI_Scatter(test_data, delta, MPI_DOUBLE, recv1, delta, MPI_DOUBLE, size / 2, MPI_COMM_WORLD);
+    MPI_Scatter(test_data, delta, MPI_DOUBLE, recv1, delta, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     EXPECT_NO_THROW(My_Scatter_By_Tree(test_data, delta, MPI_DOUBLE,
-        recv2, delta, MPI_DOUBLE, size / 2, MPI_COMM_WORLD));
+        recv2, delta, MPI_DOUBLE, 0, MPI_COMM_WORLD));
 
     for (int i = 0; i < delta; i++) {
         EXPECT_EQ(recv1[i], recv2[i]);
@@ -126,7 +126,7 @@ TEST(Task_2, Test_Scatter_By_Tree_Works_With_Float) {
     float test_data[1000];
     if (rank == 0) {
         for (int i = 0; i < 1000; i++) {
-            test_data[i] = 2.1f;
+            test_data[i] = 2.1f + i;
         }
     }
     int delta = 1000 / size;
@@ -134,9 +134,9 @@ TEST(Task_2, Test_Scatter_By_Tree_Works_With_Float) {
     recv1 = new float[delta];
     recv2 = new float[delta];
 
-    MPI_Scatter(test_data, delta, MPI_FLOAT, recv1, delta, MPI_FLOAT, size / 2, MPI_COMM_WORLD);
+    MPI_Scatter(test_data, delta, MPI_FLOAT, recv1, delta, MPI_FLOAT, 0, MPI_COMM_WORLD);
     EXPECT_NO_THROW(My_Scatter_By_Tree(test_data, delta, MPI_FLOAT,
-        recv2, delta, MPI_FLOAT, size / 2, MPI_COMM_WORLD));
+        recv2, delta, MPI_FLOAT, 0, MPI_COMM_WORLD));
 
     for (int i = 0; i < delta; i++) {
         EXPECT_EQ(recv1[i], recv2[i]);
