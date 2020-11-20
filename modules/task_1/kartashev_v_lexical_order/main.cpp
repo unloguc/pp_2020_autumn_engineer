@@ -194,7 +194,6 @@ TEST(Parallel_Operations_MPI, parallel_works_random_str_not_equal_size) {
     }
 }
 
-
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     MPI_Init(&argc, &argv);
