@@ -68,9 +68,39 @@ TEST(Parallel_Operations_MPI, Test_VecSize_Not_Equal_Columns) {
     }
 }
 
-TEST(Parallel_Operations_MPI, Test_Size_Tiny) {
+TEST(Parallel_Operations_MPI, Test_MultiplyNonParall) {
     const int rows = 3;
     const int columns = 2;
+
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    int** matr;
+    int* vec;
+    if (rank == 0) {
+        matr = new int*[rows];
+        matr[0] = new int[] { 1, 2 };
+        matr[1] = new int[] { 2, 3 };
+        matr[2] = new int[] { 3, 4 };
+        vec = new int[] {3, 4};
+
+        int* multiplyNotParall
+            = multiplyMatrixByVectorNotParall(matr, rows, columns, vec, columns);
+        ASSERT_EQ(11, multiplyNotParall[0]);
+        ASSERT_EQ(18, multiplyNotParall[1]);
+        ASSERT_EQ(25, multiplyNotParall[2]);
+
+        delete[] multiplyNotParall;
+        delete[] vec;
+        for (int i = 0; i < rows; i++) {
+            delete[] matr[i];
+        }
+        delete[] matr;
+    }
+}
+
+TEST(Parallel_Operations_MPI, Test_Size_Tiny) {
+    const int rows = 1;
+    const int columns = 1;
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -101,8 +131,8 @@ TEST(Parallel_Operations_MPI, Test_Size_Tiny) {
 }
 
 TEST(Parallel_Operations_MPI, Test_Size_Medium) {
-    const int rows = 30;
-    const int columns = 10;
+    const int rows = 4;
+    const int columns = 5;
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -133,8 +163,8 @@ TEST(Parallel_Operations_MPI, Test_Size_Medium) {
 }
 
 TEST(Parallel_Operations_MPI, Test_Size_Huge) {
-    const int rows = 31;
-    const int columns = 11;
+    const int rows = 9;
+    const int columns = 7;
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
