@@ -110,16 +110,16 @@ int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     MPI_Init(&argc, &argv);
 
-    int rank, size, temp;
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    //int rank, size, temp;
+    //MPI_Comm_size(MPI_COMM_WORLD, &size);
+    //MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    if (rank == 0)
-    {
-        std::cout << "Please input number: ";
-        std::cin >> temp;
-    }
-    MPI_Barrier(MPI_COMM_WORLD); // All threads will wait here until you give thread 0 an input
+    //if (rank == 0)
+    //{
+    //    std::cout << "Please input number: ";
+    //    std::cin >> temp;
+    //}
+    //MPI_Barrier(MPI_COMM_WORLD); // All threads will wait here until you give thread 0 an input
 
     ::testing::AddGlobalTestEnvironment(new GTestMPIListener::MPIEnvironment);
     ::testing::TestEventListeners& listeners =
