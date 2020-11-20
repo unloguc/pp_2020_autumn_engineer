@@ -99,7 +99,7 @@ TEST(Task_2, Test_Scatter_By_Tree_Works_With_Double) {
     double test_data[1000];
     if (rank == 0) {
         for (int i = 0; i < 1000; i++) {
-            test_data[i] = i / 3.0;
+            test_data[i] = 2.3;
         }
     }
     int delta = 1000 / size;
@@ -126,7 +126,7 @@ TEST(Task_2, Test_Scatter_By_Tree_Works_With_Float) {
     float test_data[1000];
     if (rank == 0) {
         for (int i = 0; i < 1000; i++) {
-            test_data[i] = i / 2.0f;
+            test_data[i] = 2.1f;
         }
     }
     int delta = 1000 / size;
