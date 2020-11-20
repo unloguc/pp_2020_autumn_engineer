@@ -28,7 +28,7 @@ TEST(Parallel_Operations_MPI, parallel_works) {
     str_2[3] = 'b';
     str_2[4] = 'b';
     str_2[5] = '\0';
-    
+
     int parallel_result = get_parallel_operations(str_1, str_2, 6, 6);
     if (rank == 0) {
         EXPECT_EQ(parallel_result, true);
