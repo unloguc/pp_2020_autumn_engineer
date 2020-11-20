@@ -2,6 +2,7 @@
 #include <gtest-mpi-listener.hpp>
 #include <gtest/gtest.h>
 #include <vector>
+#include <cmath>
 #include "./gather.h"
 
 TEST(Parallel_Operations_MPI, Get_MPI_Gather_Result) {
