@@ -130,7 +130,7 @@ TEST(Task_2, Test_Scatter_By_Tree_Works_With_Float) {
         std::mt19937 gen;
         gen.seed(static_cast<unsigned int>(time(0)));
         for (int i = 0; i < 1000; i++) {
-            test_data[i] = static_cast<double>(gen() % 128);
+            test_data[i] = static_cast<float>(gen() % 128);
         }
     }
     int delta = 1000 / size;
