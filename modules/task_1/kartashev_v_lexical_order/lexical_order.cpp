@@ -67,9 +67,10 @@ int get_parallel_operations(const char* str_1, const char* str_2, int length_1, 
             if (proc == size - 1) {
                 local_size = length - start_index;
             }
+            MPI_Request r;
             std::cout << "local_size: " << local_size << std::flush << std::endl;
-            MPI_Send(str_1 + start_index, local_size, MPI_CHAR, proc, 0, MPI_COMM_WORLD);
-            MPI_Send(str_2 + start_index, local_size, MPI_CHAR, proc, 0, MPI_COMM_WORLD);
+            MPI_Isend(str_1 + start_index, local_size, MPI_CHAR, proc, 0, MPI_COMM_WORLD, &r);
+            MPI_Isend(str_2 + start_index, local_size, MPI_CHAR, proc, 0, MPI_COMM_WORLD, &r);
         }
         local_size = delta;
     } else {
