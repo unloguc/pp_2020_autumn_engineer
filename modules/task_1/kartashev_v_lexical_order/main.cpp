@@ -9,7 +9,6 @@
 TEST(Parallel_Operations_MPI, parallel_works) {
     char* str_1, * str_2;
 
-    std::cout << "------" << std::flush;
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     if (rank == 0) {
