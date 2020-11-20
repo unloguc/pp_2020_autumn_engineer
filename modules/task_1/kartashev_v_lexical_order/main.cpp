@@ -12,7 +12,6 @@ TEST(Parallel_Operations_MPI, parallel_works) {
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    std::cout << "test 1 proc: "<< rank << std::flush;
     if (rank == 0) {
         str_1 = new char[6];
         str_1[0] = 'a';
@@ -30,7 +29,7 @@ TEST(Parallel_Operations_MPI, parallel_works) {
         str_2[4] = 'b';
         str_2[5] = '\0';
     }
-
+    std::cout << "test 1 proc: "<< rank << std::flush;
     bool parallel_result = get_parallel_operations(str_1, str_2, 6, 6);
 
     if (rank == 0) {
