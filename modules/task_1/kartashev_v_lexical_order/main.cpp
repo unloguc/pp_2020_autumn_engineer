@@ -109,15 +109,14 @@ TEST(Parallel_Operations_MPI, parallel_str_1_length) {
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    if (rank == 0) {
-        str_1 = new char[2];
-        str_1[0] = 'd';
-        str_1[1] = '\0';
 
-        str_2 = new char[2];
-        str_2[0] = 'a';
-        str_2[1] = '\0';
-    }
+    str_1 = new char[2];
+    str_1[0] = 'd';
+    str_1[1] = '\0';
+
+    str_2 = new char[2];
+    str_2[0] = 'a';
+    str_2[1] = '\0';
 
     auto parallel_result = get_parallel_operations(str_1, str_2, 1, 1);
 
