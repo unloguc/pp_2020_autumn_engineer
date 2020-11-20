@@ -9,7 +9,7 @@
 TEST(Parallel_Operations_MPI, parallel_works) {
     char* str_1, * str_2;
 
-
+    std::cout << '------' << std::flush;
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     if (rank == 0) {
@@ -198,6 +198,7 @@ TEST(Parallel_Operations_MPI, parallel_works_random_str_not_equal_size) {
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     MPI_Init(&argc, &argv);
+    std::cout << 'kasdfasdf' << std::flush;
     std::string testStr = "Carpe diem. Seize the day, boys. Make your lives extraordinary.";
     ::testing::AddGlobalTestEnvironment(new GTestMPIListener::MPIEnvironment);
     ::testing::TestEventListeners& listeners =
