@@ -32,10 +32,14 @@ std::vector<int> contrastRaiseSeq(std::vector<int> imageData, int size, int cont
     float corr = 1.0 + static_cast<float>(contrast) / 100;
     for (int i = 0; i < 256; ++i) {
         int a = ((i - midBright) * corr) + midBright;
-        if (a < 0) buf[i] = 0;
-        else if (a > 255) buf[i] = 255;
+        buf[i] = a;
+        if (a < 0) {
+            buf[i] = 0;
+        }
+        if (a > 255) {
+            buf[i] = 255;
+        }
 
-        else buf[i] = a;
     }
     for (int i = 0; i < size; ++i) {
         imageData[i] = buf[imageData[i]];
