@@ -98,10 +98,8 @@ TEST(Task_2, Test_Scatter_By_Tree_Works_With_Double) {
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     double test_data[1000];
     if (rank == 0) {
-        std::mt19937 gen;
-        gen.seed(static_cast<unsigned int>(time(0)));
         for (int i = 0; i < 1000; i++) {
-            test_data[i] = static_cast<double>(gen() % 128);
+            test_data[i] = i / 3.0;
         }
     }
     int delta = 1000 / size;
@@ -127,10 +125,8 @@ TEST(Task_2, Test_Scatter_By_Tree_Works_With_Float) {
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     float test_data[1000];
     if (rank == 0) {
-        std::mt19937 gen;
-        gen.seed(static_cast<unsigned int>(time(0)));
         for (int i = 0; i < 1000; i++) {
-            test_data[i] = static_cast<float>(gen() % 128);
+            test_data[i] = i / 2.0f;
         }
     }
     int delta = 1000 / size;
