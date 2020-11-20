@@ -35,7 +35,7 @@ int get_parallel_operations(const char* str_1, const char* str_2, int length_1, 
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    std::cout << "rank: " << rank << std::flush;
+    std::cout << std::endl << "rank: " << rank << " lenght: " << length << std::flush;
 
     if (length < size) {
         if (rank == 0) {
