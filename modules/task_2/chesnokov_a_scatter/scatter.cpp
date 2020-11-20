@@ -20,8 +20,7 @@ int My_Scatter_By_Tree(const void* sendbuf, int sendcount,
     void * temp_buf = nullptr;
     // just memory move for root process
     if (rank == root) {
-        switch (MPI_Type_c2f(sendtype)) {
-        case MPI_INT:
+        if (sendtype == MPI_INT) {
             temp_buf = new int[sendcount * size];
             // cpy own data first
             memcpy(temp_buf, reinterpret_cast<const int*>(sendbuf) + sendcount * root,
@@ -32,8 +31,8 @@ int My_Scatter_By_Tree(const void* sendbuf, int sendcount,
             // cpy all data after root
             memcpy(reinterpret_cast<int*>(temp_buf) + sendcount * (root + 1), reinterpret_cast<const int*>(sendbuf)
                 + sendcount * (root + 1), static_cast<size_t>(sendcount * sizeof(int) * (size - root - 1)));
-            break;
-        case MPI_FLOAT:
+        }
+        else if (sendtype == MPI_FLOAT) {
             temp_buf = new float[sendcount * size];
             // cpy own data first
             memcpy(temp_buf, reinterpret_cast<const float*>(sendbuf) + sendcount * root,
@@ -44,8 +43,8 @@ int My_Scatter_By_Tree(const void* sendbuf, int sendcount,
             // cpy all data after root
             memcpy(reinterpret_cast<float*>(temp_buf) + sendcount * (root + 1), reinterpret_cast<const float*>(sendbuf)
                 + sendcount * (root + 1), static_cast<size_t>(sendcount * sizeof(float) * (size - root - 1)));
-            break;
-        case MPI_DOUBLE:
+        }
+        else if (sendtype == MPI_DOUBLE) {
             temp_buf = new double[sendcount * size];
             // cpy own data first
             memcpy(temp_buf, reinterpret_cast<const double*>(sendbuf) + sendcount * root,
@@ -57,7 +56,6 @@ int My_Scatter_By_Tree(const void* sendbuf, int sendcount,
             memcpy(reinterpret_cast<double*>(temp_buf) + sendcount * (root + 1),
                 reinterpret_cast<const double*>(sendbuf) + sendcount * (root + 1),
                 static_cast<size_t>(sendcount * sizeof(double) * (size - root - 1)));
-            break;
         }
     }
     std::vector<int> * O = new std::vector<int>[size];
@@ -81,36 +79,33 @@ int My_Scatter_By_Tree(const void* sendbuf, int sendcount,
             O[i].resize(half);
             if (rank == i) {
                 // sending
-                switch (MPI_Type_c2f(sendtype)) {
-                case MPI_INT:
+                if (sendtype == MPI_INT) {
                     MPI_Send(reinterpret_cast<int*>(temp_buf) + half * sendcount,
                         sendcount * static_cast<int>(O[recipient].size()),
                         sendtype, recipient, 0, comm);
-                    break;
-                case MPI_FLOAT:
+                }
+                else if (sendtype == MPI_FLOAT) {
                     MPI_Send(reinterpret_cast<float*>(temp_buf) + half * sendcount,
                         sendcount * static_cast<int>(O[recipient].size()),
                         sendtype, recipient, 0, comm);
-                    break;
-                case MPI_DOUBLE:
+                }
+                else if (sendtype == MPI_DOUBLE) {
                     MPI_Send(reinterpret_cast<double*>(temp_buf) + half * sendcount,
                         sendcount * static_cast<int>(O[recipient].size()),
                         sendtype, recipient, 0, comm);
-                    break;
                 }
             } else if (rank == recipient) {
                 // recieving
                 if (temp_buf == nullptr) {
-                    switch (static_cast<int>(sendtype)) {
-                    case MPI_INT:
+
+                    if (sendtype == MPI_INT) {
                         temp_buf = new int[sendcount * O[recipient].size()];
-                        break;
-                    case MPI_FLOAT:
+                    }
+                    else if (sendtype == MPI_FLOAT) {
                         temp_buf = new float[sendcount * O[recipient].size()];
-                        break;
-                    case MPI_DOUBLE:
+                    }
+                    else if (sendtype == MPI_DOUBLE) {
                         temp_buf = new double[sendcount * O[recipient].size()];
-                        break;
                     }
                 }
                 MPI_Status status;
@@ -125,16 +120,14 @@ int My_Scatter_By_Tree(const void* sendbuf, int sendcount,
     MPI_Type_size(recvtype, &Size);
     memcpy(recvbuf, temp_buf, static_cast<size_t>(Size * recvcount));
 
-    switch (MPI_Type_c2f(sendtype)) {
-    case MPI_INT:
+    if (sendtype == MPI_INT) {
         delete[] static_cast<int*>(temp_buf);
-        break;
-    case MPI_FLOAT:
+    }
+    else if (sendtype == MPI_FLOAT) {
         delete[] static_cast<float*>(temp_buf);
-        break;
-    case MPI_DOUBLE:
+    }
+    else if (sendtype == MPI_DOUBLE) {
         delete[] static_cast<double*>(temp_buf);
-        break;
     }
     delete[] O;
     return MPI_SUCCESS;
@@ -148,41 +141,37 @@ int My_Scatter_Naive(const void* sendbuf, int sendcount, MPI_Datatype sendtype,
     MPI_Comm_rank(comm, &rank);
 
     if (rank == root) {
-        // sending to all others
-        switch (MPI_Type_c2f(sendtype)) {
-        case MPI_INT:
+        if (sendtype == MPI_INT) {
             // local moving
             for (int i = 0; i < sendcount; i++) {
                 reinterpret_cast<int*>(recvbuf)[i] = reinterpret_cast<const int*>(sendbuf)[i];
             }
             for (int i = 0; i < size; i++) {
                 if (i != root)
-                MPI_Send(reinterpret_cast<const int*>(sendbuf) + i * sendcount,
-                    sendcount, sendtype, i, 0, comm);
+                    MPI_Send(reinterpret_cast<const int*>(sendbuf) + i * sendcount,
+                        sendcount, sendtype, i, 0, comm);
             }
-            break;
-        case MPI_FLOAT:
+        }
+        else if (sendtype == MPI_FLOAT) {
             // local moving
             for (int i = 0; i < sendcount; i++) {
                 reinterpret_cast<float*>(recvbuf)[i] = reinterpret_cast<const float*>(sendbuf)[i];
             }
             for (int i = 0; i < size; i++) {
                 if (i != root)
-                MPI_Send(reinterpret_cast<const float*>(sendbuf) + i * sendcount,
-                    sendcount, sendtype, i, 0, comm);
+                    MPI_Send(reinterpret_cast<const float*>(sendbuf) + i * sendcount,
+                        sendcount, sendtype, i, 0, comm);
             }
-            break;
-        case MPI_DOUBLE:
-            // local moving
+        }
+        else if (sendtype == MPI_DOUBLE) {
             for (int i = 0; i < sendcount; i++) {
                 reinterpret_cast<double*>(recvbuf)[i] = reinterpret_cast<const double*>(sendbuf)[i];
             }
             for (int i = 0; i < size; i++) {
                 if (i != root)
-                MPI_Send(reinterpret_cast<const double*>(sendbuf) + i * sendcount,
-                    sendcount, sendtype, i, 0, comm);
+                    MPI_Send(reinterpret_cast<const double*>(sendbuf) + i * sendcount,
+                        sendcount, sendtype, i, 0, comm);
             }
-            break;
         }
     } else {
         MPI_Status status;
