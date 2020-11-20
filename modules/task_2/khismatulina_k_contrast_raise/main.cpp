@@ -30,15 +30,15 @@ TEST(khism_task_2, test_2_seq) {
         res[7] = 250;
         res[8] = 70;
 
-        exp[0] = 151;
-        exp[1] = 118;
-        exp[2] = 96;
-        exp[3] = 121;
-        exp[4] = 179;
-        exp[5] = 173;
-        exp[6] = 41;
+        exp[0] = 153;
+        exp[1] = 117;
+        exp[2] = 93;
+        exp[3] = 120;
+        exp[4] = 183;
+        exp[5] = 177;
+        exp[6] = 33;
         exp[7] = 255;
-        exp[8] = 63;
+        exp[8] = 57;
     }
     res = contrastRaiseSeq(res, size, contrast);
     if (rank == 0) {
@@ -62,15 +62,15 @@ TEST(khism_task_2, test_3_paral_and_chiselki) {
         res[7] = 250;
         res[8] = 70;
 
-        exp[0] = 151;
-        exp[1] = 118;
-        exp[2] = 96;
-        exp[3] = 121;
-        exp[4] = 179;
-        exp[5] = 173;
-        exp[6] = 41;
+        exp[0] = 153;
+        exp[1] = 117;
+        exp[2] = 93;
+        exp[3] = 120;
+        exp[4] = 183;
+        exp[5] = 177;
+        exp[6] = 33;
         exp[7] = 255;
-        exp[8] = 63;
+        exp[8] = 57;
     }
     res = contrastRaiseParallel(res, size, contrast);
     if (rank == 0) {

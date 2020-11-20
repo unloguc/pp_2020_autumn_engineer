@@ -23,7 +23,7 @@ std::vector<int> getRandomImage(int size) {
 }
 
 std::vector<int> contrastRaiseSeq(std::vector<int> imageData, int size, int contrast) {
-    std::vector<int> buf(256);
+    std::vector<int> buf(256, 0);
     int midBright = 0;
     for (int i = 0; i < size; ++i) {
         midBright += imageData[i];
