@@ -101,7 +101,7 @@ TEST(Task_2, Test_Scatter_By_Tree_Works_With_Double) {
         std::mt19937 gen;
         gen.seed(static_cast<unsigned int>(time(0)));
         for (int i = 0; i < 1000; i++) {
-            test_data[i] = gen() / 128.0;
+            test_data[i] = (gen() % 128) / 128.0;
         }
     }
     int delta = 1000 / size;
@@ -112,6 +112,35 @@ TEST(Task_2, Test_Scatter_By_Tree_Works_With_Double) {
     MPI_Scatter(test_data, delta, MPI_DOUBLE, recv1, delta, MPI_DOUBLE, size / 2, MPI_COMM_WORLD);
     EXPECT_NO_THROW(My_Scatter_By_Tree(test_data, delta, MPI_DOUBLE,
         recv2, delta, MPI_DOUBLE, size / 2, MPI_COMM_WORLD));
+
+    for (int i = 0; i < delta; i++) {
+        EXPECT_EQ(recv1[i], recv2[i]);
+    }
+
+    delete[] recv1;
+    delete[] recv2;
+}
+
+TEST(Task_2, Test_Scatter_By_Tree_Works_With_Float) {
+    int rank, size;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    float test_data[1000];
+    if (rank == 0) {
+        std::mt19937 gen;
+        gen.seed(static_cast<unsigned int>(time(0)));
+        for (int i = 0; i < 1000; i++) {
+            test_data[i] = (gen() % 128) / 128.0f;
+        }
+    }
+    int delta = 1000 / size;
+    float *recv1, *recv2;
+    recv1 = new float[delta];
+    recv2 = new float[delta];
+
+    MPI_Scatter(test_data, delta, MPI_FLOAT, recv1, delta, MPI_FLOAT, size / 2, MPI_COMM_WORLD);
+    EXPECT_NO_THROW(My_Scatter_By_Tree(test_data, delta, MPI_FLOAT,
+        recv2, delta, MPI_FLOAT, size / 2, MPI_COMM_WORLD));
 
     for (int i = 0; i < delta; i++) {
         EXPECT_EQ(recv1[i], recv2[i]);

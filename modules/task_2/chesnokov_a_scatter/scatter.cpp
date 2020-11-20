@@ -20,7 +20,7 @@ int My_Scatter_By_Tree(const void* sendbuf, int sendcount,
     void * temp_buf = nullptr;
     // just memory move for root process
     if (rank == root) {
-        switch (static_cast<int>(sendtype)) {
+        switch (MPI_Type_c2f(sendtype)) {
         case MPI_INT:
             temp_buf = new int[sendcount * size];
             // cpy own data first
@@ -81,7 +81,7 @@ int My_Scatter_By_Tree(const void* sendbuf, int sendcount,
             O[i].resize(half);
             if (rank == i) {
                 // sending
-                switch (static_cast<int>(sendtype)) {
+                switch (MPI_Type_c2f(sendtype)) {
                 case MPI_INT:
                     MPI_Send(reinterpret_cast<int*>(temp_buf) + half * sendcount,
                         sendcount * static_cast<int>(O[recipient].size()),
@@ -125,7 +125,7 @@ int My_Scatter_By_Tree(const void* sendbuf, int sendcount,
     MPI_Type_size(recvtype, &Size);
     memcpy(recvbuf, temp_buf, static_cast<size_t>(Size * recvcount));
 
-    switch (static_cast<int>(sendtype)) {
+    switch (MPI_Type_c2f(sendtype)) {
     case MPI_INT:
         delete[] static_cast<int*>(temp_buf);
         break;
@@ -149,7 +149,7 @@ int My_Scatter_Naive(const void* sendbuf, int sendcount, MPI_Datatype sendtype,
 
     if (rank == root) {
         // sending to all others
-        switch (sendtype) {
+        switch (MPI_Type_c2f(sendtype)) {
         case MPI_INT:
             // local moving
             for (int i = 0; i < sendcount; i++) {

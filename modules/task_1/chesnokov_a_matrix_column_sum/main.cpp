@@ -43,7 +43,7 @@ TEST(Task_1, Test_Parallel_On_Predefined_Matrix) {
 }
 
 TEST(Task_1, Test_Sequential_And_Parallel_Sums_Are_The_Same_11x11) {
-  Matrix mat = getRandomMatrix(100, 101);
+  Matrix mat = getRandomMatrix(11, 11);
   auto seq_res = getSequentialColumnSum(mat);
   auto par_res = getParallelColumnSum(mat);
   int rank;
