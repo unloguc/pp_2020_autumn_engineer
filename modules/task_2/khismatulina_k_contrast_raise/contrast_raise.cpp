@@ -14,16 +14,16 @@ std::vector<int> getRandomImage(int size) {
     std::mt19937 gen;
     gen.seed(static_cast<unsigned int>(time(0)));
     std::uniform_int_distribution<> dist(0, 255);
-    std::vector<int> imageData(256);
+    std::vector<int> imageData(size);
     for (int i = 0; i < size; ++i) {
         imageData[i] = dist(gen) % 256;
     }
+    imageData.resize(size);
     return imageData;
 }
 
 std::vector<int> contrastRaiseSeq(std::vector<int> imageData, int size, int contrast) {
     std::vector<int> buf(256, 0);
-    imageData.resize(size);
     int midBright = 0;
     for (int i = 0; i < size; ++i) {
         midBright += imageData[i];
