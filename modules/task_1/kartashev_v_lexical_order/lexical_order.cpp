@@ -31,9 +31,12 @@ int get_sequential_operations(const char* str_1, const char* str_2, int length_1
 }
 
 int get_parallel_operations(const char* str_1, const char* str_2, int length_1, int length_2) {
+    std::cout << "rank: " << rank << std::flush << std::endl;
     int size, rank, length = std::min(length_1, length_2);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+    std::cout << "rank: " << rank << std::flush << std::endl;
 
     if (length < size) {
         if (rank == 0) {
@@ -50,8 +53,8 @@ int get_parallel_operations(const char* str_1, const char* str_2, int length_1, 
     int local_size;
 
     if (rank == 0) {
-//        std::cout << "length: " << length << std::flush << std::endl;
-//        std::cout << "delta: " << delta << std::flush << std::endl;
+        std::cout << "length: " << length << std::flush << std::endl;
+        std::cout << "delta: " << delta << std::flush << std::endl;
 
         local_str_1 = new char[delta];
         local_str_2 = new char[delta];
@@ -65,7 +68,7 @@ int get_parallel_operations(const char* str_1, const char* str_2, int length_1, 
             if (proc == size - 1) {
                 local_size = length - start_index;
             }
-//            std::cout << "local_size: " << local_size << std::flush << std::endl;
+            std::cout << "local_size: " << local_size << std::flush << std::endl;
             MPI_Send(str_1 + start_index, local_size, MPI_CHAR, proc, 0, MPI_COMM_WORLD);
             MPI_Send(str_2 + start_index, local_size, MPI_CHAR, proc, 0, MPI_COMM_WORLD);
         }
@@ -76,7 +79,7 @@ int get_parallel_operations(const char* str_1, const char* str_2, int length_1, 
         if (rank == size - 1) {
             local_size = length - delta * (size - 1);
         }
-//        std::cout << "local_size recive: " << local_size << std::flush << std::endl;
+        std::cout << "local_size recive: " << local_size << std::flush << std::endl;
 
         local_str_1 = new char[local_size];
         local_str_2 = new char[local_size];
@@ -85,12 +88,12 @@ int get_parallel_operations(const char* str_1, const char* str_2, int length_1, 
     }
     auto local_result = static_cast<int>(get_sequential_operations(local_str_1, local_str_2, local_size, local_size));
 
-//    std::cout << "process rank=" << rank << " get local_result: " << local_result << std::flush << std::endl;
+    std::cout << "process rank=" << rank << " get local_result: " << local_result << std::flush << std::endl;
 
     int batch[2] = {rank, local_result};
     int * globalResult = new int[size*2];
 
-//    std::cout << "process rank=" << rank << " get batch: " << batch[0] << ',' << batch[1] << std::flush << std::endl;
+    std::cout << "process rank=" << rank << " get batch: " << batch[0] << ',' << batch[1] << std::flush << std::endl;
 
     MPI_Gather(&batch, 2, MPI_INT, globalResult + rank * 2, 2, MPI_INT, 0, MPI_COMM_WORLD);
 
@@ -108,12 +111,12 @@ int get_parallel_operations(const char* str_1, const char* str_2, int length_1, 
 
         for (int i = 0; i < size; i++) {
             if (sortedGlobResult[i] == 2) {
-//                std::cout << "result: " << 2 << std::flush << std::endl;
+                std::cout << "result: " << 2 << std::flush << std::endl;
                 delete [] sortedGlobResult;
                 return 2;
             }
             if (sortedGlobResult[i] == 0) {
-//                std::cout << "result: " << 0 << std::flush << std::endl;
+                std::cout << "result: " << 0 << std::flush << std::endl;
                 delete [] sortedGlobResult;
                 return 0;
             }
@@ -122,16 +125,16 @@ int get_parallel_operations(const char* str_1, const char* str_2, int length_1, 
         delete [] sortedGlobResult;
 
         if (length_1 < length_2) {
-//            std::cout << "result: " << 2 << std::flush << std::endl;
+            std::cout << "result: " << 2 << std::flush << std::endl;
             return 2;
         }
 
         if (length_1 == length_2) {
-//            std::cout << "result: " << 1 << std::flush << std::endl;
+            std::cout << "result: " << 1 << std::flush << std::endl;
             return 1;
         }
 
-//        std::cout << "result: " << 0 << std::flush << std::endl;
+        std::cout << "result: " << 0 << std::flush << std::endl;
         return 0;
     }
 
