@@ -86,6 +86,7 @@ int get_parallel_operations(const char* str_1, const char* str_2, int length_1, 
         MPI_Recv(local_str_1, local_size, MPI_CHAR, 0, 0, MPI_COMM_WORLD, &status);
         MPI_Recv(local_str_2, local_size, MPI_CHAR, 0, 0, MPI_COMM_WORLD, &status);
     }
+    MPI_Barrier(MPI_COMM_WORLD);
     auto local_result = static_cast<int>(get_sequential_operations(local_str_1, local_str_2, local_size, local_size));
 
     std::cout << "process rank=" << rank << " get local_result: " << local_result << std::flush << std::endl;
