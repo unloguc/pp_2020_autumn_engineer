@@ -6,38 +6,38 @@
 #include "./lexical_order.h"
 
 
-// TEST(Parallel_Operations_MPI, parallel_works) {
-//     char* str_1;
-//     char* str_2;
+TEST(Parallel_Operations_MPI, parallel_works) {
+    char* str_1;
+    char* str_2;
 
-//     int rank;
-//     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-//     if (rank == 0) {
-//         str_1 = new char[6];
-//         str_1[0] = 'a';
-//         str_1[1] = 'a';
-//         str_1[2] = 'a';
-//         str_1[3] = 'a';
-//         str_1[4] = 'a';
-//         str_1[5] = '\0';
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    if (rank == 0) {
+        str_1 = new char[6];
+        str_1[0] = 'a';
+        str_1[1] = 'a';
+        str_1[2] = 'a';
+        str_1[3] = 'a';
+        str_1[4] = 'a';
+        str_1[5] = '\0';
 
-//         str_2 = new char[6];
-//         str_2[0] = 'b';
-//         str_2[1] = 'b';
-//         str_2[2] = 'b';
-//         str_2[3] = 'b';
-//         str_2[4] = 'b';
-//         str_2[5] = '\0';
-//     }
-//     std::cout << "test 1 proc: "<< rank << std::flush;
-//     bool parallel_result = get_parallel_operations(str_1, str_2, 6, 6);
+        str_2 = new char[6];
+        str_2[0] = 'b';
+        str_2[1] = 'b';
+        str_2[2] = 'b';
+        str_2[3] = 'b';
+        str_2[4] = 'b';
+        str_2[5] = '\0';
+    }
+    std::cout << "test 1 proc: "<< rank << std::flush;
+    bool parallel_result = get_parallel_operations(str_1, str_2, 6, 6);
 
-//     if (rank == 0) {
-//         EXPECT_EQ(parallel_result, true);
-//         delete [] str_1;
-//         delete [] str_2;
-//     }
-// }
+    if (rank == 0) {
+        EXPECT_EQ(parallel_result, true);
+        delete [] str_1;
+        delete [] str_2;
+    }
+}
 
 TEST(Parallel_Operations_MPI, sequential_operations_works) {
     char * str_1, * str_2;
