@@ -8,7 +8,6 @@
 #include "../../../modules/task_2/khismatulina_k_contrast_raise/contrast_raise.h"
 
 std::vector<int> getRandomImage(int size) {
-    // assert(size > 0);
     if (size <= 0) {
         throw "fucking error";
     }
