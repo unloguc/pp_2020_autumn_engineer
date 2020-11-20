@@ -133,8 +133,8 @@ TEST(Parallel_Operations_MPI, Test_Size_Medium) {
 }
 
 TEST(Parallel_Operations_MPI, Test_Size_Huge) {
-    const int rows = 301;
-    const int columns = 100;
+    const int rows = 31;
+    const int columns = 11;
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
