@@ -39,7 +39,6 @@ std::vector<int> contrastRaiseSeq(std::vector<int> imageData, int size, int cont
         if (a > 255) {
             buf[i] = 255;
         }
-
     }
     for (int i = 0; i < size; ++i) {
         imageData[i] = buf[imageData[i]];
