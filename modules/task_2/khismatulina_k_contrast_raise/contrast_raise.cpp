@@ -8,7 +8,7 @@
 #include "../../../modules/task_2/khismatulina_k_contrast_raise/contrast_raise.h"
 
 std::vector<int> getRandomImage(int size) {
-    assert(size > 0);
+    // assert(size > 0);
     if (size <= 0) {
         throw "fucking error";
     }
@@ -24,6 +24,7 @@ std::vector<int> getRandomImage(int size) {
 
 std::vector<int> contrastRaiseSeq(std::vector<int> imageData, int size, int contrast) {
     std::vector<int> buf(256, 0);
+    imageData.resize(size);
     int midBright = 0;
     for (int i = 0; i < size; ++i) {
         midBright += imageData[i];
@@ -84,10 +85,10 @@ std::vector<int> contrastRaiseParallel(std::vector<int> imageData, int imageSize
     MPI_Reduce(&tmp, &pixelsSum, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
 
     if (rank == 0) {
-        double cont = 1.0 + contrast / 100.0;
+        double koef = 1.0 + contrast / 100.0;
         int midBright = pixelsSum / imageSize;
         for (int i = 0; i < 256; ++i) {
-            buf_2[i] = static_cast<int>(midBright + cont * (static_cast<int>(i) - midBright));
+            buf_2[i] = static_cast<int>(midBright + koef * (static_cast<int>(i) - midBright));
 
             if (buf_2[i] <= 0)
                 buf_2[i] = 0;
