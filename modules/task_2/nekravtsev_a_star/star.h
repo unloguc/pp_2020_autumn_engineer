@@ -3,7 +3,6 @@
 #define MODULES_TASK_2_NEKRAVTSEV_A_STAR_STAR_H_
 
 #include <mpi.h>
-#include <vector>
 
 int createStar(MPI_Comm oldcomm, MPI_Comm* comm_graph);
 

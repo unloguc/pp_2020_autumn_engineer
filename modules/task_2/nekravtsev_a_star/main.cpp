@@ -1,7 +1,6 @@
 // Copyright 2020 Alexey Nekravtsev
 #include <gtest-mpi-listener.hpp>
 #include <gtest/gtest.h>
-#include <vector>
 #include "../../modules/task_2/nekravtsev_a_star/star.h"
 
 
@@ -15,9 +14,7 @@ TEST(Parallel_Operations_MPI, Test_Topology) {
 
   MPI_Topo_test(result, &status);
 
-  if (procRank == 1) {
-    EXPECT_EQ(MPI_GRAPH, status) << "Wrong result";
-  }
+  EXPECT_EQ(MPI_GRAPH, status) << "Wrong result";
 }
 
 TEST(Parallel_Operations_MPI, Test_Neighbours_Count) {
@@ -28,15 +25,10 @@ TEST(Parallel_Operations_MPI, Test_Neighbours_Count) {
   MPI_Comm_rank(MPI_COMM_WORLD, &procRank);
   MPI_Comm_size(MPI_COMM_WORLD, &procNum);
   createStar(MPI_COMM_WORLD, &result);
-  MPI_Topo_test(result, &status);
 
-  if (status == MPI_GRAPH) {
-    MPI_Graph_neighbors_count(result, 0, &status);
-  }
+  MPI_Graph_neighbors_count(result, 0, &status);
 
-  if (procRank == 1) {
-    EXPECT_EQ(procNum - 1, status) << "Wrong result";
-  }
+  EXPECT_EQ(procNum - 1, status) << "Wrong result";
 }
 
 TEST(Parallel_Operations_MPI, Test_Neighbours_Set) {
@@ -47,9 +39,8 @@ TEST(Parallel_Operations_MPI, Test_Neighbours_Set) {
   MPI_Comm_rank(MPI_COMM_WORLD, &procRank);
   MPI_Comm_size(MPI_COMM_WORLD, &procNum);
   createStar(MPI_COMM_WORLD, &result);
-  MPI_Topo_test(result, &status);
 
-  if (procRank == 1 && status == MPI_GRAPH) {
+  if (procRank == 1) {
     int t = 0;
     status = 0;
     for (int i = 1; i < procNum; i++) {
@@ -57,7 +48,9 @@ TEST(Parallel_Operations_MPI, Test_Neighbours_Set) {
       status += t;
     }
 
-    EXPECT_EQ(procNum - 1, status) << "Wrong result";
+    if (procRank == 1) {
+      EXPECT_EQ(procNum - 1, status) << "Wrong result";
+    }
   }
 }
 
@@ -65,17 +58,20 @@ TEST(Parallel_Operations_MPI, Test_starSend_Transit) {
   int procRank, procNum;
   MPI_Comm result;
   MPI_Status status;
-
   MPI_Comm_rank(MPI_COMM_WORLD, &procRank);
   MPI_Comm_size(MPI_COMM_WORLD, &procNum);
 
   int in[3] = { 1, 2, 3 }, out[3] = { 3, 2, 1 };
   createStar(MPI_COMM_WORLD, &result);
 
-  starSend(&in, 3, MPI_INT, procNum - 1, 1, 1, result);
-  starRecv(&out, 3, MPI_INT, procNum - 1, 1, 1, result, &status);
+  if (procNum == 1) {
+    EXPECT_ANY_THROW(starSend(&in, 3, MPI_INT, procNum - 1, 1, 1, result););
+  } else {
+    starSend(&in, 3, MPI_INT, procNum - 1, 1, 1, result);
+    starRecv(&out, 3, MPI_INT, procNum - 1, 1, 1, result, &status);
+  }
 
-  if (procRank == 1) {
+  if (procRank == 1 && procNum != 1) {
     EXPECT_EQ(out[0], in[0]) << "Wrong result";
   }
 }
@@ -91,10 +87,14 @@ TEST(Parallel_Operations_MPI, Test_starSend_To_Center) {
   int in = 3, out = 5;
   createStar(MPI_COMM_WORLD, &result);
 
-  starSend(&in, 1, MPI_INT, procNum - 1, 0, 1, result);
-  starRecv(&out, 1, MPI_INT, procNum - 1, 0, 1, result, &status);
+  if (procNum == 1) {
+    EXPECT_ANY_THROW(starSend(&in, 1, MPI_INT, procNum - 1, 0, 1, result));
+  } else {
+    starSend(&in, 1, MPI_INT, procNum - 1, 0, 1, result);
+    starRecv(&out, 1, MPI_INT, procNum - 1, 0, 1, result, &status);
+  }
 
-  if (procRank == 0) {
+  if (procRank == 0 && procNum != 1) {
     EXPECT_EQ(out, in) << "Wrong result";
   }
 }
@@ -110,10 +110,14 @@ TEST(Parallel_Operations_MPI, Test_starSend_From_Center) {
   int in = 3, out = 5;
   createStar(MPI_COMM_WORLD, &result);
 
-  starSend(&in, 1, MPI_INT, 0, procNum - 1, 1, result);
-  starRecv(&out, 1, MPI_INT, 0, procNum - 1, 1, result, &status);
+  if (procNum == 1) {
+    EXPECT_ANY_THROW(starSend(&in, 1, MPI_INT, 0, procNum - 1, 1, result););
+  } else {
+    starSend(&in, 1, MPI_INT, 0, procNum - 1, 1, result);
+    starRecv(&out, 1, MPI_INT, 0, procNum - 1, 1, result, &status);
+  }
 
-  if (procRank == procNum - 1) {
+  if (procRank == procNum - 1 && procNum != 1) {
     EXPECT_EQ(out, in) << "Wrong result";
   }
 }
