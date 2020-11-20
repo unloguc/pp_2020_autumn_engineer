@@ -7,31 +7,31 @@
 
 
 TEST(Parallel_Operations_MPI, parallel_works) {
-    char* str_1;
-    char* str_2;
+    char* str_1 = new char[6];
+    char* str_2 = new char[6];
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    if (rank == 0) {
+        str_1 = new char[6];
+        str_1[0] = 'a';
+        str_1[1] = 'a';
+        str_1[2] = 'a';
+        str_1[3] = 'a';
+        str_1[4] = 'a';
+        str_1[5] = '\0';
 
-    str_1 = new char[6];
-    str_1[0] = 'a';
-    str_1[1] = 'a';
-    str_1[2] = 'a';
-    str_1[3] = 'a';
-    str_1[4] = 'a';
-    str_1[5] = '\0';
-
-    str_2 = new char[6];
-    str_2[0] = 'b';
-    str_2[1] = 'b';
-    str_2[2] = 'b';
-    str_2[3] = 'b';
-    str_2[4] = 'b';
-    str_2[5] = '\0';
-
+        str_2 = new char[6];
+        str_2[0] = 'b';
+        str_2[1] = 'b';
+        str_2[2] = 'b';
+        str_2[3] = 'b';
+        str_2[4] = 'b';
+        str_2[5] = '\0';
+    }
     int parallel_result = get_parallel_operations(str_1, str_2, 6, 6);
     if (rank == 0) {
-        EXPECT_EQ(parallel_result, 2);
+        EXPECT_EQ(parallel_result, true);
         delete [] str_1;
         delete [] str_2;
     }
@@ -105,18 +105,20 @@ TEST(Parallel_Operations_MPI, sequential_operations_equal_work) {
 }
 
 TEST(Parallel_Operations_MPI, parallel_str_1_length) {
-    char * str_1, * str_2;
+    char * str_1 = new char[2];
+    char * str_2 = new char[2];
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    if (rank == 0) {
+        str_1 = new char[2];
+        str_1[0] = 'd';
+        str_1[1] = '\0';
 
-    str_1 = new char[2];
-    str_1[0] = 'd';
-    str_1[1] = '\0';
-
-    str_2 = new char[2];
-    str_2[0] = 'a';
-    str_2[1] = '\0';
+        str_2 = new char[2];
+        str_2[0] = 'a';
+        str_2[1] = '\0';
+    }
 
     auto parallel_result = get_parallel_operations(str_1, str_2, 1, 1);
 
@@ -150,8 +152,9 @@ TEST(Parallel_Operations_MPI, get_rand_str_negative_size) {
 }
 
 TEST(Parallel_Operations_MPI, parallel_works_random_str_equal_size) {
-    char * str_1, * str_2;
     int length = 100000;
+    char * str_1 = new char[length];
+    char * str_2 = new char[length];
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -171,9 +174,10 @@ TEST(Parallel_Operations_MPI, parallel_works_random_str_equal_size) {
 }
 
 TEST(Parallel_Operations_MPI, parallel_works_random_str_not_equal_size) {
-    char * str_1, * str_2;
     int length_1 = 100000;
     int length_2 = 10000;
+    char * str_1 = new char[length_1];
+    char * str_2 = new char[length_2];
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
