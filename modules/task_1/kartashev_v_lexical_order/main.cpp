@@ -30,7 +30,7 @@ TEST(Parallel_Operations_MPI, parallel_works) {
         str_2[5] = '\0';
     }
     bool parallel_result = get_parallel_operations(str_1, str_2, 6, 6);
-
+    std::cout << "out" << std::flush;
     if (rank == 0) {
         EXPECT_EQ(parallel_result, true);
         delete [] str_1;
