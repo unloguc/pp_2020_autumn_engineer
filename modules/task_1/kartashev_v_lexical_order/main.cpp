@@ -29,7 +29,6 @@ TEST(Parallel_Operations_MPI, parallel_works) {
         str_2[4] = 'b';
         str_2[5] = '\0';
     }
-    std::cout << "test 1 proc: "<< rank << std::flush;
     bool parallel_result = get_parallel_operations(str_1, str_2, 6, 6);
 
     if (rank == 0) {
@@ -198,9 +197,6 @@ TEST(Parallel_Operations_MPI, parallel_works_random_str_not_equal_size) {
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     MPI_Init(&argc, &argv);
-    int rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    std::cout << "prooooooooc: "<< rank << std::flush;
     std::string testStr = "Carpe diem. Seize the day, boys. Make your lives extraordinary.";
     ::testing::AddGlobalTestEnvironment(new GTestMPIListener::MPIEnvironment);
     ::testing::TestEventListeners& listeners =
