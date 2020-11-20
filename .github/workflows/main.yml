@@ -113,5 +113,5 @@ jobs:
       shell: cmd
     - name: Run tests
       run: |
-        set OMP_NUM_THREADS=2
+        set OMP_NUM_THREADS=4
         scripts/run.bat
