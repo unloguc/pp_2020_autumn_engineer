@@ -31,12 +31,11 @@ int get_sequential_operations(const char* str_1, const char* str_2, int length_1
 }
 
 int get_parallel_operations(const char* str_1, const char* str_2, int length_1, int length_2) {
-    std::cout << "rank: " << rank << std::flush << std::endl;
     int size, rank, length = std::min(length_1, length_2);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    std::cout << "rank: " << rank << std::flush << std::endl;
+    std::cout << "rank: " << rank << std::flush;
 
     if (length < size) {
         if (rank == 0) {
