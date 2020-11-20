@@ -7,7 +7,8 @@
 
 
 TEST(Parallel_Operations_MPI, parallel_works) {
-    char* str_1, * str_2;
+    char* str_1;
+    char* str_2;
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
