@@ -95,7 +95,9 @@ TEST(Parallel_Operations_MPI, Test_Size_Tiny) {
             delete[] matr[i];
         }
         delete[] matr;
+        delete[] multiplyNotParall;
     }
+    delete[] multiply;
 }
 
 TEST(Parallel_Operations_MPI, Test_Size_Medium) {
@@ -125,11 +127,13 @@ TEST(Parallel_Operations_MPI, Test_Size_Medium) {
             delete[] matr[i];
         }
         delete[] matr;
+        delete[] multiplyNotParall;
     }
+    delete[] multiply;
 }
 
 TEST(Parallel_Operations_MPI, Test_Size_Huge) {
-    const int rows = 300;
+    const int rows = 301;
     const int columns = 100;
 
     int rank;
@@ -155,7 +159,9 @@ TEST(Parallel_Operations_MPI, Test_Size_Huge) {
             delete[] matr[i];
         }
         delete[] matr;
+        delete[] multiplyNotParall;
     }
+    delete[] multiply;
 }
 
 int main(int argc, char* argv[]) {
