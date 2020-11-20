@@ -118,7 +118,7 @@ std::vector<int> contrastRaiseParallel(std::vector<int> imageData, int imageSize
             MPI_Status status;
             MPI_Recv(&tmp2[0], delta, MPI_INT, proc, 0, MPI_COMM_WORLD, &status);
             for (int i = 0; i < delta; ++i) {
-                res[proc * delta + i + rem] = tmp2[i]; //  о боже ну почему ты не работаешь аааааааааа
+                res[proc * delta + i + rem] = tmp2[i];
             }
         }
     }

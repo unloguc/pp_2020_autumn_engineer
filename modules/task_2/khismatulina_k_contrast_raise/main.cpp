@@ -7,7 +7,7 @@
 TEST(khism_task_2, test_1) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    if (rank == 0) {
+    if (rank == 0) { 
         ASSERT_ANY_THROW(getRandomImage(-10));
     }
 }
