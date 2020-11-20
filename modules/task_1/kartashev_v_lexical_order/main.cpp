@@ -2,6 +2,7 @@
 #include <gtest-mpi-listener.hpp>
 #include <gtest/gtest.h>
 #include <vector>
+#include <string>
 #include "./lexical_order.h"
 
 
