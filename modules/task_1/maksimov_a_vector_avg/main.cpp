@@ -24,7 +24,7 @@ TEST(Parallel_Operations_MPI, Test_Size_1) {
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    std::vector<int> vec;
+    std::vector<int> vec(vecSize);
     if (rank == 0) {
         vec = getRandomVector(vecSize);
     }
@@ -40,7 +40,7 @@ TEST(Parallel_Operations_MPI, Test_Size_Tiny) {
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    std::vector<int> vec;
+    std::vector<int> vec(vecSize);
     if (rank == 0) {
         vec = getRandomVector(vecSize);
     }
@@ -55,7 +55,7 @@ TEST(Parallel_Operations_MPI, Test_Size_Medium) {
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    std::vector<int> vec;
+    std::vector<int> vec(vecSize);
     if (rank == 0) {
         vec = getRandomVector(vecSize);
     }
@@ -71,7 +71,7 @@ TEST(Parallel_Operations_MPI, Test_Size_Huge) {
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    std::vector<int> vec;
+    std::vector<int> vec(vecSize);
     if (rank == 0) {
         vec = getRandomVector(vecSize);
     }
