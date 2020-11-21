@@ -41,7 +41,6 @@ std::vector<int> ParallelContrast(std::vector<int> Arr, int height, int width) {
     int process_number, process_rank;
     MPI_Comm_size(MPI_COMM_WORLD, &process_number);
     MPI_Comm_rank(MPI_COMM_WORLD, &process_rank);
-    MPI_Status status;
     int del = height / process_number;
     int tmp = height % process_number;
 
@@ -70,8 +69,9 @@ std::vector<int> ParallelContrast(std::vector<int> Arr, int height, int width) {
         MPI_INT, 0, MPI_COMM_WORLD);
     std::vector<int>local_result_mas(recvbuf.size() * width);
     local_result_mas = LocalContrast(Arr, recvbuf.size(), width);
+    int lon = recvbuf.size();
     std::vector<int>local_result(width * recvbuf.size());
-    for (int i = 0; i < width * recvbuf.size(); i++) {
+    for (int i = 0; i < width * lon; i++) {
         local_result[i] = local_result_mas[i];
     }
     int* global_result = new int[pixes];
