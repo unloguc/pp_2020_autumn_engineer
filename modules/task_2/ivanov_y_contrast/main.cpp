@@ -10,9 +10,10 @@ TEST(Parallel_Operation_MPI, Test_Can_Create_Image_3x3) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     int height = 3;
     int width = 3;
-    std::vector<int> Arr;
-    std::vector<int> Arr2;
-    std::vector<int> Arr1;
+    int pixes = height * width;
+    std::vector<int> Arr(pixes);
+    std::vector<int> Arr2(pixes);
+    std::vector<int> Arr1(pixes);
     if (rank == 0) {
         Arr = CreateRandomImg(height, width);
     }
@@ -28,9 +29,10 @@ TEST(Parallel_Operation_MPI, Test_Can_Create_Image_10x10) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     int height = 10;
     int width = 10;
-    std::vector<int> Arr;
-    std::vector<int> Arr2;
-    std::vector<int> Arr1;
+    int pixes = height * width;
+    std::vector<int> Arr(pixes);
+    std::vector<int> Arr2(pixes);
+    std::vector<int> Arr1(pixes);
     if (rank == 0) {
         Arr = CreateRandomImg(height, width);
     }
@@ -46,9 +48,10 @@ TEST(Parallel_Operation_MPI, Test_Can_Create_Image_30x30) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     int height = 30;
     int width = 30;
-    std::vector<int> Arr;
-    std::vector<int> Arr2;
-    std::vector<int> Arr1;
+    int pixes = height * width;
+    std::vector<int> Arr(pixes);
+    std::vector<int> Arr2(pixes);
+    std::vector<int> Arr1(pixes);
     if (rank == 0) {
         Arr = CreateRandomImg(height, width);
     }
@@ -64,9 +67,10 @@ TEST(Parallel_Operation_MPI, Test_Can_Create_Image_100x100) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     int height = 100;
     int width = 100;
-    std::vector<int> Arr;
-    std::vector<int> Arr2;
-    std::vector<int> Arr1;
+    int pixes = height * width;
+    std::vector<int> Arr(pixes);
+    std::vector<int> Arr2(pixes);
+    std::vector<int> Arr1(pixes);
     if (rank == 0) {
         Arr = CreateRandomImg(height, width);
     }
@@ -82,9 +86,10 @@ TEST(Parallel_Operation_MPI, Test_Can_Create_Image_200x200) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     int height = 200;
     int width = 200;
-    std::vector<int> Arr;
-    std::vector<int> Arr2;
-    std::vector<int> Arr1;
+    int pixes = height * width;
+    std::vector<int> Arr(pixes);
+    std::vector<int> Arr2(pixes);
+    std::vector<int> Arr1(pixes);
     if (rank == 0) {
         Arr = CreateRandomImg(height, width);
     }
@@ -100,9 +105,10 @@ TEST(Parallel_Operation_MPI, Test_Can_Create_Image_1000x1000) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     int height = 1000;
     int width = 1000;
-    std::vector<int> Arr;
-    std::vector<int> Arr2;
-    std::vector<int> Arr1;
+    int pixes = height * width;
+    std::vector<int> Arr(pixes);
+    std::vector<int> Arr2(pixes);
+    std::vector<int> Arr1(pixes);
     if (rank == 0) {
         Arr = CreateRandomImg(height, width);
     }
