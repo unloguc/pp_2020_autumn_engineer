@@ -2,6 +2,7 @@
 #include <gtest-mpi-listener.hpp>
 #include <gtest/gtest.h>
 #include <iostream>
+#include <vector>
 #include "./contrast.h"
 
 TEST(Parallel_Operation_MPI, Test_Can_Create_Image_10x10) {
@@ -55,7 +56,7 @@ TEST(Parallel_Operation_MPI, Test_Can_Create_Image_200x200) {
         ASSERT_EQ(Arr1, Arr2);
     }
 }
-    
+
 TEST(Parallel_Operation_MPI, Test_Can_Create_Image_1000x1000) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);

@@ -3,6 +3,7 @@
 #include <random>
 #include <algorithm>
 #include <ctime>
+#include <vector>
 #include "../../../modules/task_2/ivanov_y_contrast/contrast.h"
 
 std::vector<int> CreateRandomImg(const int width, const int height) {
@@ -24,8 +25,7 @@ std::vector<int> LocalContrast(std::vector<int> Arr, int height, int width) {
             if (p < 0) {
                 p = 0;
             }
-        }
-        else {
+        } else {
             p += 25;
             if (p > 255) {
                 p = 255;
@@ -72,7 +72,7 @@ std::vector<int> ParallelContrast(std::vector<int> Arr, int height, int width) {
     local_result_mas = LocalContrast(Arr, recvbuf.size(), width);
     std::vector<int>local_result(width * recvbuf.size());
     for (int i = 0; i < width * recvbuf.size(); i++) {
-        local_result[i] = local_result_mas[i];   
+        local_result[i] = local_result_mas[i];
     }
     int* global_result = new int[pixes];
     int* sendcounts_global = new int[process_number];
@@ -87,7 +87,7 @@ std::vector<int> ParallelContrast(std::vector<int> Arr, int height, int width) {
     }
     MPI_Gatherv(&local_result[0], sendcounts_global[process_rank], MPI_INT, &global_result[0],
         sendcounts_global, displs_global, MPI_INT, 0, MPI_COMM_WORLD);
-   
+
     std::vector<int> global_result_mas(pixes);
     for (int i = 0; i < height * width; i++) {
         global_result_mas[i] = global_result[i];
