@@ -9,12 +9,8 @@
 TEST(Parallel_Operations_MPI, Can_Generate_Vector) {
     const int vecSize = 40;
 
-    int* vec = getRandomVector(vecSize);
-    for (int i = 0; i < vecSize; i++) {
-        ASSERT_LE(vec[i], MAX_GEN);
-        ASSERT_GT(vec[i], -1);
-    }
-    delete[] vec;
+    std::vector<int> vec = getRandomVector(vecSize);
+    ASSERT_EQ(static_cast<int>(vec.size()), vecSize);
 }
 
 TEST(Parallel_Operations_MPI, Test_Negative_VecSize) {
@@ -27,17 +23,8 @@ TEST(Parallel_Operations_MPI, Can_Generate_Matrix) {
     const int rows = 20;
     const int columns = 10;
 
-    int** matr = getRandomMatrix(rows, columns);
-    for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < columns; j++) {
-            ASSERT_LE(matr[i][j], MAX_GEN);
-            ASSERT_GT(matr[i][j], -1);
-        }
-    }
-    for (int i = 0; i < rows; i++) {
-        delete[] matr[i];
-    }
-    delete[] matr;
+    std::vector<int> matr = getRandomMatrix(rows, columns);
+    ASSERT_EQ(static_cast<int>(matr.size()), rows * columns);
 }
 
 TEST(Parallel_Operations_MPI, Test_VecSize_Not_Equal_Columns) {
@@ -48,8 +35,8 @@ TEST(Parallel_Operations_MPI, Test_VecSize_Not_Equal_Columns) {
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    int** matr;
-    int* vec;
+    std::vector<int> matr;
+    std::vector<int> vec;
     if (rank == 0) {
         matr = getRandomMatrix(rows, columns);
         vec = getRandomVector(vecSize);
@@ -58,14 +45,6 @@ TEST(Parallel_Operations_MPI, Test_VecSize_Not_Equal_Columns) {
         matr, rows, columns, vec, vecSize));
     ASSERT_ANY_THROW(multiplyMatrixByVectorNotParall(
         matr, rows, columns, vec, vecSize));
-    if (rank == 0) {
-        delete[] vec;
-
-        for (int i = 0; i < rows; i++) {
-            delete[] matr[i];
-        }
-        delete[] matr;
-    }
 }
 
 TEST(Parallel_Operations_MPI, Test_MultiplyNonParall) {
@@ -74,132 +53,92 @@ TEST(Parallel_Operations_MPI, Test_MultiplyNonParall) {
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    int** matr;
-    int* vec;
+    std::vector<int> matr;
+    std::vector<int> vec;
     if (rank == 0) {
-        matr = new int*[rows];
-        for (int i = 0; i < rows; i++) {
-            matr[i] = new int[columns];
-        }
-        matr[0][0] = 1;
-        matr[0][1] = 2;
-        matr[1][0] = 2;
-        matr[1][1] = 3;
-        matr[2][0] = 3;
-        matr[2][1] = 4;
-        vec = new int[2];
+        matr = std::vector<int>(rows * columns);
+        matr[0] = 1;
+        matr[1] = 2;
+        matr[2] = 2;
+        matr[3] = 3;
+        matr[4] = 3;
+        matr[5] = 4;
+        vec = std::vector<int>(2);
         vec[0] = 3;
         vec[1] = 4;
 
-        int* multiplyNotParall
+        std::vector<int> multiplyNotParall
             = multiplyMatrixByVectorNotParall(matr, rows, columns, vec, columns);
         ASSERT_EQ(11, multiplyNotParall[0]);
         ASSERT_EQ(18, multiplyNotParall[1]);
         ASSERT_EQ(25, multiplyNotParall[2]);
-
-        delete[] multiplyNotParall;
-        delete[] vec;
-        for (int i = 0; i < rows; i++) {
-            delete[] matr[i];
-        }
-        delete[] matr;
     }
 }
 
 TEST(Parallel_Operations_MPI, Test_Size_Tiny) {
-    const int rows = 1;
-    const int columns = 1;
+    const int rows = 2;
+    const int columns = 3;
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    int** matr;
-    int* vec;
+    std::vector<int> matr;
+    std::vector<int> vec;
     if (rank == 0) {
         matr = getRandomMatrix(rows, columns);
         vec = getRandomVector(columns);
     }
-    int* multiply = multiplyMatrixByVector(
+    std::vector<int> multiply = multiplyMatrixByVector(
         matr, rows, columns, vec, columns);
     if (rank == 0) {
-        int* multiplyNotParall = multiplyMatrixByVectorNotParall(
+        std::vector<int> multiplyNotParall = multiplyMatrixByVectorNotParall(
             matr, rows, columns, vec, columns);
-        for (int i = 0; i < rows; i++) {
-            ASSERT_EQ(multiplyNotParall[i], multiply[i]);
-        }
 
-        delete[] vec;
-
-        for (int i = 0; i < rows; i++) {
-            delete[] matr[i];
-        }
-        delete[] matr;
-        delete[] multiplyNotParall;
+        ASSERT_EQ(multiplyNotParall, multiply);
     }
-    delete[] multiply;
 }
 
 TEST(Parallel_Operations_MPI, Test_Size_Medium) {
-    const int rows = 4;
+    const int rows = 10;
     const int columns = 5;
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    int** matr;
-    int* vec;
+    std::vector<int> matr;
+    std::vector<int> vec;
     if (rank == 0) {
         matr = getRandomMatrix(rows, columns);
         vec = getRandomVector(columns);
     }
-    int* multiply = multiplyMatrixByVector(
+    std::vector<int> multiply = multiplyMatrixByVector(
         matr, rows, columns, vec, columns);
     if (rank == 0) {
-        int* multiplyNotParall = multiplyMatrixByVectorNotParall(
+        std::vector<int> multiplyNotParall = multiplyMatrixByVectorNotParall(
             matr, rows, columns, vec, columns);
-        for (int i = 0; i < rows; i++) {
-            ASSERT_EQ(multiplyNotParall[i], multiply[i]);
-        }
 
-        delete[] vec;
-
-        for (int i = 0; i < rows; i++) {
-            delete[] matr[i];
-        }
-        delete[] matr;
-        delete[] multiplyNotParall;
+        ASSERT_EQ(multiplyNotParall, multiply);
     }
-    delete[] multiply;
 }
 
 TEST(Parallel_Operations_MPI, Test_Size_Huge) {
-    const int rows = 9;
-    const int columns = 7;
+    const int rows = 20;
+    const int columns = 14;
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    int** matr;
-    int* vec;
+    std::vector<int> matr;
+    std::vector<int> vec;
     if (rank == 0) {
         matr = getRandomMatrix(rows, columns);
         vec = getRandomVector(columns);
     }
-    int* multiply = multiplyMatrixByVector(
+    std::vector<int> multiply = multiplyMatrixByVector(
         matr, rows, columns, vec, columns);
     if (rank == 0) {
-        int* multiplyNotParall = multiplyMatrixByVectorNotParall(
+        std::vector<int> multiplyNotParall = multiplyMatrixByVectorNotParall(
             matr, rows, columns, vec, columns);
-        for (int i = 0; i < rows; i++) {
-            ASSERT_EQ(multiplyNotParall[i], multiply[i]);
-        }
 
-        delete[] vec;
-
-        for (int i = 0; i < rows; i++) {
-            delete[] matr[i];
-        }
-        delete[] matr;
-        delete[] multiplyNotParall;
+        ASSERT_EQ(multiplyNotParall, multiply);
     }
-    delete[] multiply;
 }
 
 int main(int argc, char* argv[]) {

@@ -3,101 +3,105 @@
 #include <mpi.h>
 #include <time.h>
 #include <random>
+#include <vector>
 
 #include "../../modules/task_2/maksimov_a_matr_vec_mult/matr_vec_mult.h"
 
 #define MAX_GEN 100
 
-int* getRandomVector(int size, int seedMod) {
+std::vector<int> getRandomVector(int size) {
     if (size < 1) {
         throw "size < 1 error";
     }
 
     std::mt19937 gen;
-    gen.seed(time(0) + seedMod);
+    gen.seed(time(0));
 
-    int* vec = new int[size];
+    std::vector<int> vec(size);
     for (int i = 0; i < size; i++) {
         vec[i] = gen() % MAX_GEN;
     }
     return vec;
 }
 
-int** getRandomMatrix(int rows, int columns) {
-    int** matr = new int*[rows];
-    for (int i = 0; i < rows; i++) {
-        matr[i] = getRandomVector(columns, i);
+std::vector<int> getRandomMatrix(int rows, int columns) {
+    if (rows < 1 || columns < 1) {
+        throw "rows or columns < 1 error";
+    }
+
+    std::mt19937 gen;
+    gen.seed(time(0));
+
+    std::vector<int> matr(rows * columns);
+    for (int row = 0; row < rows; row++) {
+        for (int column = 0; column < columns; column++) {
+            matr[row * columns + column] = gen() % MAX_GEN;
+        }
     }
     return matr;
 }
 
-int* multiplyMatrixByVectorNotParall(
-    int** matr, int rows, int columns,
-    int* vec, int vecSize) {
+std::vector<int> multiplyMatrixByVectorNotParall(
+    std::vector<int> matr, int rows, int columns,
+    std::vector<int> vec, int vecSize) {
 
     if (columns != vecSize)
         throw "columns != vecSize error";
 
-    int* result = new int[rows];
+    std::vector<int> result(rows);
     int sum = 0;
-    for (int i = 0; i < rows; i++) {
+    for (int row = 0; row < rows; row++) {
         sum = 0;
-        for (int j = 0; j < columns; j++) {
-            sum += matr[i][j] * vec[j];
+        for (int column = 0; column < columns; column++) {
+            sum += matr[row * columns + column] * vec[column];
         }
-        result[i] = sum;
+        result[row] = sum;
     }
 
     return result;
 }
 
-int* multiplyMatrixByVector(
-    int** matr, int rows, int columns,
-    int* vec, int vecSize) {
-
+std::vector<int> multiplyMatrixByVector(
+    std::vector<int> matr, int rows, int columns,
+    std::vector<int> vec, int vecSize) {
 
     if (columns != vecSize)
         throw "columns != vecSize error";
 
     MPI_Status mpiStatus;
-    int procNum, procRank, sum, rowsPart, packedDataSize;
+    int procNum, procRank, sum, rowsPart, size;
 
     MPI_Comm_size(MPI_COMM_WORLD, &procNum);
     MPI_Comm_rank(MPI_COMM_WORLD, &procRank);
 
     rowsPart = rows / procNum;
-    packedDataSize = columns + rowsPart * columns;
+    size = rowsPart * columns;
 
-    int* packedData = new int[packedDataSize];
+    if (procRank != 0) {
+        vec = std::vector<int>(columns);
+        matr = std::vector<int>(size);
+    }
+
+    MPI_Bcast(vec.data(), columns, MPI_INT, 0, MPI_COMM_WORLD);
 
     if (procRank == 0) {
-        for (int i = 0; i < columns; i++) {
-            packedData[i] = vec[i];
-        }
         for (int currProc = 1; currProc < procNum; currProc++) {
-            for (int row = 0; row < rowsPart; row++) {
-                for (int column = 0; column < columns; column++) {
-                    packedData[columns + row * columns + column]
-                        = matr[currProc * rowsPart + row][column];
-                }
-            }
-            MPI_Send(&packedData[0], packedDataSize, MPI_INT, currProc, 0, MPI_COMM_WORLD);
+            MPI_Send(matr.data() + currProc * size, size, MPI_INT, currProc, 0, MPI_COMM_WORLD);
         }
     }
 
     if (procRank != 0) {
-        MPI_Recv(&packedData[0], packedDataSize, MPI_INT, 0,
-            0, MPI_COMM_WORLD, &mpiStatus);
+        MPI_Recv(matr.data(), size, MPI_INT, 0, 0, MPI_COMM_WORLD, &mpiStatus);
     }
 
-    int* returnVec = new int[rows];
+    std::vector<int> returnVec(rows);
 
-    int* resultVec = new int[rowsPart];
+    std::vector<int> resultVec(rowsPart);
     if (procRank == 0) {
         for (int row = 0; row < rowsPart; row++) {
             sum = 0;
             for (int column = 0; column < columns; column++) {
-                sum += matr[row][column] * vec[column];
+                sum += matr[row * columns + column] * vec[column];
             }
             returnVec[row] = sum;
         }
@@ -105,34 +109,30 @@ int* multiplyMatrixByVector(
         for (int row = 0; row < rowsPart; row++) {
             sum = 0;
             for (int column = 0; column < columns; column++) {
-                sum += packedData[columns + row * columns + column] * packedData[column];
+                sum += matr[row * columns + column] * vec[column];
             }
             resultVec[row] = sum;
         }
     }
 
-    delete[] packedData;
-
     if (procRank != 0) {
-        MPI_Send(&resultVec[0], rowsPart, MPI_INT, 0, 0, MPI_COMM_WORLD);
+        MPI_Send(resultVec.data(), rowsPart, MPI_INT, 0, 0, MPI_COMM_WORLD);
     }
 
     if (procRank == 0) {
         for (int currProc = 1; currProc < procNum; currProc++) {
-            MPI_Recv(&returnVec[currProc * rowsPart], rowsPart, MPI_INT, currProc,
+            MPI_Recv(returnVec.data() + currProc * rowsPart, rowsPart, MPI_INT, currProc,
                 0, MPI_COMM_WORLD, &mpiStatus);
         }
 
         for (int i = 0; i < rows % procNum; i++) {
             sum = 0;
             for (int j = 0; j < columns; j++) {
-                sum += matr[rowsPart * procNum + i][j] * vec[j];
+                sum += matr[(rowsPart * procNum + i) * columns + j] * vec[j];
             }
             returnVec[rowsPart * procNum + i] = sum;
         }
     }
-
-    delete[] resultVec;
 
     return returnVec;
 }
