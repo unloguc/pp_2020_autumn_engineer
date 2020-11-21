@@ -9,7 +9,7 @@ TEST(Function_Test, MyFunc_Return_0_From_0) {
 }
 
 TEST(Function_Test, MyFunc_Return_50_From_100) {
-  EXPECT_EQ(f(100), 50);
+    EXPECT_DOUBLE_EQ(f(100), 50);
 }
 
 TEST(Local_Integration_Test, Local_Integration_Dont_Throws_Exceptions) {
@@ -17,7 +17,7 @@ TEST(Local_Integration_Test, Local_Integration_Dont_Throws_Exceptions) {
 }
 
 TEST(Local_Integration_Test, Local_Integration_Return_Right_Value) {
-  EXPECT_EQ(localIntegration(f, 1, 1, 3), 2);
+    EXPECT_DOUBLE_EQ(localIntegration(f, 1, 1, 3), 2);
 }
 
 TEST(Local_Integration_Test, Local_Integration_Throws_Error_When_N_Less_1) {
@@ -37,13 +37,13 @@ TEST(Integration_Test, Integration_Dont_Throws_Exceptions) {
 TEST(Integration_Test, Integration_Return_Right_Value) {
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  EXPECT_EQ(integration(f, 2, 1, 3), 2);
+  EXPECT_DOUBLE_EQ(integration(f, 10000, 1, 3), 2);
 }
 
 TEST(Integration_Test, Integration_Return_Right_Value_2) {
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  EXPECT_EQ(integration(f, 3, 1, 4), 3.75);
+  EXPECT_DOUBLE_EQ(integration(f, 3, 1, 4), 3.75);
 }
 
 int main(int argc, char** argv) {
