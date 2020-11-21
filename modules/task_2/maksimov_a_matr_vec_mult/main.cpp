@@ -1,6 +1,7 @@
 // Copyright 2020 Maksimov Andrey
 #include <gtest-mpi-listener.hpp>
 #include <gtest/gtest.h>
+#include <vector>
 
 #include "../../modules/task_2/maksimov_a_matr_vec_mult/matr_vec_mult.h"
 
