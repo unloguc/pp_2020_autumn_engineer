@@ -81,12 +81,10 @@ void my::MPI_Allreduce(void* sendbuf, void* recvbuf, int count, MPI_Datatype dat
 
     if (datatype == MPI_INT) {
         delete[] static_cast<int*>(tmp);
-    }
-    else {
+    } else {
         if (datatype == MPI_FLOAT) {
             delete[] static_cast<float*>(tmp);
-        }
-        else {
+        } else {
             if (datatype == MPI_DOUBLE) {
                 delete[] static_cast<double*>(tmp);
             }
