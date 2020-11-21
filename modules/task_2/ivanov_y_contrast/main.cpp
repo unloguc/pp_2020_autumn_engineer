@@ -5,15 +5,38 @@
 #include <vector>
 #include "./contrast.h"
 
+TEST(Parallel_Operation_MPI, Test_Can_Create_Image_3x3) {
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    int height = 3;
+    int width = 3;
+    std::vector<int> Arr;
+    std::vector<int> Arr2;
+    std::vector<int> Arr1;
+    if (rank == 0) {
+        Arr = CreateRandomImg(height, width);
+    }
+    Arr2 = ParallelContrast(Arr, height, width);
+    if (rank == 0) {
+        Arr1 = LocalContrast(Arr, height, width);
+        ASSERT_EQ(Arr1, Arr2);
+    }
+}
+
 TEST(Parallel_Operation_MPI, Test_Can_Create_Image_10x10) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     int height = 10;
     int width = 10;
-    std::vector<int> Arr = CreateRandomImg(height, width);
-    std::vector<int> Arr2 = ParallelContrast(Arr, height, width);
+    std::vector<int> Arr;
+    std::vector<int> Arr2;
+    std::vector<int> Arr1;
     if (rank == 0) {
-        std::vector<int> Arr1 = LocalContrast(Arr, height, width);
+        Arr = CreateRandomImg(height, width);
+    }
+    Arr2 = ParallelContrast(Arr, height, width);
+    if (rank == 0) {
+        Arr1 = LocalContrast(Arr, height, width);
         ASSERT_EQ(Arr1, Arr2);
     }
 }
@@ -23,10 +46,15 @@ TEST(Parallel_Operation_MPI, Test_Can_Create_Image_30x30) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     int height = 30;
     int width = 30;
-    std::vector<int> Arr = CreateRandomImg(height, width);
-    std::vector<int> Arr2 = ParallelContrast(Arr, height, width);
+    std::vector<int> Arr;
+    std::vector<int> Arr2;
+    std::vector<int> Arr1;
     if (rank == 0) {
-        std::vector<int> Arr1 = LocalContrast(Arr, height, width);
+        Arr = CreateRandomImg(height, width);
+    }
+    Arr2 = ParallelContrast(Arr, height, width);
+    if (rank == 0) {
+        Arr1 = LocalContrast(Arr, height, width);
         ASSERT_EQ(Arr1, Arr2);
     }
 }
@@ -36,10 +64,15 @@ TEST(Parallel_Operation_MPI, Test_Can_Create_Image_100x100) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     int height = 100;
     int width = 100;
-    std::vector<int> Arr = CreateRandomImg(height, width);
-    std::vector<int> Arr2 = ParallelContrast(Arr, height, width);
+    std::vector<int> Arr;
+    std::vector<int> Arr2;
+    std::vector<int> Arr1;
     if (rank == 0) {
-        std::vector<int> Arr1 = LocalContrast(Arr, height, width);
+        Arr = CreateRandomImg(height, width);
+    }
+    Arr2 = ParallelContrast(Arr, height, width);
+    if (rank == 0) {
+        Arr1 = LocalContrast(Arr, height, width);
         ASSERT_EQ(Arr1, Arr2);
     }
 }
@@ -49,10 +82,15 @@ TEST(Parallel_Operation_MPI, Test_Can_Create_Image_200x200) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     int height = 200;
     int width = 200;
-    std::vector<int> Arr = CreateRandomImg(height, width);
-    std::vector<int> Arr2 = ParallelContrast(Arr, height, width);
+    std::vector<int> Arr;
+    std::vector<int> Arr2;
+    std::vector<int> Arr1;
     if (rank == 0) {
-        std::vector<int> Arr1 = LocalContrast(Arr, height, width);
+        Arr = CreateRandomImg(height, width);
+    }
+    Arr2 = ParallelContrast(Arr, height, width);
+    if (rank == 0) {
+        Arr1 = LocalContrast(Arr, height, width);
         ASSERT_EQ(Arr1, Arr2);
     }
 }
@@ -62,10 +100,15 @@ TEST(Parallel_Operation_MPI, Test_Can_Create_Image_1000x1000) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     int height = 1000;
     int width = 1000;
-    std::vector<int> Arr = CreateRandomImg(height, width);
-    std::vector<int> Arr2 = ParallelContrast(Arr, height, width);
+    std::vector<int> Arr;
+    std::vector<int> Arr2;
+    std::vector<int> Arr1;
     if (rank == 0) {
-        std::vector<int> Arr1 = LocalContrast(Arr, height, width);
+        Arr = CreateRandomImg(height, width);
+    }
+    Arr2 = ParallelContrast(Arr, height, width);
+    if (rank == 0) {
+        Arr1 = LocalContrast(Arr, height, width);
         ASSERT_EQ(Arr1, Arr2);
     }
 }
