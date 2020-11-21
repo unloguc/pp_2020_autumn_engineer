@@ -4,6 +4,7 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
+#include <cstring>
 #include "../../../modules/task_2/novikov_d_allreduce/allreduce.h"
 
 template <typename Type>
@@ -78,5 +79,17 @@ void my::MPI_Allreduce(void* sendbuf, void* recvbuf, int count, MPI_Datatype dat
         m = 2 * m;
     }
 
-    delete[] tmp;
+    if (datatype == MPI_INT) {
+        delete[] static_cast<int*>(tmp);
+    }
+    else {
+        if (datatype == MPI_FLOAT) {
+            delete[] static_cast<float*>(tmp);
+        }
+        else {
+            if (datatype == MPI_DOUBLE) {
+                delete[] static_cast<double*>(tmp);
+            }
+        }
+    }
 }
