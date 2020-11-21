@@ -5,11 +5,11 @@
 #include <vector>
 #include "./contrast.h"
 
-TEST(Parallel_Operation_MPI, Test_Can_Create_Image_3x3) {
+TEST(Parallel_Operation_MPI, Test_Can_Create_Image_5x5) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    int height = 3;
-    int width = 3;
+    int height = 5;
+    int width = 5;
     int pixes = height * width;
     std::vector<int> Arr(pixes);
     std::vector<int> Arr2(pixes);

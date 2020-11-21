@@ -48,6 +48,7 @@ std::vector<int> ParallelContrast(std::vector<int> Arr, int height, int width) {
     int* sendbuf = new int[height];
     int* sendcounts = new int[process_number];
     int* displs = new int[process_number];
+    std::vector<int> Ar(LocalContrast(Arr, height, width));
     for (int i = 0; i < height; i++) {
         sendbuf[i] = i;
     }
@@ -88,9 +89,9 @@ std::vector<int> ParallelContrast(std::vector<int> Arr, int height, int width) {
     MPI_Gatherv(&local_result[0], sendcounts_global[process_rank], MPI_INT, &global_result[0],
         sendcounts_global, displs_global, MPI_INT, 0, MPI_COMM_WORLD);
 
-    std::vector<int> global_result_mas(pixes);
+    std::vector<int> global_result_mas(Ar);
     for (int i = 0; i < height * width; i++) {
-        global_result_mas[i] = global_result[i];
+        global_result[i] = global_result_mas[i];
     }
     return global_result_mas;
 }
