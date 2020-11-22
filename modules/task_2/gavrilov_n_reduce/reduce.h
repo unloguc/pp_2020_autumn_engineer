@@ -2,12 +2,12 @@
 #ifndef MODULES_TASK_2_GAVRILOV_N_REDUCE_REDUCE_H_
 #define MODULES_TASK_2_GAVRILOV_N_REDUCE_REDUCE_H_
 
-#include <vector>
 #include <mpi.h>
+#include <vector>
+#include <algorithm>
 
 template <typename T>
 MPI_Datatype getMPIDataType() {
-
     if (std::is_same<T, int>::value)
         return MPI_INT;
     else if (std::is_same<T, float>::value)
@@ -20,12 +20,10 @@ MPI_Datatype getMPIDataType() {
 
 template <typename T>
 T getRandomVar() {
-
     if (std::is_same<T, int>::value)
-        return rand() % 20000 - 10000;
+        return rand_r() % 20000 - 10000;
     else if (std::is_same<T, float>::value || std::is_same<T, double>::value)
-        return getRandomVar<int>() + rand() % 100 * 0.01;
-    
+        return getRandomVar<int>() + rand_r() % 100 * 0.01;
     throw "Type not supported.";
 }
 
@@ -33,8 +31,7 @@ template <typename T>
 std::vector<T> getRandomVector(size_t size) {
     std::vector<T> result(size);
 
-    for (size_t i = 0; i < size; i++)
-    {
+    for (size_t i = 0; i < size; i++) {
         result[i] = getRandomVar<T>();
     }
 
@@ -87,8 +84,6 @@ void operation(T* arr1, T* arr2, int count, MPI_Op op) {
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-
-    //printf("x %d %d %d\n", rank,  arr1[0], arr2[0]);
 }
 
 void operation(MPI_Datatype datatype, void* arr1, void* arr2, int count, MPI_Op op);

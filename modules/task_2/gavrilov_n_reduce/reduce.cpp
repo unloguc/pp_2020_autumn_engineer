@@ -1,10 +1,9 @@
 // Copyright 2020 Gavrilov Nikita
-#include <algorithm>
 #include <mpi.h>
+#include <algorithm>
 #include "../../modules/task_2/gavrilov_n_reduce/reduce.h"
 
 void operation(MPI_Datatype datatype, void* arr1, void* arr2, int count, MPI_Op op) {
-
     switch (datatype) {
     case MPI_INT:
         operation(static_cast<int*>(arr1), static_cast<int*>(arr2), count, op);
@@ -95,7 +94,6 @@ void reduce(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_
             int recvId = (recvIdRooted + root) % size;
 
             if (recvIdRooted < size) {
-
                 MPI_Recv(rbuf, count, datatype, recvId, 0, comm, &status);
                 operation(datatype, sbuf, rbuf, count, op);
             }
@@ -106,8 +104,7 @@ void reduce(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_
             }
 
             magicNumber *= 2;
-        }
-        else {
+        } else {
             int sendIdRooted = index - magicNumber / 2;
             int sendId = (sendIdRooted + root) % size;
 

@@ -4,6 +4,8 @@
 #include <gtest/gtest.h>
 #include <gtest-mpi-listener.hpp>
 #include <algorithm>
+#include <string>
+#include <vector>
 #include "./reduce.h"
 
 TEST(Parallel_Operations_MPI, No_Throw) {
@@ -46,8 +48,7 @@ void testRankSumRoot(int root) {
 
     reduce(&rank, &res, 1, MPI_INT, MPI_SUM, root, MPI_COMM_WORLD);
 
-    if (rank == root)
-    {
+    if (rank == root) {
         ASSERT_EQ(res, (size - 1) * size / 2);
     }
 }
@@ -58,7 +59,7 @@ void test(MPI_Op op, int root) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
     int size = 1000000;
-    
+
     std::vector<T> inp = getRandomVector<T>(size);
 
     std::vector<T> res1(size);
@@ -83,7 +84,6 @@ void test(MPI_Op op, int root) {
         printf("My time = %fl\n", t1);
         printf("MPI time = %fl\n", t2);
     }
-
 }
 
 int main(int argc, char** argv) {
