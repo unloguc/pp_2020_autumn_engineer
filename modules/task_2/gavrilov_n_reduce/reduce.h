@@ -7,6 +7,7 @@
 #include <vector>
 #include <algorithm>
 #include <ctime>
+#include <random>
 
 template <typename T>
 MPI_Datatype getMPIDataType() {
@@ -22,11 +23,12 @@ MPI_Datatype getMPIDataType() {
 
 template <typename T>
 T getRandomVar() {
-    unsigned int t = (unsigned int)time(0);
+    std::mt19937 rnd;
+    rnd.seed(static_cast<unsigned int>(time(0)));
     if (std::is_same<T, int>::value)
-        return rand_r(&t) % 20000 - 10000;
+        return rnd() % 20000 - 10000;
     else if (std::is_same<T, float>::value || std::is_same<T, double>::value)
-        return getRandomVar<int>() + rand_r(&t) % 100 * 0.01;
+        return getRandomVar<int>() + rnd() % 100 * 0.01;
     throw "Type not supported.";
 }
 
