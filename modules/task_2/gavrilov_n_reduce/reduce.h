@@ -3,6 +3,7 @@
 #define MODULES_TASK_2_GAVRILOV_N_REDUCE_REDUCE_H_
 
 #include <mpi.h>
+#include <stdlib.h>
 #include <vector>
 #include <algorithm>
 #include <ctime>
