@@ -16,8 +16,6 @@ TEST(Topology_Torus, Create_topology_with_correct_number_of_processes) {
 
     int dims[] = {0, 0};
     MPI_Dims_create(procNum, 2, dims);
-    //const int gridHeight = 4;
-    //const int gridWidth = 5;
     MPI_Comm torusTopology;
     bool res = createTorusTopology(&torusTopology, dims[0], dims[1]);
     ASSERT_TRUE(res);
@@ -32,8 +30,6 @@ TEST(Topology_Torus, Create_topology_from_extra_number_of_processes) {
     int dims[] = {0, 0};
     if (procNum > 1) --procNum;
     MPI_Dims_create(procNum, 2, dims);
-    //const int gridHeight = 2;
-    //const int gridWidth = 2;
 
     MPI_Comm torusTopology;
     bool res = createTorusTopology(&torusTopology, dims[0], dims[1]);
@@ -53,8 +49,6 @@ TEST(Topology_Torus, Send_Message_To_Random_Point_For_Single_Process) {
     std::vector<int> message;
     int dims[] = {0, 0};
     MPI_Dims_create(procNum, 2, dims);
-    //const int gridHeight = 4;
-    //const int gridWidth = 5;
 
     MPI_Comm torusTopology;
     bool res = createTorusTopology(&torusTopology, dims[0], dims[1]);
@@ -93,9 +87,6 @@ TEST(Topology_Torus, Send_Message_To_Random_Point_For_Each_Process) {
     std::vector<int> message;
     int dims[] = {0, 0};
     MPI_Dims_create(procNum, 2, dims);
-    //const int gridHeight = 4;
-    //const int gridWidth = 5;
-    std::cout << dims[0] << ' ' << dims[1] << std::endl;
 
     MPI_Comm torusTopology;
     bool res = createTorusTopology(&torusTopology, dims[0], dims[1]);
