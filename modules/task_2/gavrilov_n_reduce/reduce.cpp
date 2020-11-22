@@ -1,6 +1,7 @@
 // Copyright 2020 Gavrilov Nikita
 #include <mpi.h>
 #include <algorithm>
+#include <cstring>
 #include "../../modules/task_2/gavrilov_n_reduce/reduce.h"
 
 void operation(MPI_Datatype datatype, void* arr1, void* arr2, int count, MPI_Op op) {
