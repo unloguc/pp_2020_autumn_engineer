@@ -22,10 +22,11 @@ MPI_Datatype getMPIDataType() {
 
 template <typename T>
 T getRandomVar() {
+    unsigned int t = (unsigned int)time(0);
     if (std::is_same<T, int>::value)
-        return rand_r(time(0)) % 20000 - 10000;
+        return rand_r(&t) % 20000 - 10000;
     else if (std::is_same<T, float>::value || std::is_same<T, double>::value)
-        return getRandomVar<int>() + rand_r(time(0)) % 100 * 0.01;
+        return getRandomVar<int>() + rand_r(&t) % 100 * 0.01;
     throw "Type not supported.";
 }
 
