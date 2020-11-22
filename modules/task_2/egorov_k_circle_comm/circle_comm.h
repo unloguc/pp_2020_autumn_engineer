@@ -5,6 +5,6 @@
 #include <vector>
 #include <string>
 
-int circle_comm_create();
+MPI_Comm circle_comm_create();
 
 #endif  // MODULES_TASK_2_EGOROV_K_CIRCLE_COMM_CIRCLE_COMM_H_

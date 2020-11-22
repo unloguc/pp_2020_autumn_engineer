@@ -7,7 +7,7 @@
 #include <algorithm>
 #include "../../../modules/task_2/egorov_k_circle_comm/circle_comm.h"
 
-int circle_comm_create() {
+MPI_Comm circle_comm_create() {
     int numtasks;
 
     MPI_Comm circle_comm;
