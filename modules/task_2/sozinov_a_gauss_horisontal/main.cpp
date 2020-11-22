@@ -5,7 +5,7 @@
 #include <vector>
 #include "./gauss_horisontal.h"
 
-TEST(Parallel_Operations_MPI, test_find) {
+TEST(Parallel_Operations_MPI, test_find_seq) {
     std::vector<double> coefs{ 1, 3, 2,
                                2, 7, 5,
                                1, 4, 6 };
@@ -13,7 +13,7 @@ TEST(Parallel_Operations_MPI, test_find) {
     ASSERT_NO_THROW(GetSequentialSolution(coefs, pPart, 3));
 }
 
-TEST(Parallel_Operations_MPI, test_find) {
+TEST(Parallel_Operations_MPI, test_find_par) {
     std::vector<double> coefs{ 1, 3, 2,
                                2, 7, 5,
                                1, 4, 6 };
