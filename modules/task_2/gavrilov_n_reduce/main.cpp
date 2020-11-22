@@ -63,11 +63,6 @@ TEST(Parallel_Operations_MPI, No_Throw) {
     ASSERT_NO_THROW(test<int>(MPI_SUM, 0));
 }
 
-TEST(Parallel_Operations_MPI, Any_Throw) {
-    ASSERT_ANY_THROW(test<int>(MPI_REPLACE, 0));
-    ASSERT_ANY_THROW(test<std::string>(MPI_REPLACE, 0));
-}
-
 TEST(Parallel_Operations_MPI, Int_Sum) {
     test<int>(MPI_SUM, 0);
 }
