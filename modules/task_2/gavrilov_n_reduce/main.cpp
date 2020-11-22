@@ -4,32 +4,52 @@
 #include <gtest/gtest.h>
 #include <gtest-mpi-listener.hpp>
 #include <algorithm>
-#include "reduce.h"
+#include "./reduce.h"
 
 TEST(Parallel_Operations_MPI, No_Throw) {
-    
     ASSERT_NO_THROW(test<int>(MPI_SUM, 0));
 }
 
 TEST(Parallel_Operations_MPI, Any_Throw) {
-
     ASSERT_ANY_THROW(test<int>(MPI_REPLACE, 0));
     ASSERT_ANY_THROW(test<std::string>(MPI_REPLACE, 0));
 }
 
 TEST(Parallel_Operations_MPI, Int_Sum) {
-
     test<int>(MPI_SUM, 0);
 }
 
 TEST(Parallel_Operations_MPI, Float_Sum) {
-
     test<float>(MPI_SUM, 0);
 }
 
 TEST(Parallel_Operations_MPI, Double_Prod) {
-
     test<double>(MPI_PROD, 1);
+}
+
+TEST(Parallel_Operations_MPI, Rank_Sum_root_0_10) {
+    for (size_t i = 0; i < 10; i++) {
+        testRankSumRoot(i);
+    }
+}
+
+void testRankSumRoot(int root) {
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    int size;
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    if (root >= size)
+        root = size - 1;
+
+    int res;
+
+    reduce(&rank, &res, 1, MPI_INT, MPI_SUM, root, MPI_COMM_WORLD);
+
+    if (rank == root)
+    {
+        ASSERT_EQ(res, (size - 1) * size / 2);
+    }
 }
 
 template <typename T>
