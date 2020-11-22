@@ -63,7 +63,7 @@ template <typename T>
 void operation(T* arr1, T* arr2, int count, MPI_Op op) {
     T(*func)(T a, T b);
 
-    if(op == MPI_SUM)
+    if (op == MPI_SUM)
         func = operationSum;
     else if (op == MPI_MAX)
         func = operationMax;
