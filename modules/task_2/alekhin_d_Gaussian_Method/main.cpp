@@ -89,6 +89,7 @@ TEST(Sequantial_Gauss, Sequantial_Gauss_Works) {
 
   if (rank == 0) {
     Matrix matrix;
+    initMatrix(&matrix);
     EXPECT_NO_THROW(getSequantialGauss(matrix));
   }
 }
@@ -99,6 +100,7 @@ TEST(Sequantial_Gauss, Sequantial_Gauss_Test) {
 
   if (rank == 0) {
     Matrix matrix;
+    initMatrix(&matrix);
     std::vector<double> result = getSequantialGauss(matrix);
     std::vector<double> temp = { 1.22, -1.145, 0.755, -0.371, 0.47 };
 
@@ -117,7 +119,7 @@ TEST(Number_Of_Lines, Number_Of_Lines_For_One_Process) {
   matrix.rows = 5;
 
   if (size == 1) {
-    std::vector<int> result = numberOfLinesToStore(matrix);
+    std::vector<int> result = numberOfLinesToStore(matrix.rows);
     std::vector<int> temp = { 5 };
 
     ASSERT_EQ(result.size(), temp.size());
@@ -135,7 +137,7 @@ TEST(Number_Of_Lines, Number_Of_Lines_For_Two_Processes) {
   matrix.rows = 5;
 
   if (size == 2) {
-    std::vector<int> result = numberOfLinesToStore(matrix);
+    std::vector<int> result = numberOfLinesToStore(matrix.rows);
     std::vector<int> temp = { 3, 2 };
 
     ASSERT_EQ(result.size(), temp.size());
@@ -153,7 +155,7 @@ TEST(Number_Of_Lines, Number_Of_Lines_For_Three_Processes) {
   matrix.rows = 5;
 
   if (size == 3) {
-    std::vector<int> result = numberOfLinesToStore(matrix);
+    std::vector<int> result = numberOfLinesToStore(matrix.rows);
     std::vector<int> temp = { 2, 2, 1 };
 
     ASSERT_EQ(result.size(), temp.size());
@@ -171,7 +173,7 @@ TEST(Number_Of_Lines, Number_Of_Lines_For_Four_Processes) {
   matrix.rows = 5;
 
   if (size == 4) {
-    std::vector<int> result = numberOfLinesToStore(matrix);
+    std::vector<int> result = numberOfLinesToStore(matrix.rows);
     std::vector<int> temp = { 2, 1, 1, 1 };
 
     ASSERT_EQ(result.size(), temp.size());
@@ -189,7 +191,7 @@ TEST(Number_Of_Lines, Number_Of_Lines_For_Five_Processes) {
   matrix.rows = 5;
 
   if (size == 5) {
-    std::vector<int> result = numberOfLinesToStore(matrix);
+    std::vector<int> result = numberOfLinesToStore(matrix.rows);
     std::vector<int> temp = { 1, 1, 1, 1, 1 };
 
     ASSERT_EQ(result.size(), temp.size());
@@ -207,7 +209,7 @@ TEST(Number_Of_Lines, Number_Of_Lines_For_Six_Processes) {
   matrix.rows = 5;
 
   if (size == 6) {
-    std::vector<int> result = numberOfLinesToStore(matrix);
+    std::vector<int> result = numberOfLinesToStore(matrix.rows);
     std::vector<int> temp = { 1, 1, 1, 1, 1 };
 
     ASSERT_EQ(result.size(), temp.size());
@@ -225,7 +227,7 @@ TEST(Number_Of_Lines, Number_Of_Lines_For_One_Line) {
   matrix.rows = 1;
 
   if (size == 2) {
-    std::vector<int> result = numberOfLinesToStore(matrix);
+    std::vector<int> result = numberOfLinesToStore(matrix.rows);
     std::vector<int> temp = { 1 };
 
     ASSERT_EQ(result.size(), temp.size());
@@ -243,7 +245,7 @@ TEST(Distribute_Test, DistributeData_Works) {
   initMatrix(&matrix);
   Matrix local_matrix;
 
-  std::vector<int> number_of_line_to_store = numberOfLinesToStore(matrix);
+  std::vector<int> number_of_line_to_store = numberOfLinesToStore(matrix.rows);
   int number_of_line_to_store_size = number_of_line_to_store.size();
   for (int i = 0; i < number_of_line_to_store_size; i++) {
     if (i == rank) {
@@ -265,7 +267,7 @@ TEST(Leading_Line_Test, Leading_Line_Test_One) {
   initMatrix(&matrix);
   Matrix local_matrix;
 
-  std::vector<int> number_of_line_to_store = numberOfLinesToStore(matrix);
+  std::vector<int> number_of_line_to_store = numberOfLinesToStore(matrix.rows);
   int number_of_line_to_store_size = number_of_line_to_store.size();
   for (int i = 0; i < number_of_line_to_store_size; i++) {
     if (i == rank) {
@@ -277,7 +279,7 @@ TEST(Leading_Line_Test, Leading_Line_Test_One) {
   int count_of_work_processors = number_of_line_to_store.size();
   if (rank < count_of_work_processors) {
     distributeData(matrix, &local_matrix);
-    EXPECT_EQ(chooseLeadingLineParallel(matrix, local_matrix, 0), 2);
+    EXPECT_EQ(chooseLeadingLineParallel(matrix.rows, matrix.columns, &local_matrix, 0), 2);
   }
 }
 
@@ -289,7 +291,7 @@ TEST(Leading_Line_Test, Leading_Line_Test_Two) {
   initMatrix(&matrix);
   Matrix local_matrix;
 
-  std::vector<int> number_of_line_to_store = numberOfLinesToStore(matrix);
+  std::vector<int> number_of_line_to_store = numberOfLinesToStore(matrix.rows);
   int number_of_line_to_store_size = number_of_line_to_store.size();
   for (int i = 0; i < number_of_line_to_store_size; i++) {
     if (i == rank) {
@@ -301,7 +303,7 @@ TEST(Leading_Line_Test, Leading_Line_Test_Two) {
   int count_of_work_processors = number_of_line_to_store.size();
   if (rank < count_of_work_processors) {
     distributeData(matrix, &local_matrix);
-    EXPECT_EQ(chooseLeadingLineParallel(matrix, local_matrix, 1), 1);
+    EXPECT_EQ(chooseLeadingLineParallel(matrix.rows, matrix.columns, &local_matrix, 1), 1);
   }
 }
 
@@ -313,7 +315,7 @@ TEST(Leading_Line_Test, Leading_Line_Test_Three) {
   initMatrix(&matrix);
   Matrix local_matrix;
 
-  std::vector<int> number_of_line_to_store = numberOfLinesToStore(matrix);
+  std::vector<int> number_of_line_to_store = numberOfLinesToStore(matrix.rows);
   int number_of_line_to_store_size = number_of_line_to_store.size();
   for (int i = 0; i < number_of_line_to_store_size; i++) {
     if (i == rank) {
@@ -325,7 +327,7 @@ TEST(Leading_Line_Test, Leading_Line_Test_Three) {
   int count_of_work_processors = number_of_line_to_store.size();
   if (rank < count_of_work_processors) {
     distributeData(matrix, &local_matrix);
-    EXPECT_EQ(chooseLeadingLineParallel(matrix, local_matrix, 4), 4);
+    EXPECT_EQ(chooseLeadingLineParallel(matrix.rows, matrix.columns, &local_matrix, 4), 4);
   }
 }
 
@@ -337,7 +339,7 @@ TEST(Leading_Line_Test, Leading_Line_Test_Four) {
   initMatrix(&matrix);
   Matrix local_matrix;
 
-  std::vector<int> number_of_line_to_store = numberOfLinesToStore(matrix);
+  std::vector<int> number_of_line_to_store = numberOfLinesToStore(matrix.rows);
   int number_of_line_to_store_size = number_of_line_to_store.size();
   for (int i = 0; i < number_of_line_to_store_size; i++) {
     if (i == rank) {
@@ -349,7 +351,7 @@ TEST(Leading_Line_Test, Leading_Line_Test_Four) {
   int count_of_work_processors = number_of_line_to_store.size();
   if (rank < count_of_work_processors) {
     distributeData(matrix, &local_matrix);
-    EXPECT_EQ(chooseLeadingLineParallel(matrix, local_matrix, 3), 4);
+    EXPECT_EQ(chooseLeadingLineParallel(matrix.rows, matrix.columns, &local_matrix, 3), 4);
   }
 }
 
@@ -358,10 +360,10 @@ TEST(Swap_Lines_Test, Swap_Lines_Works) {
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   Matrix matrix;
-  initMatrix(&matrix);
+  randomMatrix(&matrix);
   Matrix local_matrix;
 
-  std::vector<int> number_of_line_to_store = numberOfLinesToStore(matrix);
+  std::vector<int> number_of_line_to_store = numberOfLinesToStore(matrix.rows);
 
   int count_of_work_processors = number_of_line_to_store.size();
   for (int i = 0; i < count_of_work_processors; i++) {
@@ -377,20 +379,25 @@ TEST(Swap_Lines_Test, Swap_Lines_Works) {
   }
 }
 
+
+
+
+
 TEST(Sequantial_Gauss, Sequantial_Gauss_Time_Test) {
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-
-  double startTime = MPI_Wtime();
-
+  std::vector<double> result;
+  double startTime = 0;
   if (rank == 0) {
     Matrix matrix;
-    std::vector<double> result = getSequantialGauss(matrix);
+    randomMatrix(&matrix);
+    startTime = MPI_Wtime();
+    result = getSequantialGauss(matrix);
   }
 
   double endTime = MPI_Wtime();
   if (rank == 0) {
-    std::cout << endTime - startTime << std::endl;
+    std::cout << std::endl << endTime - startTime << std::endl;
   }
 }
 
@@ -399,22 +406,27 @@ TEST(Gauss_Parallel_Test, Gauss_Parallel_Time_Test) {
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   Matrix matrix;
-  initMatrix(&matrix);
+  randomMatrix(&matrix);
 
-  std::vector<int> number_of_line_to_store = numberOfLinesToStore(matrix);
+  std::vector<int> number_of_line_to_store = numberOfLinesToStore(matrix.rows);
   int count_of_work_processors = number_of_line_to_store.size();
 
-  double startTime = MPI_Wtime();
+  std::vector<double> result;
+  double startTime = 0;
 
   if (rank < count_of_work_processors) {
-    getParallelGauss(matrix);
+    startTime = MPI_Wtime();
+    result = getParallelGauss(matrix);
   }
 
   double endTime = MPI_Wtime();
   if (rank == 0) {
-    std::cout << endTime - startTime << std::endl;
+    std::cout << std::endl << endTime - startTime << std::endl;
   }
 }
+
+
+
 
 int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);

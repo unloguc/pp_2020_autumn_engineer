@@ -13,15 +13,17 @@ struct Matrix {
 
 std::vector<double> getSequantialGauss(Matrix matrix);
 void initMatrix(Matrix* matrix);
+void randomMatrix(Matrix* matrix);
 int chooseLeadingLine(Matrix matrix, int column);
 void swapLines(Matrix* matrix, int line1, int line2);
 
 std::vector<double> getParallelGauss(Matrix matrix);
 void distributeData(Matrix matrix, Matrix* local_matrix);
-std::vector<int> numberOfLinesToStore(Matrix matrix);
+std::vector<int> numberOfLinesToStore(int global_matrix_rows);
 void printMatrix(Matrix local_matrix);
-void shareCoeffs(Matrix global_matrix, Matrix local_matrix, int column);
-int chooseLeadingLineParallel(Matrix global_matrix, Matrix local_matrix, int column);
+void shareCoeffs(int global_matrix_rows, const Matrix* local_matrix, int column);
+int chooseLeadingLineParallel(int global_matrix_rows,
+  int global_matrix_culumns, const Matrix* local_matrix, int column);
 
 void getGaussForward(Matrix global_matrix, Matrix* local_matrix);
 void swapLinesParallel(Matrix* local_matrix, int line1, int line2);
