@@ -5,6 +5,7 @@
 #include <mpi.h>
 #include <vector>
 #include <algorithm>
+#include <ctime>
 
 template <typename T>
 MPI_Datatype getMPIDataType() {
@@ -21,9 +22,9 @@ MPI_Datatype getMPIDataType() {
 template <typename T>
 T getRandomVar() {
     if (std::is_same<T, int>::value)
-        return rand_r() % 20000 - 10000;
+        return rand_r(time(0)) % 20000 - 10000;
     else if (std::is_same<T, float>::value || std::is_same<T, double>::value)
-        return getRandomVar<int>() + rand_r() % 100 * 0.01;
+        return getRandomVar<int>() + rand_r(time(0)) % 100 * 0.01;
     throw "Type not supported.";
 }
 
@@ -62,22 +63,17 @@ template <typename T>
 void operation(T* arr1, T* arr2, int count, MPI_Op op) {
     T(*func)(T a, T b);
 
-    switch (op) {
-    case MPI_SUM:
+    if(op == MPI_SUM)
         func = operationSum;
-        break;
-    case MPI_MAX:
+    else if (op == MPI_MAX)
         func = operationMax;
-        break;
-    case MPI_MIN:
+    else if (op == MPI_MIN)
         func = operationMin;
-        break;
-    case MPI_PROD:
+    else if (op == MPI_PROD)
         func = operationMply;
-        break;
-    default:
+    else
         throw "Operation not supported.";
-    }
+
     for (int i = 0; i < count; i++) {
         arr1[i] = func(arr1[i], arr2[i]);
     }

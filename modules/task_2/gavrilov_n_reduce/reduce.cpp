@@ -4,50 +4,37 @@
 #include "../../modules/task_2/gavrilov_n_reduce/reduce.h"
 
 void operation(MPI_Datatype datatype, void* arr1, void* arr2, int count, MPI_Op op) {
-    switch (datatype) {
-    case MPI_INT:
+    if (datatype == MPI_INT)
         operation(static_cast<int*>(arr1), static_cast<int*>(arr2), count, op);
-        break;
-    case MPI_FLOAT:
+    else if (datatype == MPI_FLOAT)
         operation(static_cast<float*>(arr1), static_cast<float*>(arr2), count, op);
-        break;
-    case MPI_DOUBLE:
+    else if (datatype == MPI_DOUBLE)
         operation(static_cast<double*>(arr1), static_cast<double*>(arr2), count, op);
-        break;
-    default:
+    else
         throw "Type not supported.";
-    }
 }
 
 void* createBuf(MPI_Datatype datatype, int count) {
-    switch (datatype) {
-    case MPI_INT:
+    if (datatype == MPI_INT)
         return new int[count];
-    case MPI_FLOAT:
+    else if (datatype == MPI_FLOAT)
         return new float[count];
-    case MPI_DOUBLE:
+    else if (datatype == MPI_DOUBLE)
         return new double[count];
-    default:
+    else
         throw "Type not supported.";
-    }
 }
 
 void copy(MPI_Datatype datatype, int count, void* dest, void* src) {
     int size;
-    switch (datatype) {
-    case MPI_INT:
+    if (datatype == MPI_INT)
         size = sizeof(int);
-        break;
-    case MPI_FLOAT:
+    else if (datatype == MPI_FLOAT)
         size = sizeof(float);
-        break;
-    case MPI_DOUBLE:
+    else if (datatype == MPI_DOUBLE)
         size = sizeof(double);
-        break;
-    default:
+    else
         throw "Type not supported.";
-    }
-
     std::memcpy(dest, src, count * size);
 }
 
@@ -55,19 +42,14 @@ void deleteBuf(MPI_Datatype datatype, void* buf) {
     if (buf == nullptr)
         return;
 
-    switch (datatype) {
-    case MPI_INT:
+    if (datatype == MPI_INT)
         delete[] static_cast<int*>(buf);
-        break;
-    case MPI_FLOAT:
+    else if (datatype == MPI_FLOAT)
         delete[] static_cast<float*>(buf);
-        break;
-    case MPI_DOUBLE:
+    else if (datatype == MPI_DOUBLE)
         delete[] static_cast<double*>(buf);
-        break;
-    default:
+    else
         throw "Type not supported.";
-    }
 }
 
 void reduce(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm) {
