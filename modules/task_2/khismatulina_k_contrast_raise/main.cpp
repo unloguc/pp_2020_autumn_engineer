@@ -109,7 +109,7 @@ TEST(khism_task_2, test_5_paral_versus_seq_big) {
         std::vector<int> exp = contrastRaiseSeq(image, size, contrast, midBright);
         ASSERT_EQ(res, exp);
     }
-} 
+}
 
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
