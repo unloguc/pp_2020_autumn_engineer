@@ -5,7 +5,8 @@
 #include <vector>
 
 std::vector<int> getRandomImage(int size);
-std::vector<int> contrastRaiseSeq(std::vector<int> imageData, int size, int contrast);
+int getMidBright(std::vector<int> imageData, int size);
+std::vector<int> contrastRaiseSeq(std::vector<int> imageData, int size, int contrast, int midBright);
 std::vector<int> contrastRaiseParallel(std::vector<int> imageData, int size, int contrast);
 
 #endif  // MODULES_TASK_2_KHISMATULINA_K_CONTRAST_RAISE_CONTRAST_RAISE_H_

@@ -1,4 +1,4 @@
-// Copyright 2020 Khismatulina Karina
+//  Copyright 2020 Khismatulina Karina
 #include <gtest/gtest.h>
 #include <vector>
 #include "../../../modules/task_2/khismatulina_k_contrast_raise/contrast_raise.h"
@@ -40,8 +40,9 @@ TEST(khism_task_2, test_2_seq) {
         exp[7] = 255;
         exp[8] = 57;
     }
-    res = contrastRaiseSeq(res, size, contrast);
     if (rank == 0) {
+        int midBright = getMidBright(res, size);
+        res = contrastRaiseSeq(res, size, contrast, midBright);
         ASSERT_EQ(exp, res);
     }
 }
@@ -84,11 +85,12 @@ TEST(khism_task_2, test_4_paral_versus_seq_small) {
     int contrast = 10;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     std::vector<int> image = {1, 2, 4, 6};
-    std::vector<int> exp = contrastRaiseSeq(image, size, contrast);
 
     std::vector<int> res = contrastRaiseParallel(image, size, contrast);
 
     if (rank == 0) {
+        int midBright = getMidBright(image, size);
+        std::vector<int> exp = contrastRaiseSeq(image, size, contrast, midBright);
         ASSERT_EQ(res, exp);
     }
 }
@@ -96,30 +98,22 @@ TEST(khism_task_2, test_4_paral_versus_seq_small) {
 TEST(khism_task_2, test_5_paral_versus_seq_big) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    std::vector<int> image = getRandomImage(50);
-    std::vector<int> exp = contrastRaiseSeq(image, 20, 10);
+    int size = 1000;
+    int contrast = 20;
+    std::vector<int> image = getRandomImage(size);
 
-    std::vector<int> res = contrastRaiseParallel(image, 20, 10);
+    std::vector<int> res = contrastRaiseParallel(image, size, contrast);
 
     if (rank == 0) {
+        int midBright = getMidBright(image, size);
+        std::vector<int> exp = contrastRaiseSeq(image, size, contrast, midBright);
         ASSERT_EQ(res, exp);
     }
-}
+} 
 
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     MPI_Init(&argc, &argv);
-
-    //int rank, size, temp;
-    //MPI_Comm_size(MPI_COMM_WORLD, &size);
-    //MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-
-    //if (rank == 0)
-    //{
-    //    std::cout << "Please input number: ";
-    //    std::cin >> temp;
-    //}
-    //MPI_Barrier(MPI_COMM_WORLD); // All threads will wait here until you give thread 0 an input
 
     ::testing::AddGlobalTestEnvironment(new GTestMPIListener::MPIEnvironment);
     ::testing::TestEventListeners& listeners =

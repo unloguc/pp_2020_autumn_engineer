@@ -9,7 +9,7 @@
 
 std::vector<int> getRandomImage(int size) {
     if (size <= 0) {
-        throw "fucking error";
+        throw "error";
     }
     std::mt19937 gen;
     gen.seed(static_cast<unsigned int>(time(0)));
@@ -22,16 +22,21 @@ std::vector<int> getRandomImage(int size) {
     return imageData;
 }
 
-std::vector<int> contrastRaiseSeq(std::vector<int> imageData, int size, int contrast) {
-    std::vector<int> buf(256, 0);
+int getMidBright(std::vector<int> imageData, int size) {
     int midBright = 0;
     for (int i = 0; i < size; ++i) {
         midBright += imageData[i];
     }
     midBright /= size;
-    float corr = 1.0 + static_cast<float>(contrast) / 100;
+    return midBright;
+}
+
+std::vector<int> contrastRaiseSeq(std::vector<int> imageData, int size, int contrast, int midBright) {
+    std::vector<int> buf(256, 0);
+    std::vector<int> temp(size, 0);
+    float koef = 1.0 + static_cast<float>(contrast) / 100;
     for (int i = 0; i < 256; ++i) {
-        int a = ((i - midBright) * corr) + midBright;
+        int a = ((i - midBright) * koef) + midBright;
         buf[i] = a;
         if (a < 0) {
             buf[i] = 0;
@@ -41,10 +46,9 @@ std::vector<int> contrastRaiseSeq(std::vector<int> imageData, int size, int cont
         }
     }
     for (int i = 0; i < size; ++i) {
-        imageData[i] = buf[imageData[i]];
+        temp[i] = buf[imageData[i]];
     }
-    imageData.resize(size);
-    return imageData;
+    return temp;
 }
 
 std::vector<int> contrastRaiseParallel(std::vector<int> imageData, int imageSize, int contrast) {
@@ -84,7 +88,7 @@ std::vector<int> contrastRaiseParallel(std::vector<int> imageData, int imageSize
     MPI_Reduce(&tmp, &pixelsSum, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
 
     if (rank == 0) {
-        double koef = 1.0 + contrast / 100.0;
+        float koef = 1.0 + static_cast<float>(contrast) / 100.0;
         int midBright = pixelsSum / imageSize;
         for (int i = 0; i < 256; ++i) {
             buf_2[i] = static_cast<int>(midBright + koef * (static_cast<int>(i) - midBright));
@@ -99,7 +103,11 @@ std::vector<int> contrastRaiseParallel(std::vector<int> imageData, int imageSize
 
     MPI_Bcast(&buf_2[0], 256, MPI_INT, 0, MPI_COMM_WORLD);
 
-    std::vector<int> localRes(delta, 0);
+    std::vector<int> localRes(1, 0);
+    if (delta != 0) {
+        localRes.resize(delta);
+    }
+
     std::vector<int> res(imageSize, 0);
     if (rank == 0) {
         for (int i = 0; i < delta + rem; ++i) {
@@ -115,7 +123,10 @@ std::vector<int> contrastRaiseParallel(std::vector<int> imageData, int imageSize
         MPI_Send(&localRes[0], delta, MPI_INT, 0, 0, MPI_COMM_WORLD);
     }
 
-    std::vector<int> tmp2(delta, 0);
+    std::vector<int> tmp2(1, 0);
+    if (delta != 0) {
+        tmp2.resize(delta);
+    }
 
     if (rank == 0) {
         for (int proc = 1; proc < size; ++proc) {
