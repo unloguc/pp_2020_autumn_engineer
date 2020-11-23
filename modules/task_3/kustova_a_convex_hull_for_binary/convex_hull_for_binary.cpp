@@ -19,35 +19,14 @@ int giveNumbersToComponents(int ** image, int height, int width) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     int componentsNumber = 0;
-    if (size > height / 2) {
-        size = height / 2;
-        if (rank >= size) {
-            std::vector<int> send(height*width);
-            int k = 0;
-            for (int i = 0; i < height; i++) {
-                for (int j = 0; j < width; j++) {
-                    send[k] = 0;
-                    k++;
-                }
-            }
-            std::vector<int> recv(height*width);
-            MPI_Allreduce(&send[0], &recv[0], height*width, MPI_INT, MPI_MAX, MPI_COMM_WORLD);
-            k = 0;
-            for (int i = 0; i < height; i++) {
-                for (int j = 0; j < width; j++) {
-                    image[i][j] = recv[k];
-                    k++;
-                }
-            }
-            std::vector<int> number(1);
-            MPI_Bcast(&number[0], 1, MPI_INT, 0, MPI_COMM_WORLD);
-            componentsNumber = number[0];
-            return componentsNumber;
-        }
-    }
     const int delta_height = height / size;
     const int rem_height = height % size;
-    int start_height = (rank < rem_height) ? rank * (delta_height + 1) : delta_height * rank + rem_height;
+    int start_height;
+    if (rank < rem_height) {
+        start_height = rank * (delta_height + 1);
+    } else {
+        start_height = delta_height * rank + rem_height;
+    }
     if (image[start_height][0] != 0) {
         componentsNumber++;
         image[start_height][0] = componentsNumber;
@@ -62,28 +41,27 @@ int giveNumbersToComponents(int ** image, int height, int width) {
             }
         }
     }
-    int max_height = (rank < rem_height) ? delta_height + 1 : delta_height;
-    max_height += start_height;
-    for (int i = start_height + 1; i < max_height; i++) {
+    int rem_count;
+    if (rank < rem_height) {
+        rem_count = delta_height + 1;
+    } else {
+        rem_count = delta_height;
+    }
+    rem_count += start_height;
+    for (int i = start_height + 1; i < rem_count; i++) {
         for (int j = 0; j < width; j++) {
             if (image[i][j] != 0) {
                 if ((j > 0) && (image[i - 1][j - 1] != 0)) {
                     image[i][j] = image[i - 1][j - 1];
+                } else if (image[i - 1][j] != 0) {
+                    image[i][j] = image[i - 1][j];
+                } else if ((j < width - 1) && (image[i - 1][j + 1] != 0)) {
+                    image[i][j] = image[i - 1][j + 1];
+                } else if ((j > 0) && (image[i][j - 1] != 0)) {
+                    image[i][j] = image[i][j - 1];
                 } else {
-                    if (image[i - 1][j] != 0) {
-                        image[i][j] = image[i - 1][j];
-                    } else {
-                        if ((j < width - 1) && (image[i - 1][j + 1] != 0)) {
-                            image[i][j] = image[i - 1][j + 1];
-                        } else {
-                            if ((j > 0) && (image[i][j - 1] != 0)) {
-                                image[i][j] = image[i][j - 1];
-                            } else {
-                                componentsNumber++;
-                                image[i][j] = componentsNumber;
-                            }
-                        }
-                    }
+                    componentsNumber++;
+                    image[i][j] = componentsNumber;
                 }
             }
         }
@@ -110,7 +88,7 @@ int giveNumbersToComponents(int ** image, int height, int width) {
             } else {
                 MPI_Send(&send[0], 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
             }
-            for (int i = start_height; i < max_height; i++) {
+            for (int i = start_height; i < rem_count; i++) {
                 for (int j = 0; j < width; j++) {
                     if (image[i][j] != 0) {
                         image[i][j] += cNumber;
@@ -143,6 +121,7 @@ int giveNumbersToComponents(int ** image, int height, int width) {
         MPI_Bcast(&number[0], 1, MPI_INT, 0, MPI_COMM_WORLD);
         componentsNumber = number[0];
     }
+    // if (rank == 0)     printImage(image, height, width);
     return componentsNumber;
 }
 
@@ -198,7 +177,29 @@ std::vector<int> combineComponentParts(int ** image, int height, int width, int 
             }
         }
     }
+     //   if (rank == 0)     printImage(graf, componentsNumber, componentsNumber);
+    int k;
+    std::vector<int>vec;
+    for (int i = 0; i < componentsNumber; i++) {
+        k = 0;
+        vec.clear();
+        for (int j = 0; j < componentsNumber; j++) {
+            if (graf[i][j] != 0) {
+                k++;
+                vec.push_back(j);
+            }
+        }
+        if (k > 1) {
+            for (unsigned int t = 0; t < vec.size(); t++) {
+                for (unsigned int p = 0; p < vec.size(); p++) {
+                    graf[vec[t]][vec[p]] = 1;
+                }
+            }
+        }
+    }
 
+
+  //  if (rank == 0)     printImage(graf, componentsNumber, componentsNumber);
     if (size > height) {
         size = height;
     }
@@ -207,8 +208,8 @@ std::vector<int> combineComponentParts(int ** image, int height, int width, int 
 
     int cNumber = componentsNumber;
     int start_height = (rank < rem_height) ? (rank * (delta_height + 1)) : (delta_height * rank + rem_height);
-    int max_height = (rank < rem_height) ? (delta_height + 1) : delta_height;
-    max_height += start_height;
+    int rem_count = (rank < rem_height) ? (delta_height + 1) : delta_height;
+    rem_count += start_height;
     for (int i = cNumber - 2; i >= 0; i--) {
         for (int j = cNumber - 1; j >= i + 1; j--) {
             if (graf[i][j] != 0) {
@@ -222,7 +223,7 @@ std::vector<int> combineComponentParts(int ** image, int height, int width, int 
                         }
                     }
                 } else {
-                    for (int h = start_height; h < max_height; h++) {
+                    for (int h = start_height; h < rem_count; h++) {
                         for (int w = 0; w < width; w++) {
                             if (image[h][w] == j + 1) {
                                 image[h][w] = i + 1;
@@ -250,6 +251,7 @@ std::vector<int> combineComponentParts(int ** image, int height, int width, int 
             }
         }
     }
+// if (rank == 0)     printImage(image, height, width);
     std::vector<int> components;
     for (int h = 0; h < height; h++) {
         for (int w = 0; w < width; w++) {
@@ -282,7 +284,8 @@ std::vector<int> searchConnectedComponents(int ** image, int height, int width) 
     return components;
 }
 
-int ** imageAND(int ** image1, int ** image2, int height, int width) {
+
+int ** imageOrAnd(int ** image1, int ** image2, int height, int width, int sign) {
     int size, rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
@@ -302,54 +305,19 @@ int ** imageAND(int ** image1, int ** image2, int height, int width) {
 
     for (int i = start_height; i < max_height; i++) {
         for (int j = 0; j < width; j++) {
-            resultImage[i][j] = (image1[i][j] != 0 && image2[i][j] != 0) ? 1 : 0;
-        }
-    }
-
-    int k = 0;
-    std::vector<int> send(height*width);
-    for (int i = 0; i < height; i++) {
-        for (int j = 0; j < width; j++) {
-            send[k] = resultImage[i][j];
-            k++;
-        }
-    }
-
-    std::vector<int> recv(height*width);
-    MPI_Allreduce(&send[0], &recv[0], height*width, MPI_INT, MPI_MAX, MPI_COMM_WORLD);
-
-    k = 0;
-    for (int i = 0; i < height; i++) {
-        for (int j = 0; j < width; j++) {
-            resultImage[i][j] = recv[k];
-            k++;
-        }
-    }
-
-    return resultImage;
-}
-
-int ** imageOR(int ** image1, int ** image2, int height, int width) {
-    int size, rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
-    int delta_height = height / size;
-    int rem_height = height % size;
-    int start_height = (rank < rem_height) ? (rank * (delta_height + 1)) : (delta_height * rank + rem_height);
-    int max_height = (rank < rem_height) ? (delta_height + 1) : delta_height;
-    max_height += start_height;
-
-    int ** resultImage = new int*[height];
-    for (int i = 0; i < height; i++) {
-        resultImage[i] = new int[width];
-        for (int j = 0; j < width; j++) {
-            resultImage[i][j] = 0;
-        }
-    }
-
-    for (int i = start_height; i < max_height; i++) {
-        for (int j = 0; j < width; j++) {
-            resultImage[i][j] = (image1[i][j] != 0 || image2[i][j] != 0) ? 1 : 0;
+            if (sign == 1) {  // or
+                if (image1[i][j] != 0 || image2[i][j] != 0) {
+                    resultImage[i][j] = 1;
+                } else {
+                    resultImage[i][j] = 0;
+                }
+            } else {  // and
+                if (image1[i][j] != 0 && image2[i][j] != 0) {
+                    resultImage[i][j] = 1;
+                } else {
+                    resultImage[i][j] = 0;
+                }
+            }
         }
     }
 
@@ -509,7 +477,7 @@ int ** buildComponentConvexHull(int ** image, int height, int width) {
     int size, rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
-    buildConvexHull(image, height, width, 8);
+    // buildConvexHull(image, height, width, 8);
 
     int ** image1 = new int*[height];
     int ** image2 = new int*[height];
@@ -522,21 +490,26 @@ int ** buildComponentConvexHull(int ** image, int height, int width) {
         }
     }
     int ** resultImage;
-    image1 = imageOR(imageOR(buildConvexHull(image1, height, width, 1),
+    image1 = imageOrAnd(imageOrAnd(buildConvexHull(image1, height, width, 1),
                              buildConvexHull(image1, height, width, 2),
-                             height, width),
-                     imageOR(buildConvexHull(image1, height, width, 3),
+                             height, width, 1),
+                     imageOrAnd(buildConvexHull(image1, height, width, 3),
                              buildConvexHull(image1, height, width, 4),
-                             height, width),
-                     height, width);
-    image2 = imageOR(imageOR(buildConvexHull(image2, height, width, 5),
+                             height, width, 1),
+                     height, width, 1);
+    image2 = imageOrAnd(imageOrAnd(buildConvexHull(image2, height, width, 5),
                              buildConvexHull(image2, height, width, 6),
-                             height, width),
-                     imageOR(buildConvexHull(image2, height, width, 7),
+                             height, width, 1),
+                     imageOrAnd(buildConvexHull(image2, height, width, 7),
                              buildConvexHull(image2, height, width, 8),
-                             height, width),
-                     height, width);
-    resultImage = imageAND(image1, image2, height, width);
+                             height, width, 1),
+                     height, width, 1);
+    // if (rank == 0) {
+    //     printImage(image1, height, width);
+    //     std::cout << "--"<<std::endl;
+    //     printImage(image2, height, width);
+    // }
+    resultImage = imageOrAnd(image1, image2, height, width, 0);
     return resultImage;
 }
 
@@ -567,11 +540,12 @@ int ** buildImageConvexHull(int ** image, int height, int width) {
         }
     }
     std::vector<int> components = searchConnectedComponents(comp, height, width);
+
     while (!components.empty()) {
         int component = components.back();
         components.pop_back();
         int ** result = buildComponentConvexHull(getComponent(comp, height, width, component), height, width);
-        resultImage = imageOR(resultImage, result, height, width);
+        resultImage = imageOrAnd(resultImage, result, height, width, 1);
     }
     return resultImage;
 }
