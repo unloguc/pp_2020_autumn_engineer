@@ -5,7 +5,7 @@
 #include <random>
 #include <iostream>
 #include <ctime>
-#define MAX_ITERATIONS 100000
+#define MAX_ITERATIONS 100
 double Distance(double *X_Old, double *X_New, int n) {
     int i;
     double max = 0;
@@ -15,42 +15,6 @@ double Distance(double *X_Old, double *X_New, int n) {
     }
     return(max);
 }
-std::vector<double> Gen_Matrix(int n) {
-    std::mt19937 gen;
-    gen.seed(static_cast<unsigned int>(time(0)));
-    std::vector<double> matrix(n*n + n);
-    double modul_sum;
-    for (int i = 0; i < n; i++) {
-        matrix[i * n + i] = gen() % (100 * n) + (100 * n);
-    }
-    for (int i = 0; i < n; i++) {
-        while (1) {
-            modul_sum = 0;
-            for (int j = 0; j < n; j++) {
-                if (i != j) {
-                    matrix[i * n + j] = gen() % 100;
-                }
-            }
-            for (int j = 0; j < n; j++) {
-                if (j != i) {
-                    modul_sum += my_abs(matrix[i * n + j] / matrix[i * n + i]);
-                }
-            }
-            if (modul_sum < 1) {
-                break;
-            }
-        }
-        // for (int j = 0; j < n; j++) {
-        //     if (j == i) matrix[i * n + j] = n * 10;
-        //     else matrix[i * n + j] = 1;
-        // }
-    }
-    for (int i = n * n; i < n * n + n; i++) {
-        matrix[i] = gen() % 100;
-    }
-    return matrix;
-}
-
 double my_abs(double x) {
     if (x > 0) {
         return x;
@@ -64,6 +28,7 @@ double *Iterations(int n, double *X_Old, double *X_New, double *Bloc_X, double *
     for (int irow = 0; irow < n; irow++) {
         X_Old[irow] = X_New[irow];
     }
+
     for (int irow = 0; irow < amountRowBloc; irow++) {
         GlobalRowNo = (rank * amountRowBloc) + irow;
         Bloc_X[irow] = BRecv[irow];
@@ -79,8 +44,8 @@ double *Iterations(int n, double *X_Old, double *X_New, double *Bloc_X, double *
     return Bloc_X;
 }
 
-double *Iteration_for_0_rank(int n, double *X_Old, std::vector<double>Input_B, double *Bloc_XX,
-        std::vector<double>Input_A, int GlobalRowNo, int amountRowBloc, int size) {
+double *Iteration_for_0_rank(int n, double *X_Old, double *Input_B, double *Bloc_XX,
+        double *Input_A, int GlobalRowNo, int amountRowBloc, int size) {
     int index;
     for (int irow = amountRowBloc * size; irow < n; irow ++) {
         GlobalRowNo = irow;
@@ -96,28 +61,53 @@ double *Iteration_for_0_rank(int n, double *X_Old, std::vector<double>Input_B, d
     return Bloc_XX;
 }
 
-std::vector<double> Parallel_Jacoby(std::vector<double> Input_A, std::vector<double> Input_B, int n, double eps) {
+
+bool Check_Correct_Matrix(std::vector<double> matrix, int n) {
+    double modul_sum;
+    for (int i = 0; i < n; i++) {
+        modul_sum = 0;
+        if (matrix[i * n + i] == 0) {
+            return false;
+        }
+        for (int j = 0; j < n; j++) {
+            if (j != i) {
+                modul_sum += my_abs(matrix[i * n + j] / matrix[i * n + i]);
+            }
+        }
+        if (modul_sum > 1) {
+            return false;
+        }
+    }
+    return true;
+}
+
+std::vector<double> Parallel_Jacoby(std::vector<double> A, std::vector<double> B, int n, double eps) {
     int size, rank, amountRowBloc, GlobalRowNo, Iteration = 0;
-    double *ARecv, *BRecv, *Bloc_XX, *X_New, *X_Old, *Bloc_X, d1 = 0;
+    double *ARecv, *BRecv, *Bloc_XX, *X_New, *X_Old, *Bloc_X, *Input_A, *Input_B;
     std::vector<double> res(n);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     amountRowBloc = n / size;    // how much to each proc
+    Input_A = new double[n * n];
+    Input_B = new double[n];
     Bloc_X = new double[n];
     X_New = new double[n];
     X_Old = new double[n];
+    for (int i = 0; i < n * n; i++) {
+        Input_A[i] = A[i];
+        if (i < n) {
+            Input_B[i] = B[i];
+            X_New[i] = B[i];
+        }
+    }
     ARecv = new double[amountRowBloc * n];
     BRecv = new double[amountRowBloc];
     // double s = MPI_Wtime();
-     MPI_Scatter(Input_A.data(), amountRowBloc * n, MPI_DOUBLE, ARecv,
-         amountRowBloc * n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-     MPI_Scatter(Input_B.data(), amountRowBloc, MPI_DOUBLE, BRecv, amountRowBloc, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+     MPI_Scatter(Input_A, amountRowBloc * n, MPI_DOUBLE, ARecv, amountRowBloc * n, MPI_DOUBLE, 0,     MPI_COMM_WORLD);
+     MPI_Scatter(Input_B, amountRowBloc, MPI_DOUBLE, BRecv, amountRowBloc, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     // std::cout << MPI_Wtime() - s << "    ";
-    for (int i = 0; i < n; i ++) {
-        X_New[i] = Input_B[i];   
-        if (i < amountRowBloc) {
-            Bloc_X[i] = BRecv[i];
-        }
+    for (int irow=0; irow < amountRowBloc; irow ++) {
+        Bloc_X[irow] = BRecv[irow];
     }
     Bloc_XX = new double[n];
     do {
@@ -130,12 +120,7 @@ std::vector<double> Parallel_Jacoby(std::vector<double> Input_A, std::vector<dou
             MPI_Allgather(&Bloc_XX[irow], 1, MPI_DOUBLE, &X_New[irow], 1, MPI_DOUBLE, MPI_COMM_WORLD);
         }
         Iteration++;
-        if ((my_abs(d1 - Distance(X_Old, X_New, n))) > eps) {
-            d1 = Distance(X_Old, X_New, n);
-        } else {
-            break;
-        }
-    } while ((Iteration < MAX_ITERATIONS) && (d1 >= eps));
+    } while ((Iteration < MAX_ITERATIONS) && (Distance(X_Old, X_New, n) >= eps));
     for (int i = 0; i < n; i++) {
         res[i] = X_New[i];
     }
