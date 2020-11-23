@@ -4,18 +4,24 @@
 #include <vector>
 #include <random>
 
-std::vector<int> getRandomVector(int size) {
+#define MAX_GEN 100
+
+int* getRandomVector(int size) {
+    if (size < 1) {
+        throw "size < 1 error";
+    }
+
     std::mt19937 gen;
     gen.seed(time(0));
 
-    std::vector<int> vec(size);
+    int* vec = new int[size];
     for (int i = 0; i < size; i++) {
-        vec[i] = gen();
+        vec[i] = gen() % MAX_GEN;
     }
     return vec;
 }
 
-double getVectorAvgNotParall(std::vector<int> vec, int vecSize) {
+double getVectorAvgNotParall(int* vec, int vecSize) {
     int sum = 0;
     for (int i = 0; i < vecSize; i++) {
         sum += vec[i];
@@ -23,7 +29,7 @@ double getVectorAvgNotParall(std::vector<int> vec, int vecSize) {
     return static_cast<double>(sum) / vecSize;
 }
 
-double getVectorAvg(std::vector<int> vec, int vecSize) {
+double getVectorAvg(int* vec, int vecSize) {
     int procNum, procRank, size, sum, sumAll;
 
     MPI_Comm_size(MPI_COMM_WORLD, &procNum);
@@ -46,10 +52,12 @@ double getVectorAvg(std::vector<int> vec, int vecSize) {
         }
     }
 
-    std::vector<int> localVec(size);
+    int* localVec = new int[size];
 
     if (procRank == 0) {
-        localVec = std::vector<int>(vec.begin(), vec.begin() + size);
+        for (int i = 0; i < size; i++) {
+            localVec[i] = vec[i];
+        }
     } else {
         MPI_Status mpiStatus;
         MPI_Recv(&localVec[0], size, MPI_INT, 0, 0, MPI_COMM_WORLD, &mpiStatus);
@@ -60,6 +68,8 @@ double getVectorAvg(std::vector<int> vec, int vecSize) {
         sum += localVec[i];
     }
     MPI_Reduce(&sum, &sumAll, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+
+    delete[] localVec;
 
     return static_cast<double>(sumAll) / vecSize;
 }
