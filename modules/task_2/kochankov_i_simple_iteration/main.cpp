@@ -2,6 +2,7 @@
 
 #include <gtest-mpi-listener.hpp>
 #include <gtest/gtest.h>
+#include <time.h>
 
 #include "iostream"
 #include "vector"
@@ -222,19 +223,38 @@ TEST(Parallel_simple_method_works, Wrong_matrix) {
 }
 
 TEST(Parallel_simple_method_works, random_matrix) {
-    Matrix matrix(100, 101);
+    Matrix matrix(1000, 1001);
     double eps = 0.001;
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     if (rank == 0) {
-        matrix = get_rand_matrix(100, 101);
+        matrix = get_rand_matrix(1000, 1001);
+    }
+
+    time_t start, end;
+    double seconds;
+
+    if (rank == 0) {
+        time(&start);
     }
 
     auto result = parallel_simple_iteration(matrix, eps);
 
     if (rank == 0) {
+        time(&end);
+        seconds = difftime(end, start);
+        std::cout << "Parallel method: " << seconds << std::endl;
+    }
+
+    if (rank == 0) {
+        time(&start);
         auto lin_result = linear_simple_iteration(matrix, eps);
+        time(&end);
+        double seconds = difftime(end, start);
+
+        std::cout << "Linear method: " << seconds << std::endl;
+
         EXPECT_EQ(lin_result, result);
     }
 }
