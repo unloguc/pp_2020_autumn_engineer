@@ -7,21 +7,21 @@
 TEST(Parallel_Multiplication_Test, Works_On_1x1_Matrix) {
   int rows = 1, columns = 1, vectorSize = columns;
   int* matrix = getRandomMatrix(rows, columns);
-  int* vector = getRandomVector(vectorSize); 
+  int* vector = getRandomVector(vectorSize);
   ASSERT_NO_THROW(parallelTransposedMultiplication(matrix, vector, rows, columns, vectorSize));
 }
 
 TEST(Parallel_Multiplication_Test, Works_On_1x5_Matrix) {
   int rows = 1, columns = 5, vectorSize = columns;
   int* matrix = getRandomMatrix(rows, columns);
-  int* vector = getRandomVector(vectorSize); 
+  int* vector = getRandomVector(vectorSize);
   ASSERT_NO_THROW(parallelTransposedMultiplication(matrix, vector, rows, columns, vectorSize));
 }
 
 TEST(Parallel_Multiplication_Test, Works_On_5x1_Matrix) {
   int rows = 5, columns = 1, vectorSize = columns;
   int* matrix = getRandomMatrix(rows, columns);
-  int* vector = getRandomVector(vectorSize); 
+  int* vector = getRandomVector(vectorSize);
   ASSERT_NO_THROW(parallelTransposedMultiplication(matrix, vector, rows, columns, vectorSize));
 }
 
@@ -94,7 +94,6 @@ TEST(Parallel_Multiplication_Test, Parallel_Equals_Sequential_On_4x3_Matrix) {
 int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);
   MPI_Init(&argc, &argv);
-  
 
   ::testing::AddGlobalTestEnvironment(new GTestMPIListener::MPIEnvironment);
   ::testing::TestEventListeners& listeners =
