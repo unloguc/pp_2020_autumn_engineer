@@ -30,8 +30,7 @@ int master(int loops) {
     while (loops != 0) {
         if (last_consumer == -1) {
             MPI_Recv(&res, 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-        }
-        else {
+        } else {
             MPI_Recv(&res, 1, MPI_INT, MPI_ANY_SOURCE, 3, MPI_COMM_WORLD, &status);
         }
         --loops;
@@ -45,15 +44,13 @@ int master(int loops) {
                 MPI_Request_free(&requestSend);
                 last_consumer = -1;
             }
-        }
-        else {
+        } else {
             if (!queue.empty()) {
                 int elem = queue.front();
                 queue.pop();
                 MPI_Isend(&elem, 1, MPI_INT, status.MPI_SOURCE, 4, MPI_COMM_WORLD, &requestSend);
                 MPI_Request_free(&requestSend);
-            }
-            else {
+            } else {
                 last_consumer = status.MPI_SOURCE;
             }
         }
