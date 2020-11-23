@@ -22,11 +22,13 @@ TEST(Parallel_Operations_MPI, test_find_par) {
 }
 
 TEST(Parallel_Operations_MPI, test_sol_1) {
-    std::vector<double> coefs{ 1, 3, 2,
-                               2, 7, 5,
-                               1, 4, 6 };
+    std::vector<double> coefs{ -1, 4, 8, 6, 4,
+                               -5, 2, -8, 5, 4,
+                               4, -5, 1, 5, 10,
+                               -4, 3, 1, -7, 5,
+                               5, 10, 7, -4, -3 };
     std::vector<double> coefs2(coefs);
-    std::vector<double> pPart{ 1, 18, 26 };
+    std::vector<double> pPart{ 6, -5, 3, 5, 3 };
     std::vector<double> pPart2(pPart);
     int size = pPart.size();
     double start1 = MPI_Wtime();
@@ -41,18 +43,17 @@ TEST(Parallel_Operations_MPI, test_sol_1) {
     int ProcRank;
     MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
     if (ProcRank == 0) {
-        printf("Matrix 3x3\nSequential - %f\nParallel - %f", end1 - start1, end2 - start2);
+        printf("Matrix 5x5\nSequential - %f\nParallel - %f", end1 - start1, end2 - start2);
         ASSERT_EQ(s, p);
     }
 }
 
 TEST(Parallel_Operations_MPI, test_sol_2) {
-    std::vector<double> coefs{ 4, 5, 4, 8,
-                               5, 1, 4, 7,
-                               3, 9, 5, 8,
-                               1, 2, 5, -2  };
+    std::vector<double> coefs{ 1, 3, 2,
+                              2, 7, 5,
+                              1, 4, 6 };
     std::vector<double> coefs2(coefs);
-    std::vector<double> pPart{ 10, 11, 8, 7 };
+    std::vector<double> pPart{ 1, 18, 26 };
     std::vector<double> pPart2(pPart);
     int size = pPart.size();
     double start1 = MPI_Wtime();
@@ -108,5 +109,5 @@ int main(int argc, char** argv) {
 
     listeners.Append(new GTestMPIListener::MPIMinimalistPrinter);
     return RUN_ALL_TESTS();
+    MPI_Finalize();
 }
-
