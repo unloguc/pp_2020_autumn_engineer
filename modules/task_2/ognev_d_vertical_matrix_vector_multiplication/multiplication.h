@@ -4,9 +4,11 @@
 
 int* getRandomMatrix(int rows, int columns);
 int* getRandomVector(int size);
-int* sequentialMultiplication1(int* matrix, int* vector, int rows, int columns, int vectorSize);
-int* sequentialMultiplication2(int* matrix, int* vector, int rows, int columns, int vectorSize);
-int* sequentialMultiplication3(int* matrix, int* vector, int rows, int columns, int vectorSize);
-int* parallelMultiplication(int* matrix, int* vector, int rows, int columns, int vectorSize);
+int* matrixTransposition(int* matrix, int rows, int columns);
+int* horizontalSequentialMultiplication(int* matrix, int* vector, int rows, int columns, int vectorSize);
+int* parallelNotTransposedMultiplication(int* matrix, int* vector, int rows, int columns, int vectorSize);
+int* sequentialTransposedMultiplication(int* matrix, int* vector, int rows, int columns, int vectorSize);
+int* parallelTransposedMultiplication(int* matrix, int* vector, int rows, int columns, int vectorSize);
+
 
 #endif  // MODULES_TASK_2_OGNEV_D_VERTICAL_MATRIX_VECTOR_MULTIPLICATION_MULTIPLICATION_H_
