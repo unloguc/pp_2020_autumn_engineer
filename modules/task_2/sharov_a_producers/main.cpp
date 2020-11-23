@@ -21,8 +21,7 @@ TEST(Parallel_Operations_MPI, Test_task_1) {
             for (int i = 0; i < N1; i++) {
                 consume();
             }
-        }
-        else {
+        } else {
             for (int i = 0; i < N2; i++) {
                 produce();
             }
@@ -52,8 +51,7 @@ TEST(Parallel_Operations_MPI, Test_task_2) {
             for (int i = 0; i < N1; i++) {
                 consume();
             }
-        }
-        else {
+        } else {
             for (int i = 0; i < N2; i++) {
                 produce();
             }
@@ -83,8 +81,7 @@ TEST(Parallel_Operations_MPI, Test_task_3) {
             for (int i = 0; i < N1; i++) {
                 consume();
             }
-        }
-        else {
+        } else {
             for (int i = 0; i < N2; i++) {
                 produce();
             }
@@ -113,8 +110,7 @@ TEST(Parallel_Operations_MPI, Test_task_4) {
             for (int i = 0; i < N1; i++) {
                 consume();
             }
-        }
-        else {
+        } else {
             for (int i = 0; i < N2; i++) {
                 produce();
             }
@@ -144,8 +140,7 @@ TEST(Parallel_Operations_MPI, Test_task_5) {
             for (int i = 0; i < N1; i++) {
                 consume();
             }
-        }
-        else {
+        } else {
             for (int i = 0; i < N2; i++) {
                 produce();
             }
