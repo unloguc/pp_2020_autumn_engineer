@@ -16,7 +16,7 @@ if( USE_MPI )
     set(PACK_LIB "${ProjectId}_lib")
     add_library(${PACK_LIB} STATIC ${header_files} ${source_files})
 
-    add_executable( ${ProjectId} ${source_files})
+    add_executable( ${ProjectId} ${source_files} )
 
     target_link_libraries(${ProjectId} ${PACK_LIB})
     if( MPI_COMPILE_FLAGS )
