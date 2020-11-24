@@ -32,15 +32,15 @@ TEST(Parallel_Operations_MPI, 1x7) {
     MPI_Comm_rank(MPI_COMM_WORLD, &Rank);
     int l = 1;
     int c = 7;
-    vector<double> m;
-    vector<double> vec;
+    std::vector<double> m;
+    std::vector<double> vec;
     if (Rank == 0) {
         m = gen_mat(l, c);
         vec = gen_vec(l);
     }
-    vector<double> v1 = par(m, vec, l, c);
+    std::vector<double> v1 = par(m, vec, l, c);
     if (Rank == 0) {
-      vector<double> v2 = seq(m, vec, l, c);
+        std::vector<double> v2 = seq(m, vec, l, c);
         ASSERT_EQ(v1, v2);
     }
 }
@@ -51,15 +51,15 @@ TEST(Parallel_Operations_MPI, 8x1) {
     MPI_Comm_rank(MPI_COMM_WORLD, &Rank);
     int l = 8;
     int c = 1;
-    vector<double> m;
-    vector<double> vec;
+    std::vector<double> m;
+    std::vector<double> vec;
     if (Rank == 0) {
         m = gen_mat(l, c);
         vec = gen_vec(l);
     }
-    vector<double> v1 = par(m, vec, l, c);
+    std::vector<double> v1 = par(m, vec, l, c);
     if (Rank == 0) {
-        vector<double> v2 = seq(m, vec, l, c);
+        std::vector<double> v2 = seq(m, vec, l, c);
         ASSERT_EQ(v1, v2);
     }
 }
@@ -70,15 +70,15 @@ TEST(Parallel_Operations_MPI, 3x3) {
     MPI_Comm_rank(MPI_COMM_WORLD, &Rank);
     int l = 3;
     int c = 3;
-    vector<double> m;
-    vector<double> vec;
+    std::vector<double> m;
+    std::vector<double> vec;
     if (Rank == 0) {
         m = gen_mat(l, c);
         vec = gen_vec(l);
     }
-    vector<double> v1 = par(m, vec, l, c);
+    std::vector<double> v1 = par(m, vec, l, c);
     if (Rank == 0) {
-        vector<double> v2 = seq(m, vec, l, c);
+        std::vector<double> v2 = seq(m, vec, l, c);
         ASSERT_EQ(v1, v2);
     }
 }
@@ -89,15 +89,15 @@ TEST(Parallel_Operations_MPI, 16x16) {
     MPI_Comm_rank(MPI_COMM_WORLD, &Rank);
     int l = 16;
     int c = 16;
-    vector<double> m;
-    vector<double> vec;
+    std::vector<double> m;
+    std::vector<double> vec;
     if (Rank == 0) {
         m = gen_mat(l, c);
         vec = gen_vec(l);
     }
-    vector<double> v1 = par(m, vec, l, c);
+    std::vector<double> v1 = par(m, vec, l, c);
     if (Rank == 0) {
-        vector<double> v2 = seq(m, vec, l, c);
+        std::vector<double> v2 = seq(m, vec, l, c);
         ASSERT_EQ(v1, v2);
     }
 }

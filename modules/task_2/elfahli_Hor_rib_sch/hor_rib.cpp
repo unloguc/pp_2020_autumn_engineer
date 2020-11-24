@@ -11,7 +11,7 @@
 std::vector<double> seq(std::vector < double > M, std::vector < double > V, int l, int c) {
     std::vector<double> vec(c);
     for (int i = 0; i < c; i++) {
-        vec[i] = r(i, M, V, l); 
+    vec[i] = r(i, M, V, l);
     }
     return vec;
 }
