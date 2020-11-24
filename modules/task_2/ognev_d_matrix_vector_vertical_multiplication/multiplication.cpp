@@ -1,6 +1,6 @@
 // Copyright 2020 Ognev Denis
 
-#include "../../modules/task_2/ognev_d_vertical_matrix_vector_multiplication/multiplication.h"
+#include "../../modules/task_2/ognev_d_matrix_vector_vertical_multiplication/multiplication.h"
 #include <mpi.h>
 #include <random>
 #include <ctime>

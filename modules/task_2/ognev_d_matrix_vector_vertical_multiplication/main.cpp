@@ -2,7 +2,7 @@
 
 #include <gtest-mpi-listener.hpp>
 #include <gtest/gtest.h>
-#include "../../modules/task_2/ognev_d_vertical_matrix_vector_multiplication/multiplication.h"
+#include "../../modules/task_2/ognev_d_matrix_vector_vertical_multiplication/multiplication.h"
 
 TEST(Parallel_Multiplication_Test, Works_On_1x1_Matrix) {
   int rows = 1, columns = 1, vectorSize = columns;
