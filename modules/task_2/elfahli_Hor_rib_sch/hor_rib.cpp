@@ -7,29 +7,29 @@
 #include <random>
 #include <algorithm>
 #include "../../../modules/task_2/elfahli_Hor_rib_sch/hor_rib.h"
-using namespace std;
-vector<double> seq(vector < double > M, vector < double > V, int l, int c) {
-    vector<double> vec(c);
+
+std::vector<double> seq(std::vector < double > M, std::vector < double > V, int l, int c) {
+    std::vector<double> vec(c);
     for (int i = 0; i < c; i++) {
-        vec[i] = r(i, M,V,l);
+        vec[i] = r(i, M, V, l); 
     }
     return vec;
 }
-double r(int i, vector<double> M,vector<double> v, int l) {
+double r(int i, std::vector<double> M, std::vector<double> v, int l) {
     double s = 0;
     for (int j = 0; j < l; j++) {
         s = s + M[j + i * l] * v[j];
-    }
+  }
     return s;
 }
-vector<double> par(vector < double > M, vector < double > V, int l, int c) {
+std::vector<double> par(std::vector < double > M, std::vector < double > V, int l, int c) {
     int s, rk;
     MPI_Comm_size(MPI_COMM_WORLD, &s);
     MPI_Comm_rank(MPI_COMM_WORLD, &rk);
     int count = c / s;
     int rf = c % s;
-    vector<double> l_m(count * l);
-    vector<double> l_v(l);
+    std::vector<double> l_m(count * l);
+    std::vector<double> l_v(l);
     MPI_Status Status;
     if (rk == 0) {
         for (int i = 0; i < count * l; i++) {
@@ -46,8 +46,8 @@ vector<double> par(vector < double > M, vector < double > V, int l, int c) {
         MPI_Recv(l_m.data(), count * l, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &Status);
         MPI_Recv(l_v.data(), l, MPI_DOUBLE, 0, 1, MPI_COMM_WORLD, &Status);
     }
-    vector<double> mult = seq(l_m, l_v, l, count);
-    vector<double> rt_mult(c);
+    std::vector<double> mult = seq(l_m, l_v, l, count);
+    std::vector<double> rt_mult(c);
     if (rk == 0) {
         for (int i = 0; i < count; i++)
             rt_mult[i] = mult[i];
@@ -65,16 +65,16 @@ vector<double> par(vector < double > M, vector < double > V, int l, int c) {
     }
     return rt_mult;
 }
-vector<double> gen_mat(int l, int c) {
-    mt19937 gen;
+std::vector<double> gen_mat(int l, int c) {
+    std::mt19937 gen;
     gen.seed(static_cast<unsigned int>(time(0)));
-    vector<double> list(c * l);
+    std::vector<double> list(c * l);
     for (int i = 0; i < c * l; i++)
         list[i] = gen() % 10;
     return list;
 }
-vector<double> gen_vec(int n) {
-    mt19937 gen;
+std::vector<double> gen_vec(int n) {
+    std::mt19937 gen;
     gen.seed(static_cast<unsigned int>(time(0)));
     std::vector<double> v(n);
     for (int i = 0; i < n; i++)

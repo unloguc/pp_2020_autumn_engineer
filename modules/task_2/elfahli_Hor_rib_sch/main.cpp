@@ -13,15 +13,15 @@ TEST(Parallel_Operations_MPI, 6x6) {
     MPI_Comm_rank(MPI_COMM_WORLD, &Rank);
     int l = 6;
     int c = 6;
-    vector<double> m;
-    vector<double> vec;
+    std::vector<double> m;
+    std::vector<double> vec;
     if (Rank == 0) {
         m = gen_mat(l, c);
         vec = gen_vec(l);
     }
-   vector<double> v1 = par(m, vec, l, c);
+    std::vector<double> v1 = par(m, vec, l, c);
     if (Rank == 0) {
-        vector<double> v2 = seq(m, vec, l, c);
+        std::vector<double> v2 = seq(m, vec, l, c);
         ASSERT_EQ(v1, v2);
     }
 }

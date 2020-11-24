@@ -1,14 +1,13 @@
 // Copyright 2020 MERYEM ELFAHLI
-
 # ifndef MODULES_TASK_2_ELFAHLI_HOR_RIB_SCH_HOR_RIB_H_
-# define  MODULES_TASK_2_ELFAHLI_HOR_RIB_SCH_HOR_RIB_H_
-#include < vector >
-using namespace std;
+# define MODULES_TASK_2_ELFAHLI_HOR_RIB_SCH_HOR_RIB_H_
+#include <vector>
 
-vector<double> gen_mat(int l, int c);
-vector<double> gen_vec(int n);
-vector < double > seq(vector < double > M, vector < double > V, int l, int c);
-vector < double > par (vector < double > M, vector < double > V, int l, int c);
-double  r ( int i,vector < double > M, vector < double > V, int l);
+
+std::vector<double> gen_mat(int l, int c);
+std::vector<double> gen_vec(int n);
+std::vector < double > seq(std::vector < double > M, std::vector < double > V, int l, int c);
+std::vector < double > par(std::vector < double > M, std::vector < double > V, int l, int c);
+double  r(int i, std::vector < double > M, std::vector < double > V, int l);
 
 # endif   // MODULES_TASK_2_ELFAHLI_HOR_RIB_SCH_HOR_RIB_H_
