@@ -24,7 +24,8 @@ std::vector<uint32_t> getRandomBinaryImage(int height, int width) {
     return image;
 }
 
-inline std::vector<uint32_t> markComponentsBlock(std::vector<uint32_t> image, int height, int width, uint32_t curr = 1) {
+inline std::vector<uint32_t> markComponentsBlock(
+    std::vector<uint32_t> image, int height, int width, uint32_t curr = 1) {
     int elemBColumn = 0;
     int elemCRow = 0;
     uint32_t A, B, C;
