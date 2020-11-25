@@ -193,8 +193,8 @@ std::vector<uint32_t> markComponents(std::vector<uint32_t> image, int height, in
                     commonRowValues.insert(commonRow[c1]);
                     newRowValues.insert(image[indexOfLastHeightRow * width + c1]);
                     for (int c2 = 0; c2 < width; ++c2) {
-                        int commonRowValuesSize = commonRowValues.size();
-                        int newRowValuesSize = newRowValues.size();
+                        long unsigned int commonRowValuesSize = commonRowValues.size();
+                        long unsigned int newRowValuesSize = newRowValues.size();
                         for (int c3 = 0; c3 < width; ++c3) {
                             if (std::find(commonRowValues.begin(), commonRowValues.end(), commonRow[c3])
                                 != commonRowValues.end()) {
