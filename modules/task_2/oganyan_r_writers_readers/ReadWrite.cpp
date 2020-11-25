@@ -34,13 +34,12 @@ int read_write(int op_cnt) {
     int size, rank;
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    int res = 0;
-    int koef = (op_cnt + 1) / 2;
-    if (size > 10) {
-        int optimise = (size + 9) / 10;
-        koef /= size;
-    }
-    if (rank == 0) {
+        int res = 0;
+        int koef = (op_cnt + 1) / 2;
+        if (size > 10) {
+            koef /= size;
+        }
+        if (rank == 0) {
         res = library(koef * (size - 1));
     }
     sleep();
@@ -70,7 +69,7 @@ int library(int op_cnt) {
     int cur_op = 0;
     int data = 0;
     int arereading = 0;
-    MPI_Request request;
+    int request;
     MPI_Status status;
     while (cur_op != op_cnt) {
         MPI_Recv(&request, 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
