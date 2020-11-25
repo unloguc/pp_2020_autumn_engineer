@@ -37,7 +37,8 @@ int read_write(int op_cnt) {
         int res = 0;
         int koef = (op_cnt + 1) / 2;
         if (size > 10) {
-            koef /= size;
+            int optimise = (size + 9) / 10;
+            koef /= size * optimise;
         }
         if (rank == 0) {
         res = library(koef * (size - 1));
