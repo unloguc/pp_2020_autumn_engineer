@@ -24,7 +24,7 @@ std::vector<uint32_t> getRandomBinaryImage(int height, int width) {
     return image;
 }
 
-inline void markComponentsBlock(std::vector<uint32_t>& image, int height, int width, uint32_t curr = 1) {
+inline std::vector<uint32_t> markComponentsBlock(std::vector<uint32_t> image, int height, int width, uint32_t curr = 1) {
     int elemBColumn = 0;
     int elemCRow = 0;
     uint32_t A, B, C;
@@ -70,9 +70,10 @@ inline void markComponentsBlock(std::vector<uint32_t>& image, int height, int wi
             }
         }
     }
+    return image;
 }
 
-inline void renumberComponents(std::vector<uint32_t>& image, int height, int width) {
+inline std::vector<uint32_t> renumberComponents(std::vector<uint32_t> image, int height, int width) {
     std::vector<uint32_t> source = std::vector<uint32_t>();
     std::vector<uint32_t> result = std::vector<uint32_t>();
 
@@ -82,7 +83,6 @@ inline void renumberComponents(std::vector<uint32_t>& image, int height, int wid
     for (int i = 0; i < size; ++i) {
         if (image[i] != 0
             && std::find(source.begin(), source.end(), image[i]) == source.end()) {
-
             source.push_back(image[i]);
             ++count;
             result.push_back(count);
@@ -93,9 +93,10 @@ inline void renumberComponents(std::vector<uint32_t>& image, int height, int wid
             image[i] = result[std::distance(source.begin(), std::find(source.begin(), source.end(), image[i]))];
         }
     }
+    return image;
 }
 
-inline void rotateImage(std::vector<uint32_t>& image, int height, int width, bool clockwise) {
+inline std::vector<uint32_t> rotateImage(std::vector<uint32_t> image, int height, int width, bool clockwise) {
     std::vector<uint32_t> rotatedImage(height * width);
     if (clockwise) {
         for (int i = 0; i < height; i++) {
@@ -110,12 +111,12 @@ inline void rotateImage(std::vector<uint32_t>& image, int height, int width, boo
             }
         }
     }
-    image = rotatedImage;
+    return rotatedImage;
 }
 
 std::vector<uint32_t> markComponentsNotParall(std::vector<uint32_t> image, int height, int width) {
-    markComponentsBlock(image, height, width);
-    renumberComponents(image, height, width);
+    image = markComponentsBlock(image, height, width);
+    image = renumberComponents(image, height, width);
     return image;
 }
 
@@ -131,7 +132,7 @@ std::vector<uint32_t> markComponents(std::vector<uint32_t> image, int height, in
         const double ratio = 0.6;
         if (width > 500 && static_cast<double>(height) / width < ratio) {
             if (procRank == 0) {
-                rotateImage(image, height, width, true);
+                image = rotateImage(image, height, width, true);
             }
             int temp = height;
             height = width;
@@ -161,10 +162,10 @@ std::vector<uint32_t> markComponents(std::vector<uint32_t> image, int height, in
     }
 
     if (procRank == 0) {
-        markComponentsBlock(image, heightPart, width);
+        image = markComponentsBlock(image, heightPart, width);
     } else {
         const uint32_t indent = 4000000;
-        markComponentsBlock(image, heightPart, width, indent * procRank + 1);
+        image = markComponentsBlock(image, heightPart, width, indent * procRank + 1);
     }
     if (procRank != 0) {
         MPI_Send(image.data(), size, MPI_INT, 0, 0, MPI_COMM_WORLD);
@@ -196,12 +197,10 @@ std::vector<uint32_t> markComponents(std::vector<uint32_t> image, int height, in
                         for (int c3 = 0; c3 < width; ++c3) {
                             if (std::find(commonRowValues.begin(), commonRowValues.end(), commonRow[c3])
                                 != commonRowValues.end()) {
-
                                 newRowValues.insert(image[indexOfLastHeightRow * width + c3]);
                             }
                             if (std::find(newRowValues.begin(), newRowValues.end(),
                                 image[indexOfLastHeightRow * width + c3]) != newRowValues.end()) {
-
                                 commonRowValues.insert(commonRow[c3]);
                             }
                         }
@@ -216,7 +215,6 @@ std::vector<uint32_t> markComponents(std::vector<uint32_t> image, int height, in
                         for (int index = 0; index < indexOfLastHeightRow * width; ++index) {
                             if (std::find(commonRowValues.begin(), commonRowValues.end(), image[index])
                                 != commonRowValues.end()) {
-
                                 image[index] = commonRowMainValue;
                             }
                         }
@@ -224,18 +222,14 @@ std::vector<uint32_t> markComponents(std::vector<uint32_t> image, int height, in
                         for (int index = 0; index < width; ++index) {
                             if (std::find(commonRowValues.begin(), commonRowValues.end(), commonRow[index])
                                 != commonRowValues.end()) {
-
                                 commonRow[index] = commonRowMainValue;
                             }
                         }
                     }
                     for (int index = indexOfLastHeightRow * width;
-                        index < (indexOfLastHeightRow + heightPartForOthers) * width;
-                        ++index) {
-
+                        index < (indexOfLastHeightRow + heightPartForOthers) * width; ++index) {
                         if (std::find(newRowValues.begin(), newRowValues.end(), image[index])
                             != newRowValues.end()) {
-
                             image[index] = commonRowMainValue;
                         }
                     }
@@ -246,9 +240,9 @@ std::vector<uint32_t> markComponents(std::vector<uint32_t> image, int height, in
             indexOfLastHeightRow += heightPartForOthers - 1;
         }
         if (isRotated) {
-            rotateImage(image, height, width, true);
+            image = rotateImage(image, height, width, false);
         }
-        renumberComponents(image, height, width);
+        image = renumberComponents(image, height, width);
     }
     return image;
 }
