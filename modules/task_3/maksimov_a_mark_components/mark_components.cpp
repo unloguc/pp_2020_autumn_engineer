@@ -101,7 +101,7 @@ inline std::vector<uint32_t> rotateImage(std::vector<uint32_t> image, int height
     if (clockwise) {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                rotatedImage[j * height + i] = image[i * width + j];
+                rotatedImage[j * height + height - 1 - i] = image[i * width + j];
             }
         }
     } else {
@@ -241,6 +241,9 @@ std::vector<uint32_t> markComponents(std::vector<uint32_t> image, int height, in
         }
         if (isRotated) {
             image = rotateImage(image, height, width, false);
+            int temp = height;
+            height = width;
+            width = temp;
         }
         image = renumberComponents(image, height, width);
     }
