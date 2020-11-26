@@ -118,18 +118,18 @@ TEST(Parallel_Operations_MPI, Test_random_matrix_100x100_parallel_mult_by_rand_v
     }
 }
 
-TEST(Parallel_Operations_MPI, Test_random_matrix_5000x10000_parallel_mult_by_rand_vect) {
+TEST(Parallel_Operations_MPI, Test_random_matrix_100x500_parallel_mult_by_rand_vect) {
     int rank;
     std::vector<int> testMx;
     std::vector<int> testVec;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     if (rank == 0) {
-        testMx = getRandomMatrix(5000, 10000);
-        testVec = getRandomVector(10000);
+        testMx = getRandomMatrix(100, 500);
+        testVec = getRandomVector(500);
     }
-    std::vector<int> result = getParallelMult(testMx, 5000, 10000, testVec, 10000);
+    std::vector<int> result = getParallelMult(testMx, 100, 500, testVec, 500);
     if (rank == 0) {
-        ASSERT_EQ(result, getSequentialMult(testMx, 5000, 10000, testVec, 10000));
+        ASSERT_EQ(result, getSequentialMult(testMx, 100, 500, testVec, 500));
     }
 }
 
