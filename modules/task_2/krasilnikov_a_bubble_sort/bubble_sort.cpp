@@ -88,7 +88,7 @@ void sortedArrayParallel(int *array, const int array_size) {
     MPI_Scatterv(array, sendcounts, displs, MPI_INT, local_vector.data(), size_block, MPI_INT, 0, MPI_COMM_WORLD);
   }
   sortedArraySequential(local_vector.data(), local_vector.size());
-  for (size_t i = 0; i < size; ++i) {
+  for (int i = 0; i < size; ++i) {
     if (i % 2 == 1) {
       if (rank % 2 == 1) {
         if (rank < size - 1) {
