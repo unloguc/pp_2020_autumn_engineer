@@ -10,4 +10,6 @@ std::vector<int> sequentialBubbleSort(const std::vector<int>& vec);
 std::vector<int> parallelOddEvenSort(std::vector<int> vec, const int& size);
 int computePartner(const int& iter, const int& rank);
 
+
+
 #endif  // MODULES_TASK_2_SCHELYANSKOVA_A_BUBBLE_SORT_BUBLE_SORT_H_

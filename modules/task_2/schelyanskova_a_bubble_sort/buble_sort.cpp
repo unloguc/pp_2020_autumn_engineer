@@ -12,7 +12,7 @@ std::vector<int> getRandomVector(const int& size) {
     if (size <= 0)
         throw "error";
     std::vector<int> randvec(size);
-    std::default_random_engine random ;
+    std::default_random_engine random;
     random.seed(static_cast<unsigned int>(time(0)));
     for (int i = 0; i < size; i++)
         i = random() % 1000;
@@ -38,9 +38,7 @@ std::vector<int> parallelOddEvenSort(std::vector<int> vec, const int& size) {
     int ProcNum, ProcRank;
     MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
     MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
-    
     int codeErr = 0;
-    
     if (ProcRank == 0) {
         if (static_cast<int>(vec.size()) == 0 || static_cast<int>(vec.size()) != size)
             codeErr = -1;
@@ -53,10 +51,8 @@ std::vector<int> parallelOddEvenSort(std::vector<int> vec, const int& size) {
     }
     if (codeErr == -1)
         throw - 1;
-    
     int elem_for_proc = size / ProcNum;
     int rem = size % ProcNum;
-    
     std::vector<int> local_vec(elem_for_proc);
     std::vector<int> temp(elem_for_proc);
     vec.resize(size);
@@ -71,7 +67,7 @@ std::vector<int> parallelOddEvenSort(std::vector<int> vec, const int& size) {
         int partner = computePartner(i, ProcRank);
         if (partner < 0 || partner >= ProcNum) {
             continue;
-    	}
+    }
         MPI_Status stats;
         if (ProcRank == 0)
             MPI_Sendrecv(&local_vec[0] + rem, elem_for_proc, MPI_INT, partner, 1, &temp[0],
@@ -89,7 +85,8 @@ std::vector<int> parallelOddEvenSort(std::vector<int> vec, const int& size) {
             else
                 iter = elem_for_proc;
             local_vec = std::vector<int>(res.begin(), res.begin() + iter);
-    	} else {
+    	}
+		else {
             local_vec = std::vector<int>(res.end() - elem_for_proc, res.end());
         }
     }
@@ -103,7 +100,6 @@ std::vector<int> parallelOddEvenSort(std::vector<int> vec, const int& size) {
     } else {
         MPI_Send(&local_vec[0], elem_for_proc, MPI_INT, 0, 2, MPI_COMM_WORLD);
     }
-    
     return res;
 }
 
@@ -111,18 +107,18 @@ int computePartner(const int& iter, const int& rank) {
     int res;
     if (iter % 2 == 0) {
         if (rank % 2 == 0) {
-        	res = rank + 1;
+         res = rank + 1;
         }
         else {
-        	res = rank - 1;
+         res = rank - 1;
         }
     }
-    else {
+     else {
         if (rank % 2 == 0) {
-        	res = rank - 1;
+         res = rank - 1;
         }
         else {
-        	res = rank + 1;
+         res = rank + 1;
         }
     }
     return res;

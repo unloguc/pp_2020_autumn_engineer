@@ -10,7 +10,7 @@ TEST(Bubble_Sort, CANT_CREATE_VECTOR_WITH_NEGATIVE_SIZE) {
     MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
     MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
     if (ProcRank == 0) {
-    	ASSERT_ANY_THROW(getRandomVector(-15));
+     ASSERT_ANY_THROW(getRandomVector(-15));
     }
 }
 
@@ -70,14 +70,11 @@ TEST(Bubble_Sort, THROWS_ON_WRONG_SIZE) {
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     MPI_Init(&argc, &argv);
-    
     ::testing::AddGlobalTestEnvironment(new GTestMPIListener::MPIEnvironment);
     ::testing::TestEventListeners& listeners =
         ::testing::UnitTest::GetInstance()->listeners();
-    
     listeners.Release(listeners.default_result_printer());
     listeners.Release(listeners.default_xml_generator());
-    
     listeners.Append(new GTestMPIListener::MPIMinimalistPrinter);
     return RUN_ALL_TESTS();
 }
