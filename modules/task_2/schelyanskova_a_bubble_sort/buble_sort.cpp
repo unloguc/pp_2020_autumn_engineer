@@ -85,8 +85,7 @@ std::vector<int> parallelOddEvenSort(std::vector<int> vec, const int& size) {
             else
                 iter = elem_for_proc;
             local_vec = std::vector<int>(res.begin(), res.begin() + iter);
-    	}
-		else {
+        } else {
             local_vec = std::vector<int>(res.end() - elem_for_proc, res.end());
         }
     }
@@ -108,16 +107,13 @@ int computePartner(const int& iter, const int& rank) {
     if (iter % 2 == 0) {
         if (rank % 2 == 0) {
          res = rank + 1;
-        }
-        else {
+        } else {
          res = rank - 1;
         }
-    }
-     else {
+    } else {
         if (rank % 2 == 0) {
          res = rank - 1;
-        }
-        else {
+        } else {
          res = rank + 1;
         }
     }
