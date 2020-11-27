@@ -1,16 +1,17 @@
 // Copyright 2020 Krasilnikov Alexey
 
 #include <mpi.h>
-#include <ctime>
-#include <vector>
-#include <random>
 #include <iostream>
+#include <ctime>
+#include <random>
 #include <algorithm>
+#include <vector>
+#include <utility>
 #include "../../../modules/task_2/krasilnikov_a_bubble_sort/bubble_sort.h"
 
 
 std::vector<int> getRandomVector(const size_t vector_size) {
-  std::mt19937 generator(time(0));
+  std::mt19937 generator;
   std::vector<int> ans(vector_size, 0);
   for (auto &symbol : ans) {
     symbol = generator() % 100000;
@@ -68,7 +69,7 @@ void sortedArrayParallel(int *array, const int array_size) {
   int k = 0;
   int *sendcounts = new int[size];
   int *displs = new int[size];
-  for(int i = 0; i < size; ++i) {
+  for (int i = 0; i < size; ++i) {
     if (i < delta) {
       sendcounts[i] = size_block + 1;
     } else {
