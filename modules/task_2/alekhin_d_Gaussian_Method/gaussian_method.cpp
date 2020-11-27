@@ -4,12 +4,13 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
+#include <random>
+#include <cstdlib>
+#include <ctime>
 #include "../../modules/task_2/alekhin_d_Gaussian_Method/gaussian_method.h"
 
 
 std::vector<double> getSequantialGauss(Matrix matrix) {
-  initMatrix(&matrix);
-
   for (int i = 0; i < matrix.rows; i++) {
     int leadingLine = chooseLeadingLine(matrix, i);
     swapLines(&matrix, i, leadingLine);
@@ -32,6 +33,17 @@ std::vector<double> getSequantialGauss(Matrix matrix) {
   }
 
   return result;
+}
+
+void randomMatrix(Matrix* matrix) {
+  matrix->rows = 500;
+  matrix->columns = 501;
+
+  std::mt19937 gen;
+  gen.seed(static_cast<unsigned int>(time(0)));
+  for (int i = 0; i < matrix->rows * matrix->columns; i++) {
+    matrix->matrix.push_back(gen() % 1000 + 1);
+  }
 }
 
 void initMatrix(Matrix* matrix) {
@@ -101,7 +113,7 @@ std::vector<double> getParallelGauss(Matrix matrix) {
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   Matrix local_matrix;
 
-  std::vector<int> number_of_line_to_store = numberOfLinesToStore(matrix);
+  std::vector<int> number_of_line_to_store = numberOfLinesToStore(matrix.rows);
   int count_of_work_processors = number_of_line_to_store.size();
   for (int i = 0; i < count_of_work_processors; i++) {
     if (i == rank) {
@@ -113,7 +125,7 @@ std::vector<double> getParallelGauss(Matrix matrix) {
   if (rank < count_of_work_processors) {
     distributeData(matrix, &local_matrix);
     getGaussForward(matrix, &local_matrix);
-    // gatherMatrix(&matrix, &local_matrix);
+    gatherMatrix(&matrix, &local_matrix);
   }
   std::vector<double> result(matrix.rows, 0);
   if (rank == 0) {
@@ -149,7 +161,7 @@ void distributeData(Matrix global_matrix, Matrix* local_matrix) {
     }
   }
 
-  std::vector<int> number_of_lines_to_store = numberOfLinesToStore(global_matrix);
+  std::vector<int> number_of_lines_to_store = numberOfLinesToStore(global_matrix.rows);
 
   if (rank == 0) {
     for (int i = 0; i < number_of_lines_to_store[rank]; i++) {
@@ -178,14 +190,14 @@ void distributeData(Matrix global_matrix, Matrix* local_matrix) {
   }
 }
 
-std::vector<int> numberOfLinesToStore(Matrix matrix) {
+std::vector<int> numberOfLinesToStore(int global_matrix_rows) {
   int size;
   MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-  int vector_size = std::min(size, matrix.rows);
+  int vector_size = std::min(size, global_matrix_rows);
   std::vector<int> result(vector_size, 0);
 
-  for (int i = 0; i < matrix.rows; i++) {
+  for (int i = 0; i < global_matrix_rows; i++) {
     result[i % size]++;
   }
 
@@ -209,16 +221,16 @@ void printMatrix(Matrix local_matrix) {
   std::cout << std::endl;
 }
 
-void shareCoeffs(Matrix global_matrix, Matrix local_matrix, int column) {
+void shareCoeffs(int global_matrix_rows, const Matrix* local_matrix, int column) {
   int size, rank;
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-  std::vector<int> number_of_lines_to_store = numberOfLinesToStore(global_matrix);
+  std::vector<int> number_of_lines_to_store = numberOfLinesToStore(global_matrix_rows);
   if (rank != 0) {
     for (int i = 0; i < number_of_lines_to_store[rank]; i++) {
       MPI_Send(
-        &local_matrix.matrix[i * global_matrix.columns + column],
+        &local_matrix->matrix[i * local_matrix->columns + column],
         1,
         MPI_DOUBLE,
         0,
@@ -228,23 +240,24 @@ void shareCoeffs(Matrix global_matrix, Matrix local_matrix, int column) {
   }
 }
 
-int chooseLeadingLineParallel(Matrix global_matrix, Matrix local_matrix, int column) {
+int chooseLeadingLineParallel(int global_matrix_rows,
+  int global_matrix_culumns, const Matrix* local_matrix, int column) {
   int size, rank;
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-  shareCoeffs(global_matrix, local_matrix, column);
+  shareCoeffs(global_matrix_rows, local_matrix, column);
 
   std::vector<double> coeff;
   if (rank == 0) {
     int j = 0;
-    for (int i = 0; i < global_matrix.rows; i++) {
+    for (int i = 0; i < global_matrix_rows; i++) {
       if (i % size == 0) {
-        coeff.push_back(local_matrix.matrix[j++ * global_matrix.columns + column]);
+        coeff.push_back(local_matrix->matrix[j++ * global_matrix_culumns + column]);
       }
     }
 
-    for (int i = 0; i < global_matrix.rows; i++) {
+    for (int i = 0; i < global_matrix_rows; i++) {
       double recv = 0;
       if (i % size != 0) {
         MPI_Recv(
@@ -263,12 +276,10 @@ int chooseLeadingLineParallel(Matrix global_matrix, Matrix local_matrix, int col
   int max_index = column;
   if (rank == 0) {
     double max = abs(coeff[column]);
-    for (std::size_t i = column; i < coeff.size() - 1; i++) {
-      for (std::size_t j = column + 1; j < coeff.size(); j++) {
-        if (abs(coeff[j]) > max) {
-          max = abs(coeff[j]);
-          max_index = j;
-        }
+    for (std::size_t i = column + 1; i < coeff.size(); i++) {
+      if (abs(coeff[i]) > max) {
+        max = abs(coeff[i]);
+        max_index = i;
       }
     }
   }
@@ -283,7 +294,7 @@ void getGaussForward(Matrix global_matrix, Matrix* local_matrix) {
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
   for (int i = 0; i < global_matrix.rows; i++) {
-    int leadingLine = chooseLeadingLineParallel(global_matrix, *local_matrix, i);
+    int leadingLine = chooseLeadingLineParallel(global_matrix.rows, global_matrix.columns, local_matrix, i);
     swapLinesParallel(local_matrix, leadingLine, i);
 
     std::vector<double> leading_Line(local_matrix->columns);
@@ -294,8 +305,9 @@ void getGaussForward(Matrix global_matrix, Matrix* local_matrix) {
     }
 
     // share leading_Line to all processors
-    std::vector<int> number_of_line_to_store = numberOfLinesToStore(global_matrix);
+    std::vector<int> number_of_line_to_store = numberOfLinesToStore(global_matrix.rows);
     int count_of_work_processors = number_of_line_to_store.size();
+
     if (rank == i % size) {
       for (int k = 0; k < count_of_work_processors; k++) {
         if (k != i % size) {
@@ -347,7 +359,8 @@ void swapLinesParallel(Matrix* local_matrix, int line1, int line2) {
   } else {
     for (int i = 0; i < local_matrix->columns; i++) {
       if (rank == line1 % size) {
-        MPI_Send(&local_matrix->matrix[i + local_matrix->columns * (line1 / size)],
+        MPI_Send(
+          &local_matrix->matrix[i + local_matrix->columns * (line1 / size)],
           1,
           MPI_DOUBLE,
           line2 % size,
@@ -366,7 +379,8 @@ void swapLinesParallel(Matrix* local_matrix, int line1, int line2) {
 
       if (rank == line2 % size) {
         double temp = local_matrix->matrix[i + local_matrix->columns * (line2 / size)];
-        MPI_Recv(&local_matrix->matrix[i + local_matrix->columns * (line2 / size)],
+        MPI_Recv(
+          &local_matrix->matrix[i + local_matrix->columns * (line2 / size)],
           1,
           MPI_DOUBLE,
           line1 % size,
@@ -374,7 +388,8 @@ void swapLinesParallel(Matrix* local_matrix, int line1, int line2) {
           MPI_COMM_WORLD,
           MPI_STATUS_IGNORE);
 
-        MPI_Send(&temp,
+        MPI_Send(
+          &temp,
           1,
           MPI_DOUBLE,
           line1 % size,
