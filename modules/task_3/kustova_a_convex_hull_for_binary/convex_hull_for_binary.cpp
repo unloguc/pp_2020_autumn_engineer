@@ -6,9 +6,21 @@
 #include <iostream>
 #include <ctime>
 void printImage(int ** image, int height, int width) {
-    for (int i = 0; i < height; i++) {
+    // for (int i = 0; i < height; i++) {
+    //     for (int j = 0; j < width; j++) {
+    //         std::cout << image[i][j] << " ";
+    //     }
+    //     std::cout << std::endl;
+    // }
+        for (int i = 0; i < height; i++) {
         for (int j = 0; j < width; j++) {
-            std::cout << image[i][j] << " ";
+            if (image[i][j] == 0) {
+            std::cout << "  ";
+            } else if (image[i][j] == 1) {
+            std::cout << "w ";
+            } else {
+                std::cout << 3 << " ";
+            }
         }
         std::cout << std::endl;
     }
@@ -121,7 +133,6 @@ int giveNumbersToComponents(int ** image, int height, int width) {
         MPI_Bcast(&number[0], 1, MPI_INT, 0, MPI_COMM_WORLD);
         componentsNumber = number[0];
     }
-    // if (rank == 0)     printImage(image, height, width);
     return componentsNumber;
 }
 
@@ -177,7 +188,6 @@ std::vector<int> combineComponentParts(int ** image, int height, int width, int 
             }
         }
     }
-     //   if (rank == 0)     printImage(graf, componentsNumber, componentsNumber);
     int k;
     std::vector<int>vec;
     for (int i = 0; i < componentsNumber; i++) {
@@ -197,9 +207,6 @@ std::vector<int> combineComponentParts(int ** image, int height, int width, int 
             }
         }
     }
-
-
-  //  if (rank == 0)     printImage(graf, componentsNumber, componentsNumber);
     if (size > height) {
         size = height;
     }
@@ -251,7 +258,6 @@ std::vector<int> combineComponentParts(int ** image, int height, int width, int 
             }
         }
     }
-// if (rank == 0)     printImage(image, height, width);
     std::vector<int> components;
     for (int h = 0; h < height; h++) {
         for (int w = 0; w < width; w++) {
@@ -274,18 +280,19 @@ std::vector<int> combineComponentParts(int ** image, int height, int width, int 
             }
         }
     }
-
     return components;
 }
 
 std::vector<int> searchConnectedComponents(int ** image, int height, int width) {
+        int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     int componentsNumber = giveNumbersToComponents(image, height, width);
     std::vector<int> components = combineComponentParts(image, height, width, componentsNumber);
     return components;
 }
 
 
-int ** imageOrAnd(int ** image1, int ** image2, int height, int width, int sign) {
+int ** imageOr(int ** image1, int ** image2, int height, int width) {
     int size, rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
@@ -305,22 +312,15 @@ int ** imageOrAnd(int ** image1, int ** image2, int height, int width, int sign)
 
     for (int i = start_height; i < max_height; i++) {
         for (int j = 0; j < width; j++) {
-            if (sign == 1) {  // or
-                if (image1[i][j] != 0 || image2[i][j] != 0) {
-                    resultImage[i][j] = 1;
-                } else {
-                    resultImage[i][j] = 0;
-                }
-            } else {  // and
-                if (image1[i][j] != 0 && image2[i][j] != 0) {
-                    resultImage[i][j] = 1;
-                } else {
-                    resultImage[i][j] = 0;
-                }
+            if (image1[i][j] != 0) {
+                resultImage[i][j] = image1[i][j];
+            } else if (image2[i][j] != 0) {
+                resultImage[i][j] = image2[i][j];
+            } else {
+                resultImage[i][j] = 0;
             }
         }
     }
-
     int k = 0;
     std::vector<int> send(height*width);
     for (int i = 0; i < height; i++) {
@@ -329,7 +329,6 @@ int ** imageOrAnd(int ** image1, int ** image2, int height, int width, int sign)
             k++;
         }
     }
-
     std::vector<int> recv(height*width);
     MPI_Allreduce(&send[0], &recv[0], height*width, MPI_INT, MPI_MAX, MPI_COMM_WORLD);
 
@@ -340,177 +339,33 @@ int ** imageOrAnd(int ** image1, int ** image2, int height, int width, int sign)
             k++;
         }
     }
-
     return resultImage;
 }
 
-int ** buildConvexHull(int ** image, int height, int width, int op) {
-    int i1, j1, i2, j2, i3, j3;
-    int min_i, max_i, min_j, max_j;
-    switch (op) {
-    case 1:
-        i1 = 1;
-        j1 = -1;
-        i2 = 1;
-        j2 = 0;
-        i3 = 1;
-        j3 = 1;
-        min_i = 0;
-        min_j = -1;
-        max_i = 1;
-        max_j = 1;
-        break;
-    case 2:
-        i1 = -1;
-        j1 = -1;
-        i2 = 0;
-        j2 = -1;
-        i3 = 1;
-        j3 = -1;
-        min_i = -1;
-        min_j = -1;
-        max_i = 1;
-        max_j = 0;
-        break;
-    case 3:
-        i1 = -1;
-        j1 = -1;
-        i2 = -1;
-        j2 = 0;
-        i3 = -1;
-        j3 = 1;
-        min_i = -1;
-        min_j = -1;
-        max_i = 0;
-        max_j = 1;
-        break;
-    case 4:
-        i1 = -1;
-        j1 = 1;
-        i2 = 0;
-        j2 = 1;
-        i3 = 1;
-        j3 = 1;
-        min_i = -1;
-        min_j = 0;
-        max_i = 1;
-        max_j = 1;
-        break;
-    case 5:
-        i1 = -1;
-        j1 = 0;
-        i2 = -1;
-        j2 = 1;
-        i3 = 0;
-        j3 = 1;
-        min_i = -1;
-        min_j = 0;
-        max_i = 0;
-        max_j = 1;
-        break;
-    case 6:
-        i1 = 0;
-        j1 = 1;
-        i2 = 1;
-        j2 = 1;
-        i3 = 1;
-        j3 = 0;
-        min_i = 0;
-        min_j = 0;
-        max_i = 1;
-        max_j = 1;
-        break;
-    case 7:
-        i1 = 1;
-        j1 = 0;
-        i2 = 1;
-        j2 = -1;
-        i3 = 0;
-        j3 = -1;
-        min_i = 0;
-        min_j = -1;
-        max_i = 1;
-        max_j = 0;
-        break;
-    case 8:
-        i1 = 0;
-        j1 = -1;
-        i2 = -1;
-        j2 = -1;
-        i3 = -1;
-        j3 = 0;
-        min_i = -1;
-        min_j = -1;
-        max_i = 0;
-        max_j = 0;
-        break;
-    default:
-        break;
-    }
-    int ** resultImage = new int*[height];
-    for (int i = 0; i < height; i++) {
-        resultImage[i] = new int[width];
-        for (int j = 0; j < width; j++) {
-            resultImage[i][j] = image[i][j];
-        }
-    }
-    int k = 1;
-    while (k != 0) {
-        k = 0;
-        for (int i = 0 - min_i; i < height - max_i; i++) {
-            for (int j = 0 - min_j; j < width - max_j; j++) {
-                if (resultImage[i][j] == 0) {
-                    if (resultImage[i + i1][j + j1] != 0 &&
-                        resultImage[i + i2][j + j2] != 0 &&
-                        resultImage[i + i3][j + j3] != 0) {
-                        k++;
-                        resultImage[i][j] = 1;
-                    }
-                }
-            }
-        }
-    }
-    return resultImage;
-}
 
 int ** buildComponentConvexHull(int ** image, int height, int width) {
     int size, rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
-    // buildConvexHull(image, height, width, 8);
-
-    int ** image1 = new int*[height];
-    int ** image2 = new int*[height];
+    std::vector<Point> vec;
+    std::vector<Point> res;
     for (int i = 0; i < height; i++) {
-        image1[i] = new int[width];
-        image2[i] = new int[width];
         for (int j = 0; j < width; j++) {
-            image1[i][j] = image[i][j];
-            image2[i][j] = image[i][j];
+            if (image[i][j] != 0) {
+                Point a;
+                a.x = i;
+                a.y = j;
+            vec.push_back(a);
+            }
         }
     }
-    int ** resultImage;
-    image1 = imageOrAnd(imageOrAnd(buildConvexHull(image1, height, width, 1),
-                             buildConvexHull(image1, height, width, 2),
-                             height, width, 1),
-                     imageOrAnd(buildConvexHull(image1, height, width, 3),
-                             buildConvexHull(image1, height, width, 4),
-                             height, width, 1),
-                     height, width, 1);
-    image2 = imageOrAnd(imageOrAnd(buildConvexHull(image2, height, width, 5),
-                             buildConvexHull(image2, height, width, 6),
-                             height, width, 1),
-                     imageOrAnd(buildConvexHull(image2, height, width, 7),
-                             buildConvexHull(image2, height, width, 8),
-                             height, width, 1),
-                     height, width, 1);
-    // if (rank == 0) {
-    //     printImage(image1, height, width);
-    //     std::cout << "--"<<std::endl;
-    //     printImage(image2, height, width);
-    // }
-    resultImage = imageOrAnd(image1, image2, height, width, 0);
-    return resultImage;
+    res = buildHull(vec);
+    for (unsigned int i = 0; i < res.size(); i++) {
+        int x1 = static_cast<int>(res[i].x);
+        int y1 = static_cast<int>(res[i].y);
+        image[x1][y1] = 3;
+    }
+    return image;
 }
 
 int ** getComponent(int ** image, int height, int width, int number) {
@@ -530,6 +385,8 @@ int ** getComponent(int ** image, int height, int width, int number) {
 
 int ** buildImageConvexHull(int ** image, int height, int width) {
     int ** resultImage = new int*[height];
+         int rank;
+     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     int ** comp = new int*[height];
     for (int i = 0; i < height; i++) {
         resultImage[i] = new int[width];
@@ -545,7 +402,115 @@ int ** buildImageConvexHull(int ** image, int height, int width) {
         int component = components.back();
         components.pop_back();
         int ** result = buildComponentConvexHull(getComponent(comp, height, width, component), height, width);
-        resultImage = imageOrAnd(resultImage, result, height, width, 1);
+        resultImage = imageOr(resultImage, result, height, width);
     }
     return resultImage;
 }
+
+int cross(const Point& a, const Point& b) {
+  return (a.x * b.y) - (b.x * a.y);
+}
+
+bool is_counter_clockwise(const Point& p, const Point& i, const Point& q) {
+  return cross(i - p, q - p) < 0;
+}
+
+Point find_leftmost_point(std::vector<Point> buf, int rank, int size, int countpr) {
+    Point most_point;
+    if (buf.size() != 0) {
+        most_point = buf[0];
+    }
+    for (unsigned int i = 1; i < buf.size(); i++) {
+        if (buf[i].x < most_point.x) {
+            most_point = buf[i];
+        }
+    }
+
+    std::vector<Point> points(size);
+    if (countpr == 0) {
+        MPI_Gather(&most_point, 2, MPI_INT, &points[0], 2, MPI_INT, 0, MPI_COMM_WORLD);
+    }
+
+    if (rank == 0) {
+        most_point = points[0];
+        for (unsigned int i = 0; i < points.size(); i++) {
+            if (points[i].x == 0) continue;
+            else
+            if (points[i].x < most_point.x) {
+                most_point = points[i];
+            }
+        }
+    }
+    MPI_Bcast(&most_point, 2, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Barrier(MPI_COMM_WORLD);
+    return most_point;
+}
+
+std::vector<Point> buildHull(std::vector<Point> m_set) {
+    int rank, size;
+    int countpr = 0;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    Point leftmost_point;
+    int delta = m_set.size() / size;
+    int rem = m_set.size() % size;
+    if (delta == 0) countpr = 1;
+    std::vector<Point> buffer(delta);
+    MPI_Scatter(&m_set[rem], delta * 2, MPI_INT, &buffer[0], delta * 2, MPI_INT, 0, MPI_COMM_WORLD);
+    if (rank == 0) {
+        buffer.insert(buffer.begin(), m_set.begin(), m_set.begin() + rem);
+    }
+    leftmost_point = find_leftmost_point(buffer, rank, size, countpr);
+    std::vector<Point> hull;
+    std::vector<Point> points(size);
+    Point endpoint;
+    do {
+        hull.push_back(leftmost_point);
+        endpoint = m_set.at(0);
+        if (countpr == 0 || rank == 0) {
+            for (auto i = buffer.begin(); i < buffer.end(); i++) {
+                if (is_counter_clockwise(hull.back(), *i, endpoint) || endpoint == leftmost_point) {
+                    endpoint = *i;
+                }
+            }
+        }
+        if (countpr == 0) {
+            MPI_Gather(&endpoint, 2, MPI_INT, &points[0], 2, MPI_INT, 0, MPI_COMM_WORLD);
+        }
+        if (rank == 0) {
+            for (auto point : points) {
+                if (is_counter_clockwise(hull.back(), point, endpoint) || endpoint == leftmost_point) {
+                    endpoint = point;
+                }
+            }
+        }
+        MPI_Bcast(&endpoint, 2, MPI_INT, 0, MPI_COMM_WORLD);
+        leftmost_point = endpoint;
+    } while (endpoint != hull.at(0));
+    return hull;
+}
+
+// std::vector<Point> buildHull_s(std::vector<Point> m_set) {
+//   Point leftmost_point = m_set[0];
+//   for (unsigned int i = 1; i < m_set.size(); i++) {
+//     if (m_set[i].x < leftmost_point.x) {
+//         leftmost_point = m_set[i];
+//     }
+//   }
+//   std::vector<Point> hull;
+//   Point endpoint;
+//   do {
+//     hull.push_back(leftmost_point);
+//     endpoint = m_set.at(0);
+//     for (auto i : m_set) {
+//       if (is_counter_clockwise(hull.back(), i, endpoint) ||
+//           endpoint == leftmost_point) {
+//         endpoint = i;
+//       }
+//     }
+
+//     leftmost_point = endpoint;
+//   } while (endpoint != hull.at(0));
+
+//   return hull;
+// }
