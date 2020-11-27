@@ -32,9 +32,9 @@ void CustomTest(const size_t vector_size) {
     vector_for_sequential_sort = getRandomVector(vector_size);
     vector_for_parallel_sort = vector_for_sequential_sort;
   }
-  sortedArrayParallel(&vector_for_parallel_sort[0], vector_size);
+  sortedArrayParallel(vector_for_parallel_sort.data(), vector_size);
   if (rank == 0) {
-    sortedArraySequential(&vector_for_sequential_sort[0], vector_size);
+    sortedArraySequential(vector_for_sequential_sort.data(), vector_size);
     ASSERT_EQ(vector_for_parallel_sort, vector_for_sequential_sort);
   }
 }

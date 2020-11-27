@@ -82,58 +82,58 @@ void sortedArrayParallel(int *array, const int array_size) {
   std::vector<int> neighbour_vector;
   if (rank < delta) {
     local_vector.resize(size_block + 1);
-    MPI_Scatterv(array, sendcounts, displs, MPI_INT, &local_vector[0], size_block + 1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Scatterv(array, sendcounts, displs, MPI_INT, local_vector.data(), size_block + 1, MPI_INT, 0, MPI_COMM_WORLD);
   } else {
     local_vector.resize(size_block);
-    MPI_Scatterv(array, sendcounts, displs, MPI_INT, &local_vector[0], size_block, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Scatterv(array, sendcounts, displs, MPI_INT, local_vector.data(), size_block, MPI_INT, 0, MPI_COMM_WORLD);
   }
-  sortedArraySequential(&local_vector[0], local_vector.size());
+  sortedArraySequential(local_vector.data(), local_vector.size());
   for (size_t i = 0; i < size; ++i) {
     if (i % 2 == 1) {
       if (rank % 2 == 1) {
         if (rank < size - 1) {
           int local_vector_size = static_cast<int>(local_vector.size());
           MPI_Send(&local_vector_size, 1, MPI_INT, rank + 1, 0, MPI_COMM_WORLD);
-          MPI_Send(&local_vector[0], local_vector_size, MPI_INT, rank + 1, 0, MPI_COMM_WORLD);
+          MPI_Send(local_vector.data(), local_vector_size, MPI_INT, rank + 1, 0, MPI_COMM_WORLD);
           int neighbour_vector_size;
           MPI_Recv(&neighbour_vector_size, 1, MPI_INT, rank + 1, 0, MPI_COMM_WORLD, &status);
           neighbour_vector.resize(neighbour_vector_size);
-          MPI_Recv(&neighbour_vector[0], neighbour_vector_size, MPI_INT, rank + 1, 0, MPI_COMM_WORLD, &status);
-          mergeArrays(&local_vector[0], &neighbour_vector[0], local_vector_size, neighbour_vector_size);
+          MPI_Recv(neighbour_vector.data(), neighbour_vector_size, MPI_INT, rank + 1, 0, MPI_COMM_WORLD, &status);
+          mergeArrays(local_vector.data(), neighbour_vector.data(), local_vector_size, neighbour_vector_size);
         }
       } else if (rank > 0) {
         int local_vector_size = static_cast<int>(local_vector.size());
         MPI_Send(&local_vector_size, 1, MPI_INT, rank - 1, 0, MPI_COMM_WORLD);
-        MPI_Send(&local_vector[0], local_vector_size, MPI_INT, rank - 1, 0, MPI_COMM_WORLD);
+        MPI_Send(local_vector.data(), local_vector_size, MPI_INT, rank - 1, 0, MPI_COMM_WORLD);
         int neighbour_vector_size;
         MPI_Recv(&neighbour_vector_size, 1, MPI_INT, rank - 1, 0, MPI_COMM_WORLD, &status);
         neighbour_vector.resize(neighbour_vector_size);
-        MPI_Recv(&neighbour_vector[0], neighbour_vector_size, MPI_INT, rank - 1, 0, MPI_COMM_WORLD, &status);
-        mergeArrays(&neighbour_vector[0], &local_vector[0], neighbour_vector_size, local_vector_size);
+        MPI_Recv(neighbour_vector.data(), neighbour_vector_size, MPI_INT, rank - 1, 0, MPI_COMM_WORLD, &status);
+        mergeArrays(neighbour_vector.data(), local_vector.data(), neighbour_vector_size, local_vector_size);
       }
     } else {
       if (rank % 2 == 0) {
         if (rank < size - 1) {
           int local_vector_size = static_cast<int>(local_vector.size());
           MPI_Send(&local_vector_size, 1, MPI_INT, rank + 1, 0, MPI_COMM_WORLD);
-          MPI_Send(&local_vector[0], local_vector_size, MPI_INT, rank + 1, 0, MPI_COMM_WORLD);
+          MPI_Send(local_vector.data(), local_vector_size, MPI_INT, rank + 1, 0, MPI_COMM_WORLD);
           int neighbour_vector_size;
           MPI_Recv(&neighbour_vector_size, 1, MPI_INT, rank + 1, 0, MPI_COMM_WORLD, &status);
           neighbour_vector.resize(neighbour_vector_size);
-          MPI_Recv(&neighbour_vector[0], neighbour_vector_size, MPI_INT, rank + 1, 0, MPI_COMM_WORLD, &status);
-          mergeArrays(&local_vector[0], &neighbour_vector[0], local_vector_size, neighbour_vector_size);
+          MPI_Recv(neighbour_vector.data(), neighbour_vector_size, MPI_INT, rank + 1, 0, MPI_COMM_WORLD, &status);
+          mergeArrays(local_vector.data(), neighbour_vector.data(), local_vector_size, neighbour_vector_size);
         }
       } else {
         int local_vector_size = static_cast<int>(local_vector.size());
         MPI_Send(&local_vector_size, 1, MPI_INT, rank - 1, 0, MPI_COMM_WORLD);
-        MPI_Send(&local_vector[0], local_vector_size, MPI_INT, rank - 1, 0, MPI_COMM_WORLD);
+        MPI_Send(local_vector.data(), local_vector_size, MPI_INT, rank - 1, 0, MPI_COMM_WORLD);
         int neighbour_vector_size;
         MPI_Recv(&neighbour_vector_size, 1, MPI_INT, rank - 1, 0, MPI_COMM_WORLD, &status);
         neighbour_vector.resize(neighbour_vector_size);
-        MPI_Recv(&neighbour_vector[0], neighbour_vector_size, MPI_INT, rank - 1, 0, MPI_COMM_WORLD, &status);
-        mergeArrays(&neighbour_vector[0], &local_vector[0], neighbour_vector_size, local_vector_size);
+        MPI_Recv(neighbour_vector.data(), neighbour_vector_size, MPI_INT, rank - 1, 0, MPI_COMM_WORLD, &status);
+        mergeArrays(neighbour_vector.data(), local_vector.data(), neighbour_vector_size, local_vector_size);
       }
     }
   }
-  MPI_Gatherv(&local_vector[0], sendcounts[rank], MPI_INT, array, sendcounts, displs, MPI_INT, 0, MPI_COMM_WORLD);
+  MPI_Gatherv(local_vector.data(), sendcounts[rank], MPI_INT, array, sendcounts, displs, MPI_INT, 0, MPI_COMM_WORLD);
 }
