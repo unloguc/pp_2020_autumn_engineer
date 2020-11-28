@@ -18,7 +18,7 @@ std::vector<int> getRandomVector(int sz) {
 }
 
   int getSequentialPart(std::vector<int> vec, int sz) {
-  if (sz == 0 ) return 0;
+  if (vec.empty()) return 0;
 
   int sum = 0;
   for (int i = 0; i < sz - 1; i++) {
@@ -30,7 +30,7 @@ std::vector<int> getRandomVector(int sz) {
 
 
 int getParallelVector(std::vector<int> global_vec, int size_vector) {
-  if (size_vector == 0 )
+  if (global_vec.empty() )
     return 0;
 
   int size, rank, GlobalSum = 0, LocalSum = 0;
