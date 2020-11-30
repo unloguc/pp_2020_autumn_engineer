@@ -72,3 +72,44 @@ std::vector<int> getDijkstrasAlgorithmSequential(const std::vector<int>* graph, 
 
   return dist;
 }
+
+std::vector<int> getDijkstrasAlgorithmParallel(const std::vector<int>* graph, int root) {
+  int size, rank;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+  int graphSize = sqrt(graph->size());
+  int maxInt = std::numeric_limits<int>::max();
+  std::vector<bool> global_used(graphSize, false);
+  std::vector<int> global_dist(graphSize, maxInt);
+  global_dist[root] = 0;
+
+  std::vector<int> local_graph(graphSize * (graphSize / size));
+  MPI_Scatter(
+    &graph[graphSize % size + graphSize],
+    graphSize / size,
+    MPI_INT,
+    &local_graph[0],
+    graphSize / size,
+    MPI_INT,
+    0,
+    MPI_COMM_WORLD);
+  if (rank == 0) {
+    local_graph.insert(
+      local_graph.begin(), 
+      graph->begin(), 
+      graph->begin() + graphSize % size);
+  }
+  /*
+  std::vector<bool> local_used(local_graph.size(), false);
+  std::vector<int> local_dist(local_graph.size(), maxInt);
+  for (size_t i = 0; i < local_graph.size(); i++) {
+    int vertex = -1;
+    for (size_t j = 0; j < local_graph.size(); j++) {
+      if (!local_used[j] && (vertex == -1 || dist[j] < dist[vertex])) {
+        vertex = j;
+      }
+    }
+  }*/
+}
+

@@ -12,4 +12,6 @@ void printResult(const std::vector<int>* result);
 
 std::vector<int> getDijkstrasAlgorithmSequential(const std::vector<int>* graph, int root);
 
+std::vector<int> getDijkstrasAlgorithmParallel(const std::vector<int>* graph, int root);
+
 #endif  // MODULES_TASK_3_ALEKHIN_D_DIJKSTRAS_ALGORITHM_DIJKSTRAS_ALGORITHM_H_
