@@ -3,6 +3,8 @@
 #include <iostream>
 #include <random>
 #include <ctime>
+#include <limits>
+#include <vector>
 #include "../../modules/task_3/alekhin_d_dijkstras_algorithm/dijkstras_algorithm.h"
 
 void getRandomGraph(std::vector<int>* graph, int size) {
@@ -13,7 +15,7 @@ void getRandomGraph(std::vector<int>* graph, int size) {
       if (i == j) {
         graph->push_back(0);
       } else if (j < i) {
-        graph->push_back((*graph)[j*size + i]);
+        graph->push_back((*graph)[j * size + i]);
       } else {
         graph->push_back(gen() % 5);
       }
@@ -46,7 +48,7 @@ std::vector<int> getDijkstrasAlgorithmSequential(const std::vector<int>* graph, 
   std::vector<bool> used(graphSize, false);
   std::vector<int> dist(graphSize, maxInt);
   dist[root] = 0;
-  
+
   for (int i = 0; i < graphSize - 1; i++) {
     int vertex = -1;
     for (int j = 0; j < graphSize; j++) {
@@ -59,9 +61,9 @@ std::vector<int> getDijkstrasAlgorithmSequential(const std::vector<int>* graph, 
       break;
     }
     used[vertex] = true;
-      
+
     for (int k = 0; k < graphSize; k++) {
-      if ((*graph)[vertex * graphSize + k] != 0 && dist[vertex] + (*graph)[vertex * graphSize + k] < dist[k] ) {
+      if ((*graph)[vertex * graphSize + k] != 0 && dist[vertex] + (*graph)[vertex * graphSize + k] < dist[k]) {
         dist[k] = dist[vertex] + (*graph)[vertex * graphSize + k];
       }
     }
