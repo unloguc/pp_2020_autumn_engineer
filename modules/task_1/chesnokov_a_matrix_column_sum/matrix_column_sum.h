@@ -4,7 +4,7 @@
 
 #include <vector>
 class Matrix {
-public:
+ public:
     int* buf;
     int columns, rows;
 
