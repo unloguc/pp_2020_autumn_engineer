@@ -9,16 +9,15 @@ TEST(Task_1, Test_Random_Matrix_No_Throw) {
 }
 
 TEST(Task_1, Test_Sequential_On_Predefined_Matrix) {
-  Matrix matrix(3);
+  int data[] = { 4, 2, 1, 8,  2, 3, 6, -2,  3, 3, 5, 1 };
   std::vector<int> res;
   std::vector<int> seq_res;
 
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   if (rank == 0) {
-    matrix = Matrix({{2, 4, 2, 1}, {1, 4, 1, 0}, {2, 3, 2, 3}});
-    res = std::vector<int>({9, 6, 10});
-
+    Matrix matrix(3, 4, data);
+    res = std::vector<int>({15, 9, 12});
     seq_res = getSequentialColumnSum(matrix);
 
     EXPECT_EQ(seq_res, res);
@@ -26,24 +25,24 @@ TEST(Task_1, Test_Sequential_On_Predefined_Matrix) {
 }
 
 TEST(Task_1, Test_Parallel_On_Predefined_Matrix) {
-  Matrix matrix(3);
+  int data[] = { 4, 2, 1, 8,  2, 3, 6, -2,  3, 3, 5, 1 };
   std::vector<int> res;
   std::vector<int> par_res;
 
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    matrix = Matrix({{2, 4, 2, 1}, {1, 4, 1, 0}, {2, 3, 2, 3}});
-    res = std::vector<int>({9, 6, 10});
+  Matrix matrix(3, 4, data);
+  res = std::vector<int>({ 15, 9, 12 });
 
-    par_res = getParallelColumnSum(matrix);
-    if (rank == 0) {
+  par_res = getParallelColumnSum(matrix);
+  if (rank == 0) {
     EXPECT_EQ(par_res, res);
   }
 }
 
-TEST(Task_1, Test_Sequential_And_Parallel_Sums_Are_The_Same_11x11) {
-  Matrix mat = getRandomMatrix(11, 11);
+TEST(Task_1, Test_Sequential_And_Parallel_Sums_Are_The_Same_123x321) {
+  Matrix mat = getRandomMatrix(123, 321);
   auto seq_res = getSequentialColumnSum(mat);
   auto par_res = getParallelColumnSum(mat);
   int rank;
