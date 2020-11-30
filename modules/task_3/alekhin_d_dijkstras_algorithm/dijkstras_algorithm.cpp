@@ -26,7 +26,7 @@ void getRandomGraph(std::vector<int>* graph, int size) {
 void printGraph(const std::vector<int>* graph) {
   int size = sqrt(graph->size());
 
-  for (int i = 0; i < graph->size(); i++) {
+  for (size_t i = 0; i < graph->size(); i++) {
     std::cout << (*graph)[i] << " ";
     if ((i + 1) % size == 0) {
       std::cout << std::endl;
@@ -35,7 +35,7 @@ void printGraph(const std::vector<int>* graph) {
 }
 
 void printResult(const std::vector<int>* result) {
-  for (int i = 0; i < result->size(); i++) {
+  for (size_t i = 0; i < result->size(); i++) {
     std::cout << (*result)[i] << " ";
   }
   std::cout << std::endl;
@@ -63,7 +63,8 @@ std::vector<int> getDijkstrasAlgorithmSequential(const std::vector<int>* graph, 
     used[vertex] = true;
 
     for (int k = 0; k < graphSize; k++) {
-      if ((*graph)[vertex * graphSize + k] != 0 && dist[vertex] + (*graph)[vertex * graphSize + k] < dist[k]) {
+      if ((*graph)[vertex * graphSize + k] != 0 && 
+        dist[vertex] + (*graph)[vertex * graphSize + k] < dist[k]) {
         dist[k] = dist[vertex] + (*graph)[vertex * graphSize + k];
       }
     }
