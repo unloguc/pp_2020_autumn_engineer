@@ -63,7 +63,7 @@ std::vector<int> getDijkstrasAlgorithmSequential(const std::vector<int>* graph, 
     used[vertex] = true;
 
     for (int k = 0; k < graphSize; k++) {
-      if ((*graph)[vertex * graphSize + k] != 0 && 
+      if ((*graph)[vertex * graphSize + k] != 0 &&
         dist[vertex] + (*graph)[vertex * graphSize + k] < dist[k]) {
         dist[k] = dist[vertex] + (*graph)[vertex * graphSize + k];
       }
