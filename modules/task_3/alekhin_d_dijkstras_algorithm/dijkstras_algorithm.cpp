@@ -80,17 +80,17 @@ std::vector<int> getDijkstrasAlgorithmParallel(const std::vector<int>* graph, in
 
   int graphSize = sqrt(graph->size());
   int maxInt = std::numeric_limits<int>::max();
-  std::vector<bool> global_used(graphSize, false);
-  std::vector<int> global_dist(graphSize, maxInt);
-  global_dist[root] = 0;
-
+  std::vector<bool> used(graphSize, false);
+  std::vector<int> dist(graphSize, maxInt);
+  dist[root] = 0;
+  
   std::vector<int> local_graph(graphSize * (graphSize / size));
   MPI_Scatter(
-    &graph[graphSize % size + graphSize],
-    graphSize / size,
+    &(*graph)[graphSize % size + (graphSize - 1)],
+    graphSize * (graphSize / size),
     MPI_INT,
     &local_graph[0],
-    graphSize / size,
+    graphSize * (graphSize / size),
     MPI_INT,
     0,
     MPI_COMM_WORLD);
@@ -98,18 +98,75 @@ std::vector<int> getDijkstrasAlgorithmParallel(const std::vector<int>* graph, in
     local_graph.insert(
       local_graph.begin(), 
       graph->begin(), 
-      graph->begin() + graphSize % size);
+      graph->begin() + graphSize % size + (graphSize - 1));
   }
-  /*
-  std::vector<bool> local_used(local_graph.size(), false);
-  std::vector<int> local_dist(local_graph.size(), maxInt);
-  for (size_t i = 0; i < local_graph.size(); i++) {
-    int vertex = -1;
-    for (size_t j = 0; j < local_graph.size(); j++) {
-      if (!local_used[j] && (vertex == -1 || dist[j] < dist[vertex])) {
-        vertex = j;
+
+  int localDelta;
+  if (rank == 0) {
+    localDelta = 0;
+  } else {
+    localDelta = graphSize % size + (graphSize / size) * rank;
+  }
+  
+  
+  struct {
+    int value;
+    int index;
+  }local_vertex, global_vertex;
+
+  int localGraphSize = local_graph.size() / graphSize;
+  for (size_t i = 0; i < localGraphSize; i++) {
+    local_vertex.value = -1;
+    local_vertex.index = -1;
+    for (size_t j = localDelta; j < localGraphSize + localDelta; j++) {
+      if (!used[j] &&
+        (local_vertex.index == -1 || dist[j] < dist[local_vertex.index])) {
+        local_vertex.index = j;
+        local_vertex.value = dist[local_vertex.index];
       }
     }
-  }*/
-}
+    if (i < graphSize / size) {
+      MPI_Allreduce(&local_vertex, &global_vertex, 1, MPI_2INT, MPI_MINLOC, MPI_COMM_WORLD);
+    }
+    if (dist[global_vertex.index] == maxInt) {
+      break;
+    }
+    used[global_vertex.index] = true;    
 
+    for (int k = 0; k < localGraphSize; k++) {
+      if (local_graph[global_vertex.index + graphSize * k] != 0 &&
+        dist[global_vertex.index] + local_graph[global_vertex.index + graphSize * k] < dist[k + localDelta]) {
+        dist[k + localDelta] = dist[global_vertex.index] + local_graph[global_vertex.index + graphSize * k];
+      }
+    }
+
+    if (i < graphSize / size) {
+      std::vector<int> global_dist((graphSize / size) * size);
+      MPI_Gather(
+        &dist[graphSize % size],
+        graphSize / size,
+        MPI_INT,
+        &global_dist[0],
+        graphSize / size,
+        MPI_INT,
+        0,
+        MPI_COMM_WORLD);
+
+      if(rank == 0) {
+        for (int i = 0; i < global_dist.size(); i++) {
+          //std::cout << global_dist[i] << " ";
+        }//std::cout << std::endl;
+      }
+
+      if (rank == 0) {
+        global_dist.insert(global_dist.begin(),
+          dist.begin(),
+          dist.begin() + graphSize % size);
+
+        dist = global_dist;
+      }
+      MPI_Bcast(&dist[0], dist.size(), MPI_INT, 0, MPI_COMM_WORLD);
+    }
+  }
+  return dist;
+}

@@ -28,6 +28,22 @@ TEST(Get_Dijkstras_Algorithm_Sequential, Get_Dijkstras_Algorithm_Sequential_Work
   }
 }
 
+TEST(Get_Dijkstras_Algorithm_Parallel, Get_Dijkstras_Algorithm_Parallel_Works) {
+  int size, rank;
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+  if (size > 1) {
+    std::vector<int> graph;
+    getRandomGraph(&graph);
+    std::vector<int> result;
+    EXPECT_NO_THROW(result = getDijkstrasAlgorithmParallel(&graph, 0));
+    if (rank == 0) {
+      printResult(&result);
+    }
+  }
+}
+
 int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);
   MPI_Init(&argc, &argv);
