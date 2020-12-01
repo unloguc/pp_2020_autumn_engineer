@@ -18,7 +18,7 @@ dpair seqGlobSearch(const std::function<double(double)>& func, double a, double 
     //константа Липшица
     for (; (vec[t + 1].first - vec[t].first) > eps; ++k) {
         for (size_t i = 0; i < (k - 1u); ++i) {
-            double M_tmp = abs((vec[i + 1].second - vec[i].second) / (vec[i + 1].first - vec[i].first));
+            double M_tmp = std::abs((vec[i + 1].second - vec[i].second) / (vec[i + 1].first - vec[i].first));
             if (M_tmp > M)
                 M = M_tmp;
         }
@@ -80,7 +80,7 @@ dpair parGlobSearch(const std::function<double(double)>& func, double a, double 
                 }
             }
             for (int i = 0; i < (k - 1); ++i) {  //константа Липшица
-                double M_tmp = abs((vec[i + 1].second - vec[i].second) / (vec[i + 1].first - vec[i].first));
+                double M_tmp = std::abs((vec[i + 1].second - vec[i].second) / (vec[i + 1].first - vec[i].first));
                 if (M_tmp > M)
                     M = M_tmp;
             }
