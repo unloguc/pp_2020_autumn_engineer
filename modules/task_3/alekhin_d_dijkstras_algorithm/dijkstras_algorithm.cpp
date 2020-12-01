@@ -83,22 +83,15 @@ std::vector<int> getDijkstrasAlgorithmParallel(const std::vector<int>* graph, in
   std::vector<bool> used(graphSize, false);
   std::vector<int> dist(graphSize, maxInt);
   dist[root] = 0;
-  
+
   std::vector<int> local_graph(graphSize * (graphSize / size));
-  MPI_Scatter(
-    &(*graph)[graphSize % size + (graphSize - 1)],
-    graphSize * (graphSize / size),
-    MPI_INT,
-    &local_graph[0],
-    graphSize * (graphSize / size),
-    MPI_INT,
-    0,
-    MPI_COMM_WORLD);
+  MPI_Scatter(&(*graph)[(graphSize % size) * graphSize], (graphSize / size) * graphSize,
+    MPI_INT, &local_graph[0], (graphSize / size) * graphSize, MPI_INT, 0, MPI_COMM_WORLD);
   if (rank == 0) {
     local_graph.insert(
-      local_graph.begin(), 
-      graph->begin(), 
-      graph->begin() + graphSize % size + (graphSize - 1));
+      local_graph.begin(),
+      graph->begin(),
+      graph->begin() + (graphSize % size) * graphSize);
   }
 
   int localDelta;
@@ -107,31 +100,31 @@ std::vector<int> getDijkstrasAlgorithmParallel(const std::vector<int>* graph, in
   } else {
     localDelta = graphSize % size + (graphSize / size) * rank;
   }
-  
-  
+
   struct {
     int value;
     int index;
   }local_vertex, global_vertex;
 
   int localGraphSize = local_graph.size() / graphSize;
-  for (size_t i = 0; i < localGraphSize; i++) {
+  for (size_t i = 0; i < graphSize - 1; i++) {
     local_vertex.value = -1;
     local_vertex.index = -1;
     for (size_t j = localDelta; j < localGraphSize + localDelta; j++) {
-      if (!used[j] &&
-        (local_vertex.index == -1 || dist[j] < dist[local_vertex.index])) {
+      if (!used[j] && (local_vertex.index == -1 || dist[j] < dist[local_vertex.index])) {
         local_vertex.index = j;
         local_vertex.value = dist[local_vertex.index];
       }
     }
-    if (i < graphSize / size) {
-      MPI_Allreduce(&local_vertex, &global_vertex, 1, MPI_2INT, MPI_MINLOC, MPI_COMM_WORLD);
+
+    if (local_vertex.index == -1) {
+      local_vertex.value = maxInt;
     }
-    if (dist[global_vertex.index] == maxInt) {
+    MPI_Allreduce(&local_vertex, &global_vertex, 1, MPI_2INT, MPI_MINLOC, MPI_COMM_WORLD);
+    if (global_vertex.index == -1 || dist[global_vertex.index] == maxInt) {
       break;
     }
-    used[global_vertex.index] = true;    
+    used[global_vertex.index] = true;
 
     for (int k = 0; k < localGraphSize; k++) {
       if (local_graph[global_vertex.index + graphSize * k] != 0 &&
@@ -140,33 +133,24 @@ std::vector<int> getDijkstrasAlgorithmParallel(const std::vector<int>* graph, in
       }
     }
 
-    if (i < graphSize / size) {
-      std::vector<int> global_dist((graphSize / size) * size);
-      MPI_Gather(
-        &dist[graphSize % size],
-        graphSize / size,
-        MPI_INT,
-        &global_dist[0],
-        graphSize / size,
-        MPI_INT,
-        0,
-        MPI_COMM_WORLD);
-
-      if(rank == 0) {
-        for (int i = 0; i < global_dist.size(); i++) {
-          //std::cout << global_dist[i] << " ";
-        }//std::cout << std::endl;
+    if (rank == 0) {
+      dist.resize(graphSize % size + graphSize / size);
+      std::vector<int> recv(graphSize / size);
+      for (int i = 1; i < size; i++) {
+        MPI_Recv(&recv[0], graphSize / size,
+          MPI_INT, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        dist.insert(dist.end(), recv.begin(), recv.end());
       }
-
-      if (rank == 0) {
-        global_dist.insert(global_dist.begin(),
-          dist.begin(),
-          dist.begin() + graphSize % size);
-
-        dist = global_dist;
+    } else {
+      for (int i = 1; i < size; i++) {
+        if (rank == i) {
+          MPI_Send(&dist[graphSize % size + rank * (graphSize / size)], graphSize / size,
+            MPI_INT, 0, 0, MPI_COMM_WORLD);
+        }
       }
-      MPI_Bcast(&dist[0], dist.size(), MPI_INT, 0, MPI_COMM_WORLD);
     }
+    MPI_Bcast(&dist[0], dist.size(), MPI_INT, 0, MPI_COMM_WORLD);
   }
+
   return dist;
 }

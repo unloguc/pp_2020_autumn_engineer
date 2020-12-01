@@ -4,14 +4,15 @@
 #include <vector>
 #include "../../modules/task_3/alekhin_d_dijkstras_algorithm/dijkstras_algorithm.h"
 
+int graphSize = 500;
+
 TEST(Get_Random_Graph, Get_Random_Graph_Test) {
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
   if (rank == 0) {
     std::vector<int> graph;
-    EXPECT_NO_THROW(getRandomGraph(&graph));
-    printGraph(&graph);
+    EXPECT_NO_THROW(getRandomGraph(&graph, graphSize));
   }
 }
 
@@ -21,10 +22,25 @@ TEST(Get_Dijkstras_Algorithm_Sequential, Get_Dijkstras_Algorithm_Sequential_Work
 
   if (rank == 0) {
     std::vector<int> graph;
-    getRandomGraph(&graph);
+    getRandomGraph(&graph, graphSize);
     std::vector<int> result;
     EXPECT_NO_THROW(result = getDijkstrasAlgorithmSequential(&graph, 0));
-    printResult(&result);
+  }
+}
+
+TEST(Get_Dijkstras_Algorithm_Sequential, Get_Dijkstras_Algorithm_Sequential_Test) {
+  int rank;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+  if (rank == 0) {
+    std::vector<int> graph;
+    getRandomGraph(&graph, graphSize);
+    std::vector<int> result;
+
+    double startTime = MPI_Wtime();
+    result = getDijkstrasAlgorithmSequential(&graph, 0);
+    double endTime = MPI_Wtime();
+    std::cout << std::endl << endTime - startTime << std::endl;
   }
 }
 
@@ -33,13 +49,32 @@ TEST(Get_Dijkstras_Algorithm_Parallel, Get_Dijkstras_Algorithm_Parallel_Works) {
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-  if (size > 1) {
+  if (size > 1 && size <= graphSize) {
     std::vector<int> graph;
-    getRandomGraph(&graph);
+    getRandomGraph(&graph, graphSize);
     std::vector<int> result;
     EXPECT_NO_THROW(result = getDijkstrasAlgorithmParallel(&graph, 0));
     if (rank == 0) {
-      printResult(&result);
+      // printResult(&result);
+    }
+  }
+}
+
+TEST(Get_Dijkstras_Algorithm_Parallel, Get_Dijkstras_Algorithm_Parallel_Test) {
+  int size, rank;
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+  if (size > 1 && size <= graphSize) {
+    std::vector<int> graph;
+    getRandomGraph(&graph, graphSize);
+    std::vector<int> result;
+
+    double startTime = MPI_Wtime();
+    result = getDijkstrasAlgorithmParallel(&graph, 0);
+    double endTime = MPI_Wtime();
+    if (rank == 0) {
+      std::cout << std::endl << endTime - startTime << std::endl;
     }
   }
 }
