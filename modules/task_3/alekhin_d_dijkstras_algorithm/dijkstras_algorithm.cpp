@@ -107,10 +107,10 @@ std::vector<int> getDijkstrasAlgorithmParallel(const std::vector<int>* graph, in
   }local_vertex, global_vertex;
 
   int localGraphSize = local_graph.size() / graphSize;
-  for (size_t i = 0; i < graphSize - 1; i++) {
+  for (int i = 0; i < graphSize - 1; i++) {
     local_vertex.value = -1;
     local_vertex.index = -1;
-    for (size_t j = localDelta; j < localGraphSize + localDelta; j++) {
+    for (int j = localDelta; j < localGraphSize + localDelta; j++) {
       if (!used[j] && (local_vertex.index == -1 || dist[j] < dist[local_vertex.index])) {
         local_vertex.index = j;
         local_vertex.value = dist[local_vertex.index];
