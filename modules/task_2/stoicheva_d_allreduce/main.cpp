@@ -2,197 +2,229 @@
 #include <gtest-mpi-listener.hpp>
 #include <gtest/gtest.h>
 #include <vector>
+#include <string>
 #include <random>
 #include <ctime>
 #include "allreduce_mpi.h"
 
 
-void print_vector(std::vector<int> vector, const size_t size, std::string prefix) {
-#ifdef DEBUG_PRINT
-    std::cout << "\n" << prefix << "Vector: {\n";
-    std::cout << prefix << "  ";
-    for (size_t i = 0; i < size; i++) {
-        std::cout << vector[i] << ", ";
-    }
-    std::cout << "\n" << prefix << "}\n";
-#endif
-}
-
-
-MPI_Comm create_topology(int root_id) {
-    int ProcNum, ProcRank;
-    MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
-    MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
-
-    int root_neighbors_count = ProcNum - 1;
-    std::vector<int> index(ProcNum);
-    std::vector<int> edges(2 * root_neighbors_count);
-    index[0] = root_neighbors_count;
-    int edge = 0;
-    for (int node = 1; node < ProcNum; node++) {
-        index[node] = index[node - 1] + 1;
-    }
-    for (int proc = 0; proc < ProcNum; proc++) {
-        if (proc != root_id)
-            edges[edge++] = proc;
-    }
-    for (int proc = 0; proc < ProcNum - 1; proc++) {
-            edges[edge++] = root_id;
-    }
-
-#ifdef DEBUG_PRINT
-    printf("\nIndex:");
-    print_vector(index, index.size(), "[" + std::to_string(ProcRank) + "] ");
-    printf("\nEdges:");
-    print_vector(edges, edges.size(), "[" + std::to_string(ProcRank) + "] ");
-#endif
-
-    MPI_Comm StarComm;
-    MPI_Graph_create(MPI_COMM_WORLD, ProcNum, index.data(), edges.data(), 1, &StarComm);
-
-    return StarComm;
-}
-
-
-std::vector<int> create_random_vector(size_t size) {
+template<typename T>
+std::vector<T> create_random_vector(size_t size) {
     assert(size >= 0);
-    std::vector<int> vector(size);
+    std::vector<T> vector(size);
     std::mt19937 gen(uint32_t(time(0)));
-    std::uniform_int_distribution<int> uid(-50, +50);
+    std::uniform_int_distribution<int> uid_int(-50, +50);
+    std::uniform_real_distribution<float> uid_real(-50.0, +50.0);
 
     for (size_t i = 0; i < size; i++) {
-        vector[i] = uid(gen);
+        vector[i] = std::is_same<T, int>::value ? uid_int(gen) : uid_real(gen);
     }
 
     return vector;
 }
 
 
-void test_with(const size_t size) {
-    int ProcNum, ProcRank;
-    MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
-    MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
-    int count_elements_per_process = std::max(1, int(size / ProcNum));
-    int count_tail_elements = size - count_elements_per_process * ProcNum;
-    MPI_Status status;
+template<typename T>
+void test_allreduce_with(const int count, const int root_id, const MPI_Datatype datatype, const MPI_Op op) {
+    int world_size, rank;
+    MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm comm = MPI_COMM_WORLD;
 
 #ifdef DEBUG_PRINT
-    printf("[%d] Process: %d of %d, Vector size: %d, Elements per proc: %d\n", ProcRank, ProcRank, ProcNum, size, count_elements_per_process);
+    printf("[%d] Process: %d of %d, Vector size: %d\n", rank, rank, world_size, count);
 #endif
 
+    std::vector<T> global_data_in(count * world_size);
 
-    int root_id = 0;
-    std::vector<int> vector;
-    std::vector<int> subvector_recv;
-    if (ProcRank == root_id) {
-        vector = create_random_vector(size);
-        print_vector(vector, size, "[" + std::to_string(ProcRank) + "]");
+    if (rank == root_id) {
+        global_data_in = create_random_vector<T>(count * world_size);
+#ifdef DEBUG_PRINT
+        print_vector<T>(global_data_in, global_data_in.size(), "[" + std::to_string(rank) + "]");
+#endif
+    }
 
-        std::vector<int> subvector_send;
-        for (int proc = 0; proc < ProcNum; proc++) {
-            subvector_send = std::vector<int>(vector.begin() + proc * count_elements_per_process,
-                vector.begin() + (proc + 1) * count_elements_per_process);
-            print_vector(subvector_send, subvector_send.size(), "[" + std::to_string(ProcRank) + "] subvector_send for proc[" +
-                std::to_string(proc) + "]");
-            if (proc != root_id) {
+    // Scatter test data between processes
+    std::vector<T> proc_data_in(count);
+    MPI_Scatter(global_data_in.data(), count, datatype, proc_data_in.data(), count, datatype, root_id, comm);
+#ifdef DEBUG_PRINT
+    print_vector(proc_data_in, proc_data_in.size(), "[" + std::to_string(rank) + "] proc_data_in ");
+#endif
 
-                MPI_Send(subvector_send.data(), subvector_send.size(), MPI_INT, proc, 0, MPI_COMM_WORLD);
+    // Use my function to get result data
+    std::vector<T> proc_data_out(count);
 
-            }
-            else {
-                subvector_recv.insert(subvector_recv.end(), subvector_send.begin(), subvector_send.end());
-            }
+    double t1;
+    if (rank == root_id) {
+        t1 = MPI_Wtime();
+    }
+    my_MPI_Allreduce(proc_data_in.data(), proc_data_out.data(), count, datatype, op, comm);
+    if (rank == root_id) {
+        t1 = MPI_Wtime() - t1;
+    }
+    T proc_out = getSequentialOperations<T>(proc_data_out, op);
+
+    // Use library function to get expected data
+    std::vector<T> expected_proc_data_out(count);
+    std::vector<T> expected_proc_data_out2(count);
+
+    double t2;
+    if (rank == root_id) {
+        t2 = MPI_Wtime();
+    }
+    MPI_Allreduce(proc_data_in.data(), expected_proc_data_out.data(), count, datatype, op, comm);
+    if (rank == root_id) {
+        t2 = MPI_Wtime() - t2;
+    }
+    T expected_out = getSequentialOperations<T>(expected_proc_data_out, op);
+
+#ifdef DEBUG_PRINT
+    print_vector<T>(expected_proc_data_out, expected_proc_data_out.size(),
+        "[" + std::to_string(rank) + "] expected ");
+    print_vector<T>(expected_proc_data_out2, expected_proc_data_out2.size(),
+        "[" + std::to_string(rank) + "] expected2 ");
+    print_vector<T>(proc_data_out, proc_data_out.size(), "[" + std::to_string(rank) + "] test      ");
+    printf("[%d] Proc_out = %s   Expected_out = %s\n", rank, std::to_string(proc_out).c_str(),
+        std::to_string(expected_out).c_str());
+#endif
+
+    if (rank == root_id) {
+        std::cout << "my_MPI_Allreduce time: " << t1 << std::endl;
+        std::cout << "MPI_Allreduce Time: " << t2 << std::endl;
+        std::cout << "MPI_Allreduce " << t1 / t2 << " times faster." << std::endl;
+
+        T sequential_out = getSequentialOperations<T>(global_data_in, op);
+
+#ifdef DEBUG_PRINT
+        printf("[%d] sequential_out = %s\n", rank, std::to_string(sequential_out).c_str());
+#endif
+        switch (datatype) {
+        case MPI_INT:
+            ASSERT_EQ(expected_out, proc_out);
+            ASSERT_EQ(sequential_out, proc_out);
+            break;
+
+        case MPI_FLOAT:
+            ASSERT_FLOAT_EQ(expected_out, proc_out);
+            ASSERT_FLOAT_EQ(sequential_out, proc_out);
+            break;
+
+        case MPI_DOUBLE:
+            ASSERT_DOUBLE_EQ(expected_out, proc_out);
+            ASSERT_DOUBLE_EQ(sequential_out, proc_out);
         }
-
-        //subvector_recv = std::vector<int>(vector.begin() + ProcNum * count_elements_per_process, vector.end);
-        std::vector<int> vector_tail(vector.begin() + ProcNum * count_elements_per_process, vector.end());
-        print_vector(vector_tail, vector_tail.size(), "[" + std::to_string(ProcRank) + "] vector_tail ");
-
-
-        subvector_recv.insert(subvector_recv.end(), vector_tail.begin(), vector_tail.end());
-        print_vector(subvector_recv, subvector_recv.size(), "[" + std::to_string(ProcRank) + "] subvector_recv ");
-
     }
-    else {
-        subvector_recv.resize(count_elements_per_process);
-        MPI_Recv(subvector_recv.data(), count_elements_per_process, MPI_INT, root_id, 0, MPI_COMM_WORLD, &status);
-        print_vector(subvector_recv, subvector_recv.size(), "[" + std::to_string(ProcRank) + "] subvector_recv ");
-    }
-    std::vector<int> vector_out(count_elements_per_process);
 
+    ASSERT_EQ(expected_proc_data_out.size(), proc_data_out.size())
+        << "Vectors expected_proc_data_out and proc_data_out are of unequal length";
 
-    MPI_Comm topology = create_topology(root_id);
-    MPI_Op operation = MPI_SUM;
-
-    MPI_Reduce(subvector_recv.data(), vector_out.data(), count_elements_per_process, MPI_INT, operation, root_id, MPI_COMM_WORLD);
-    //MPI_Reduce(subvector_recv.data(), vector_out.data(), count_elements_per_process, MPI_INT, operation, root_id, MPI_COMM_WORLD);
-
-    if (ProcRank == root_id) {
-        print_vector(vector_out, vector_out.size(), "[" + std::to_string(ProcRank) + "] vector_out ");
-
-        int sum = 0;
-        for (int i = 0; i < vector.size(); i++) {
-            sum += vector[i];
+    std::string message("expected_proc_data_out and proc_data_out differ at index ");
+    for (int i = 0; i < expected_proc_data_out.size(); ++i) {
+        if (datatype == MPI_INT) {
+            EXPECT_EQ(expected_proc_data_out[i], proc_data_out[i]) << "Vectors<int> " << message << i;
         }
-        printf("Sum of elements: %d\n", sum);
+        else {
+            EXPECT_NEAR(expected_proc_data_out[i], proc_data_out[i], 0.001) << "Vectors<float> " << message << i;
+        }
     }
-    //int parallel_sum;
-    //for (int proc = 0; proc < ProcNum; proc++) {
-    //    if (proc != root_id) {
-    //        //MPI_Reduce(vector.data() + proc * count_elements_per_process, vector_out.data(), count_elements_per_process, MPI_INT, operation, root_id, topology);
-    //        std::vector<int> subvector(vector.begin() + proc * count_elements_per_process, vector.begin() + (proc + 1) * count_elements_per_process);
-    //        print_vector(subvector, vector_out.size(), "[" + std::to_string(ProcRank) + "] subvector ");
-    //        MPI_Reduce(subvector.data(), vector_out.data(), count_elements_per_process, MPI_INT, operation, root_id, MPI_COMM_WORLD);
-    //        //MPI_Reduce(vector.data() + proc * count_elements_per_process, vector_out.data(), count_elements_per_process, MPI_INT, operation, root_id, MPI_COMM_WORLD);
-    //        print_vector(vector_out, vector_out.size(), "[" + std::to_string(ProcRank) + "] out ");
-    //    }
-    //}
-    //
-    ////    get_max_elements_of_rows_parallel(vector, rows, columns);
-
-    //if (ProcRank == root_id) {
-    //    int sequential_sum = 
-    //        getSequentialOperations(vector, "+");
-    //    ASSERT_EQ(sequential_sum, parallel_sum);
-    //}
 }
 
 
-//TEST(Parallel_Operations_MPI, Test_Empty) {
-//    test_with(0);
-//}
-//
-//TEST(Parallel_Operations_MPI, Test_One_Element) {
-//    test_with(1);
-//}
-
-TEST(Parallel_Operations_MPI, Test_Five_Elements) {
-    test_with(50);
+TEST(Parallel_Operations_MPI, Test_Allreduce_C1_R0_INT_SUM) {
+    test_allreduce_with<int>(1, 0, MPI_INT, MPI_SUM);
 }
 
-//TEST(Parallel_Operations_MPI, Test_One_Row_Ten_Columns) {
-//    test_with(1, 10);
-//}
-//
-//TEST(Parallel_Operations_MPI, Test_Two_Rows_One_Column) {
-//    test_with(2, 1);
-//}
-//
-//TEST(Parallel_Operations_MPI, Test_Ten_Rows_One_Column) {
-//    test_with(10, 1);
-//}
-//
-//TEST(Parallel_Operations_MPI, Test_Ten_Rows_Ten_Column) {
-//    test_with(10, 10);
-//}
-//
-//TEST(Parallel_Operations_MPI, Test_100_Rows_200_Columns) {
-//  test_with(100, 200);
-//}
-//
-//TEST(Parallel_Operations_MPI, Test_1000_Rows_2000_Columns) {
-//  test_with(1000, 2000);
-//}
+TEST(Parallel_Operations_MPI, Test_Allreduce_C1_R2_INT_SUM) {
+    test_allreduce_with<int>(1, 2, MPI_INT, MPI_SUM);
+}
+
+TEST(Parallel_Operations_MPI, Test_Allreduce_C1_R0_FLOAT_SUM) {
+    test_allreduce_with<float>(1, 0, MPI_FLOAT, MPI_SUM);
+}
+
+TEST(Parallel_Operations_MPI, Test_Allreduce_C1_R0_DOUBLE_SUM) {
+    test_allreduce_with<double>(1, 0, MPI_DOUBLE, MPI_SUM);
+}
+
+TEST(Parallel_Operations_MPI, Test_Allreduce_C6_R0_INT_SUM) {
+    test_allreduce_with<int>(6, 0, MPI_INT, MPI_SUM);
+}
+
+TEST(Parallel_Operations_MPI, Test_Allreduce_C6_R0_FLOAT_SUM) {
+    test_allreduce_with<float>(6, 0, MPI_FLOAT, MPI_SUM);
+}
+
+TEST(Parallel_Operations_MPI, Test_Allreduce_C6_R0_DOUBLE_SUM) {
+    test_allreduce_with<double>(6, 0, MPI_DOUBLE, MPI_SUM);
+}
+
+TEST(Parallel_Operations_MPI, Test_Allreduce_C1_R0_INT_MAX) {
+    test_allreduce_with<int>(1, 0, MPI_INT, MPI_MAX);
+}
+
+TEST(Parallel_Operations_MPI, Test_Allreduce_C1_R0_FLOAT_MAX) {
+    test_allreduce_with<float>(1, 0, MPI_FLOAT, MPI_MAX);
+}
+
+TEST(Parallel_Operations_MPI, Test_Allreduce_C1_R0_DOUBLE_MAX) {
+    test_allreduce_with<double>(1, 0, MPI_DOUBLE, MPI_MAX);
+}
+
+TEST(Parallel_Operations_MPI, Test_Allreduce_C6_R0_INT_MAX) {
+    test_allreduce_with<int>(6, 0, MPI_INT, MPI_MAX);
+}
+
+TEST(Parallel_Operations_MPI, Test_Allreduce_C6_R0_FLOAT_MAX) {
+    test_allreduce_with<float>(6, 0, MPI_FLOAT, MPI_MAX);
+}
+
+TEST(Parallel_Operations_MPI, Test_Allreduce_C6_R0_DOUBLE_MAX) {
+    test_allreduce_with<double>(6, 0, MPI_DOUBLE, MPI_MAX);
+}
+
+TEST(Parallel_Operations_MPI, Test_Allreduce_C1_R0_INT_MIN) {
+    test_allreduce_with<int>(1, 0, MPI_INT, MPI_MIN);
+}
+
+TEST(Parallel_Operations_MPI, Test_Allreduce_C1_R0_FLOAT_MIN) {
+    test_allreduce_with<float>(1, 0, MPI_FLOAT, MPI_MIN);
+}
+
+TEST(Parallel_Operations_MPI, Test_Allreduce_C1_R0_DOUBLE_MIN) {
+    test_allreduce_with<double>(1, 0, MPI_DOUBLE, MPI_MIN);
+}
+
+TEST(Parallel_Operations_MPI, Test_Allreduce_C6_R0_INT_MIN) {
+    test_allreduce_with<int>(6, 0, MPI_INT, MPI_MIN);
+}
+
+TEST(Parallel_Operations_MPI, Test_Allreduce_C6_R0_FLOAT_MIN) {
+    test_allreduce_with<float>(6, 0, MPI_FLOAT, MPI_MIN);
+}
+
+TEST(Parallel_Operations_MPI, Test_Allreduce_C6_R0_DOUBLE_MIN) {
+    test_allreduce_with<double>(6, 0, MPI_DOUBLE, MPI_MIN);
+}
+
+TEST(DISABLED_Parallel_Operations_MPI, Test_swap_1_0_10) {
+    ASSERT_EQ(swap_0_with_root(true, 0, 10), 10);
+}
+
+TEST(DISABLED_Parallel_Operations_MPI, Test_swap_1_5_10) {
+    ASSERT_EQ(swap_0_with_root(true, 5, 10), 5);
+}
+
+TEST(DISABLED_Parallel_Operations_MPI, Test_swap_0_0_10) {
+    ASSERT_EQ(swap_0_with_root(false, 0, 10), 0);
+}
+
+TEST(DISABLED_Parallel_Operations_MPI, Test_swap_0_5_10) {
+    ASSERT_EQ(swap_0_with_root(false, 5, 10), 5);
+}
+
+TEST(Parallel_Operations_MPI, Test_Allreduce_C100000_R2_INT_SUM) {
+    test_allreduce_with<int>(100000, 0, MPI_INT, MPI_SUM);
+}
 
 
 int main(int argc, char** argv) {
