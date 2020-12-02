@@ -1,11 +1,11 @@
 // Copyright 2020 Stoicheva Darya
-#include <gtest-mpi-listener.hpp>
 #include <gtest/gtest.h>
 #include <vector>
 #include <string>
 #include <random>
 #include <ctime>
-#include "allreduce_mpi.h"
+#include <gtest-mpi-listener.hpp>
+#include "../../../modules/task_2/stoicheva_d_allreduce/allreduce_mpi.h"
 
 
 template<typename T>
@@ -122,8 +122,7 @@ void test_allreduce_with(const int count, const int root_id, const MPI_Datatype 
     for (int i = 0; i < expected_proc_data_out.size(); ++i) {
         if (datatype == MPI_INT) {
             EXPECT_EQ(expected_proc_data_out[i], proc_data_out[i]) << "Vectors<int> " << message << i;
-        }
-        else {
+        } else {
             EXPECT_NEAR(expected_proc_data_out[i], proc_data_out[i], 0.001) << "Vectors<float> " << message << i;
         }
     }

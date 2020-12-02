@@ -7,7 +7,7 @@
 #include <cassert>
 #include <cstdlib>
 #include <cstring>
-#include "allreduce_mpi.h"
+#include "../../../modules/task_2/stoicheva_d_allreduce/allreduce_mpi.h"
 
 #define MPI_TAG_REDUCE_VALUE 0xFF000000;
 #define MPI_TAG_REDUCE_VALUE_MASK 0x00FFFFFF;
@@ -108,19 +108,16 @@ T getSequentialOperations(const std::vector<T> vec, const MPI_Op op) {
         for (int i = 0; i < sz; i++) {
             reduction_elem += vec[i];
         }
-    }
-    else if (op == MPI_PROD) {
+    } else if (op == MPI_PROD) {
         for (int i = 0; i < sz; i++) {
             reduction_elem *= vec[i];
         }
-    }
-    else if (op == MPI_MAX) {
+    } else if (op == MPI_MAX) {
         reduction_elem = vec[0];
         for (int i = 1; i < sz; i++) {
             reduction_elem = std::max(reduction_elem, vec[i]);
         }
-    }
-    else if (op == MPI_MIN) {
+    } else if (op == MPI_MIN) {
         reduction_elem = vec[0];
         for (int i = 1; i < sz; i++) {
             reduction_elem = std::min(reduction_elem, vec[i]);
@@ -314,8 +311,7 @@ int my_MPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm
                 MPI_Send(buf, count, datatype, proc, 0, comm);
             }
         }
-    }
-    else {
+    } else {
         MPI_Status recv_status;
         status = MPI_Recv(buf, count, datatype, root, 0, comm, &recv_status);
     }
