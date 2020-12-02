@@ -72,8 +72,7 @@ vector<double> Par(const vector<vector<double> >& A, const vector<double>& _b, i
     if (procRank == procNum - 1) {
         localB = vector<double>(lastBlock);
         block = vector<double>((size_t)lastBlock * n);
-    }
-    else {
+    } else {
         block = vector<double>(blockSize);
         localB = vector<double>(procBlock);
     }
@@ -90,8 +89,7 @@ vector<double> Par(const vector<vector<double> >& A, const vector<double>& _b, i
                 MPI_Send(&A[(size_t)procNum * procBlock + i][0], n, MPI_DOUBLE, procNum - 1, 0, MPI_COMM_WORLD);
             }
         }
-    }
-    else if (procRank == procNum - 1) {
+    } else if (procRank == procNum - 1) {
         for (int i = 0; i < procBlock; ++i) {
             MPI_Recv(&block[(size_t)n * i], n, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &status);
         }
@@ -101,8 +99,7 @@ vector<double> Par(const vector<vector<double> >& A, const vector<double>& _b, i
                 MPI_Recv(&block[(size_t)((size_t)procBlock + i) * n], n, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &status);
             }
         }
-    }
-    else {
+    } else {
         for (int i = 0; i < procBlock; ++i) {
             MPI_Recv(&block[(size_t)n * i], n, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &status);
         }
@@ -123,8 +120,7 @@ vector<double> Par(const vector<vector<double> >& A, const vector<double>& _b, i
                     MPI_Send(&x[i], 1, MPI_DOUBLE, k, 0, MPI_COMM_WORLD);
                 }
             }
-        }
-        else if (procRank == procNum - 1) {
+        } else if (procRank == procNum - 1) {
             for (int i = 0; i < procRank; ++i) {
                 for (int j = 0; j < procBlock; ++j) {
                     MPI_Recv(&x[(size_t)i * procBlock + j], 1, MPI_DOUBLE, i, 0, MPI_COMM_WORLD, &status);
@@ -141,8 +137,7 @@ vector<double> Par(const vector<vector<double> >& A, const vector<double>& _b, i
                 x[diag_elem] = (localB[i] - rsum - lsum) / block[(size_t)i * n + diag_elem];
                 lsum = rsum = 0;
             }
-        }
-        else {
+        } else {
             for (int i = 0; i < procRank; ++i) {
                 for (int j = 0; j < procBlock; ++j) {
                     MPI_Recv(&x[(size_t)i * procBlock + j], 1, MPI_DOUBLE, i, 0, MPI_COMM_WORLD, &status);

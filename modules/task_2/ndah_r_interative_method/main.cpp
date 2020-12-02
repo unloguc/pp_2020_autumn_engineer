@@ -1,8 +1,8 @@
 // Copyright 2020 Ndah Rony
 #include <gtest-mpi-listener.hpp>
 #include <numeric>
-#include <gtest/gtest.h>
 #include <vector>
+#include <gtest/gtest.h>
 #include "./interative_method.h"
 
 TEST(method_Seidel, test_evkl_norm) {
