@@ -1,10 +1,10 @@
 // Copyright 2020 Stoicheva Darya
 #include <gtest/gtest.h>
+#include <gtest-mpi-listener.hpp>
 #include <vector>
 #include <string>
 #include <random>
 #include <ctime>
-#include <gtest-mpi-listener.hpp>
 #include "../../../modules/task_2/stoicheva_d_allreduce/allreduce_mpi.h"
 
 

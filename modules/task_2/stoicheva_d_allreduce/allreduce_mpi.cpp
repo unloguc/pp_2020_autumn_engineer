@@ -1,4 +1,5 @@
 // Copyright 2020 Stoicheva Darya
+#include "../../../modules/task_2/stoicheva_d_allreduce/allreduce_mpi.h"
 #include <vector>
 #include <iostream>
 #include <sstream>
@@ -7,7 +8,6 @@
 #include <cassert>
 #include <cstdlib>
 #include <cstring>
-#include "../../../modules/task_2/stoicheva_d_allreduce/allreduce_mpi.h"
 
 #define MPI_TAG_REDUCE_VALUE 0xFF000000;
 #define MPI_TAG_REDUCE_VALUE_MASK 0x00FFFFFF;

@@ -5,6 +5,8 @@
 #include <mpi.h>
 #include <vector>
 #include <string>
+#include <iostream>
+
 
 int my_MPI_Reduce(const void* send_data, void* recv_data, int count, MPI_Datatype datatype,
     MPI_Op op, int root, MPI_Comm comm);
