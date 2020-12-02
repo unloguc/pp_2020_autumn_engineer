@@ -46,7 +46,7 @@ TEST(Parallel_Test, Time_Test) {
   int* array = getRandomVector(size);
 
   start_time = MPI_Wtime();
-  int* result = quickSortWithMergeParallel(array, size);
+  quickSortWithMergeParallel(array, size);
   end_time = MPI_Wtime();
   if (rank == 0) {
     std::cout << "Parallel time = " << end_time - start_time << "\n";
