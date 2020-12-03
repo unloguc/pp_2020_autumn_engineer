@@ -234,7 +234,7 @@ int my_MPI_Reduce_t(const void* sendbuf, void* recvbuf, int count, MPI_Datatype 
                     // status = MPI_Recv(recv_buf, count, datatype,
                     //     MPI_ANY_SOURCE,
                     //     MPI_ANY_TAG, comm, &recv_status);
-
+#ifdef DEBUG_PRINT
                     sender = recv_status.MPI_SOURCE;
                     int tag = recv_status.MPI_TAG;
                     int error_code = recv_status.MPI_ERROR;
@@ -242,8 +242,6 @@ int my_MPI_Reduce_t(const void* sendbuf, void* recvbuf, int count, MPI_Datatype 
                     int resultlen = 0;
                     MPI_Error_string(error_code, error_string, &resultlen);
                     error_string[resultlen] = 0;
-
-#ifdef DEBUG_PRINT
                     printf("[%d] receiver process '%d' received data(%s) with tag(%d) from sender process '%d'  "
                         "current buffer: %s  (status: %s)\n",
                         rank, receiver, std::to_string(recv_buf[0]).c_str(), tag, sender,
@@ -415,5 +413,5 @@ int my_MPI_Allreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype
     MPI_Barrier(comm);
     my_MPI_Bcast_Tree(recvbuf, count, datatype, root, comm);
 
-    return MPI_SUCCESS;
+    return status;
 }
