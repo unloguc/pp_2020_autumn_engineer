@@ -119,7 +119,7 @@ void test_allreduce_with(const int count, const int root_id, const MPI_Datatype 
         << "Vectors expected_proc_data_out and proc_data_out are of unequal length";
 
     std::string message("expected_proc_data_out and proc_data_out differ at index ");
-    for (int i = 0; i < expected_proc_data_out.size(); ++i) {
+    for (size_t i = 0; i < expected_proc_data_out.size(); ++i) {
         if (datatype == MPI_INT) {
             EXPECT_EQ(expected_proc_data_out[i], proc_data_out[i]) << "Vectors<int> " << message << i;
         } else {

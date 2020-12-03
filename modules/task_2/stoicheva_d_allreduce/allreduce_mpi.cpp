@@ -8,9 +8,7 @@
 #include <cassert>
 #include <cstdlib>
 #include <cstring>
-
-#define MPI_TAG_REDUCE_VALUE 0xFF000000;
-#define MPI_TAG_REDUCE_VALUE_MASK 0x00FFFFFF;
+#include <string>
 
 
 template<typename result, typename source>
