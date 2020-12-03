@@ -194,6 +194,10 @@ int my_MPI_Reduce_t(const void* sendbuf, void* recvbuf, int count, MPI_Datatype 
     printf("[%d] my_MPI_Reduce_Base(): count = %d\n", rank, count);
 #endif
 
+    if (root < 0 || root >= world_size) {
+        return MPI_ERR_ROOT;
+    }
+
     if (count == 0) {
         return status;
     }
@@ -301,6 +305,10 @@ int my_MPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm
     MPI_Comm_size(comm, &world_size);
     MPI_Comm_rank(comm, &rank);
 
+    if (root < 0 || root >= world_size) {
+        return MPI_ERR_ROOT;
+    }
+
     if (rank == root) {
         for (int proc = 0; proc < world_size; proc++) {
             if (proc != root) {
@@ -325,6 +333,10 @@ int my_MPI_Bcast_Tree(void *buf, int count, MPI_Datatype datatype, int root, MPI
     MPI_Comm_rank(comm, &rank);
 
     int last_power_of_2 = static_cast<int>(std::log2(world_size));
+
+    if (root < 0 || root >= world_size) {
+        return MPI_ERR_ROOT;
+    }
 
     // Need to place non zero root on top of broadcasting tree
     bool swap_0_with_root_required = root != 0;

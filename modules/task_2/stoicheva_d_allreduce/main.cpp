@@ -35,6 +35,10 @@ void test_allreduce_with(const int count, const int root_id, const MPI_Datatype 
     printf("[%d] Process: %d of %d, Vector size: %d\n", rank, rank, world_size, count);
 #endif
 
+    if (root < 0 || root >= world_size) {
+        return;
+    }
+
     std::vector<T> global_data_in(count * world_size);
 
     if (rank == root_id) {
@@ -133,8 +137,8 @@ TEST(Parallel_Operations_MPI, Test_Allreduce_C1_R0_INT_SUM) {
     test_allreduce_with<int>(1, 0, MPI_INT, MPI_SUM);
 }
 
-TEST(Parallel_Operations_MPI, Test_Allreduce_C1_R2_INT_SUM) {
-    test_allreduce_with<int>(1, 2, MPI_INT, MPI_SUM);
+TEST(Parallel_Operations_MPI, Test_Allreduce_C1_R1_INT_SUM) {
+    test_allreduce_with<int>(1, 1, MPI_INT, MPI_SUM);
 }
 
 TEST(Parallel_Operations_MPI, Test_Allreduce_C1_R0_FLOAT_SUM) {
