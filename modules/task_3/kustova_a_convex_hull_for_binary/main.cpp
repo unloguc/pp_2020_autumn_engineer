@@ -5,7 +5,7 @@
 #include <vector>
 #include <iostream>
 #include "./convex_hull_for_binary.h"
-TEST(Convex_Hull, build_Image_Convex_Hull_Right) {
+TEST(Convex_Hull, build_Image) {
     int size, rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
@@ -89,9 +89,9 @@ TEST(Convex_Hull, build_Image_Convex_Hull_Right) {
     }
     int ** result = buildImageConvexHull(image, height, width, type);
     if (rank == 0) {
-        printImage(image, width, height);
-        std::cout << std::endl;
-        printImage(result, width, height);
+        // printImage(image, width, height);
+        // std::cout << std::endl;
+        // printImage(result, width, height);
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 ASSERT_EQ(result[i][j], check_img[i][j]);
@@ -100,7 +100,7 @@ TEST(Convex_Hull, build_Image_Convex_Hull_Right) {
     }
 }
 
-TEST(Convex_Hull, build_Image_Convex_Hull_Right_2) {
+TEST(Convex_Hull, build_Image_2) {
     int size, rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
@@ -184,9 +184,9 @@ TEST(Convex_Hull, build_Image_Convex_Hull_Right_2) {
     }
     int ** result = buildImageConvexHull(image, height, width, type);
     if (rank == 0) {
-        printImage(image, width, height);
-        std::cout << std::endl;
-        printImage(result, width, height);
+        // printImage(image, width, height);
+        // std::cout << std::endl;
+        // printImage(result, width, height);
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 ASSERT_EQ(result[i][j], check_img[i][j]);
@@ -195,7 +195,7 @@ TEST(Convex_Hull, build_Image_Convex_Hull_Right_2) {
     }
 }
 
-TEST(Convex_Hull, build_Image_Convex_Hull_Right_3) {
+TEST(Convex_Hull, build_Image_3) {
     int size, rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
@@ -279,9 +279,9 @@ TEST(Convex_Hull, build_Image_Convex_Hull_Right_3) {
     }
     int ** result = buildImageConvexHull(image, height, width, type);
     if (rank == 0) {
-        printImage(image, width, height);
-        std::cout << std::endl;
-        printImage(result, width, height);
+        // printImage(image, width, height);
+        // std::cout << std::endl;
+        // printImage(result, width, height);
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 ASSERT_EQ(result[i][j], check_img[i][j]);
@@ -290,7 +290,7 @@ TEST(Convex_Hull, build_Image_Convex_Hull_Right_3) {
     }
 }
 
-TEST(Convex_Hull, build_Image_Convex_Hull_Right_4) {
+TEST(Convex_Hull, build_Image_4) {
     int size, rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
@@ -374,9 +374,9 @@ TEST(Convex_Hull, build_Image_Convex_Hull_Right_4) {
     }
     int ** result = buildImageConvexHull(image, height, width, type);
     if (rank == 0) {
-        printImage(image, width, height);
-        std::cout << std::endl;
-        printImage(result, width, height);
+        // printImage(image, width, height);
+        // std::cout << std::endl;
+        // printImage(result, width, height);
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 ASSERT_EQ(result[i][j], check_img[i][j]);
@@ -385,7 +385,7 @@ TEST(Convex_Hull, build_Image_Convex_Hull_Right_4) {
     }
 }
 
-TEST(Convex_Hull, build_Image_Convex_Hull_Right_5) {
+TEST(Convex_Hull, build_Image_5) {
     int size, rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
@@ -469,9 +469,9 @@ TEST(Convex_Hull, build_Image_Convex_Hull_Right_5) {
     }
     int ** result = buildImageConvexHull(image, height, width, type);
     if (rank == 0) {
-        printImage(image, width, height);
-        std::cout << std::endl;
-        printImage(result, width, height);
+        // printImage(image, width, height);
+        // std::cout << std::endl;
+        // printImage(result, width, height);
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 ASSERT_EQ(result[i][j], check_img[i][j]);
