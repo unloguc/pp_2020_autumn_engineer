@@ -355,7 +355,7 @@ int my_MPI_Bcast_Tree(void *buf, int count, MPI_Datatype datatype, int root, MPI
 #endif
                     status = MPI_Recv(buf, count, datatype,
                         swap_0_with_root(swap_0_with_root_required, sender, root),
-                        bcast_tag, comm, &recv_status);  
+                        bcast_tag, comm, &recv_status);
 #ifdef DEBUG_PRINT
                     int sender = recv_status.MPI_SOURCE;
                     int tag = recv_status.MPI_TAG;
@@ -393,7 +393,6 @@ int my_MPI_Allreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype
     MPI_Comm_size(MPI_COMM_WORLD, &world_size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    int count_elements_per_process = std::max(1, world_size);
     int root = 0;
 
     switch (datatype) {
