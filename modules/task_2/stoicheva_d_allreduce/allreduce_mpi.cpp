@@ -355,8 +355,8 @@ int my_MPI_Bcast_Tree(void *buf, int count, MPI_Datatype datatype, int root, MPI
 #endif
                     status = MPI_Recv(buf, count, datatype,
                         swap_0_with_root(swap_0_with_root_required, sender, root),
-                        bcast_tag, comm, &recv_status);
-
+                        bcast_tag, comm, &recv_status);  
+#ifdef DEBUG_PRINT
                     int sender = recv_status.MPI_SOURCE;
                     int tag = recv_status.MPI_TAG;
                     int error_code = recv_status.MPI_ERROR;
@@ -364,7 +364,6 @@ int my_MPI_Bcast_Tree(void *buf, int count, MPI_Datatype datatype, int root, MPI
                     int resultlen = 0;
                     MPI_Error_string(error_code, error_string, &resultlen);
                     error_string[resultlen] = 0;
-#ifdef DEBUG_PRINT
                     printf("[%d] receiver process '%d' received data(%s) with tag(%d) from sender process '%d'"
                         "  (status: %s)\n", rank, receiver, value_to_string(buf, datatype).c_str(), tag, sender,
                         error_string);
