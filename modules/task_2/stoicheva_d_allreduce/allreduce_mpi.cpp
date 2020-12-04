@@ -194,6 +194,10 @@ int my_MPI_Reduce_t(const void* sendbuf, void* recvbuf, int count, MPI_Datatype 
     printf("[%d] my_MPI_Reduce_Base(): count = %d\n", rank, count);
 #endif
 
+    if (root < 0 || root >= world_size) {
+        return MPI_ERR_ROOT;
+    }
+
     if (count == 0) {
         return status;
     }
@@ -234,7 +238,7 @@ int my_MPI_Reduce_t(const void* sendbuf, void* recvbuf, int count, MPI_Datatype 
                     // status = MPI_Recv(recv_buf, count, datatype,
                     //     MPI_ANY_SOURCE,
                     //     MPI_ANY_TAG, comm, &recv_status);
-
+#ifdef DEBUG_PRINT
                     sender = recv_status.MPI_SOURCE;
                     int tag = recv_status.MPI_TAG;
                     int error_code = recv_status.MPI_ERROR;
@@ -242,8 +246,6 @@ int my_MPI_Reduce_t(const void* sendbuf, void* recvbuf, int count, MPI_Datatype 
                     int resultlen = 0;
                     MPI_Error_string(error_code, error_string, &resultlen);
                     error_string[resultlen] = 0;
-
-#ifdef DEBUG_PRINT
                     printf("[%d] receiver process '%d' received data(%s) with tag(%d) from sender process '%d'  "
                         "current buffer: %s  (status: %s)\n",
                         rank, receiver, std::to_string(recv_buf[0]).c_str(), tag, sender,
@@ -303,6 +305,10 @@ int my_MPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm
     MPI_Comm_size(comm, &world_size);
     MPI_Comm_rank(comm, &rank);
 
+    if (root < 0 || root >= world_size) {
+        return MPI_ERR_ROOT;
+    }
+
     if (rank == root) {
         for (int proc = 0; proc < world_size; proc++) {
             if (proc != root) {
@@ -327,6 +333,10 @@ int my_MPI_Bcast_Tree(void *buf, int count, MPI_Datatype datatype, int root, MPI
     MPI_Comm_rank(comm, &rank);
 
     int last_power_of_2 = static_cast<int>(std::log2(world_size));
+
+    if (root < 0 || root >= world_size) {
+        return MPI_ERR_ROOT;
+    }
 
     // Need to place non zero root on top of broadcasting tree
     bool swap_0_with_root_required = root != 0;
@@ -358,7 +368,7 @@ int my_MPI_Bcast_Tree(void *buf, int count, MPI_Datatype datatype, int root, MPI
                     status = MPI_Recv(buf, count, datatype,
                         swap_0_with_root(swap_0_with_root_required, sender, root),
                         bcast_tag, comm, &recv_status);
-
+#ifdef DEBUG_PRINT
                     int sender = recv_status.MPI_SOURCE;
                     int tag = recv_status.MPI_TAG;
                     int error_code = recv_status.MPI_ERROR;
@@ -366,7 +376,6 @@ int my_MPI_Bcast_Tree(void *buf, int count, MPI_Datatype datatype, int root, MPI
                     int resultlen = 0;
                     MPI_Error_string(error_code, error_string, &resultlen);
                     error_string[resultlen] = 0;
-#ifdef DEBUG_PRINT
                     printf("[%d] receiver process '%d' received data(%s) with tag(%d) from sender process '%d'"
                         "  (status: %s)\n", rank, receiver, value_to_string(buf, datatype).c_str(), tag, sender,
                         error_string);
@@ -396,7 +405,6 @@ int my_MPI_Allreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype
     MPI_Comm_size(MPI_COMM_WORLD, &world_size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    int count_elements_per_process = std::max(1, world_size);
     int root = 0;
 
     switch (datatype) {
@@ -415,5 +423,5 @@ int my_MPI_Allreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype
     MPI_Barrier(comm);
     my_MPI_Bcast_Tree(recvbuf, count, datatype, root, comm);
 
-    return MPI_SUCCESS;
+    return status;
 }
