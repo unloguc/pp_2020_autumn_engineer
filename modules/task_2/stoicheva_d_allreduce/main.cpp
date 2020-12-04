@@ -110,12 +110,12 @@ void test_allreduce_with(const int count, const int root_id, const MPI_Datatype 
 
         case MPI_FLOAT:
             ASSERT_FLOAT_EQ(expected_out, proc_out);
-            ASSERT_FLOAT_EQ(sequential_out, proc_out);
+            ASSERT_NEAR(sequential_out, proc_out, 0.001);
             break;
 
         case MPI_DOUBLE:
             ASSERT_DOUBLE_EQ(expected_out, proc_out);
-            ASSERT_DOUBLE_EQ(sequential_out, proc_out);
+            ASSERT_NEAR(sequential_out, proc_out, 0.001);
         }
     }
 
