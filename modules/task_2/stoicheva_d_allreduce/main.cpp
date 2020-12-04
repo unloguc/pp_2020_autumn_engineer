@@ -35,7 +35,7 @@ void test_allreduce_with(const int count, const int root_id, const MPI_Datatype 
     printf("[%d] Process: %d of %d, Vector size: %d\n", rank, rank, world_size, count);
 #endif
 
-    if (root < 0 || root >= world_size) {
+    if (root_id < 0 || root_id >= world_size) {
         return;
     }
 
