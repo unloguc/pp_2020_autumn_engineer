@@ -120,24 +120,6 @@ TEST(Parallel_Operations_MPI, can_get_result_with_parallel_version_random_matrix
     ASSERT_NO_THROW(parallelGaussianMethod(sample_matrix, rows));
 }
 
-TEST(Parallel_Operations_MPI, can_compare_result_with_parallel_version_random_matrix_three_unknowns) {
-    int rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-
-    const int rows = 3;
-        std::vector<double> sample_matrix = getRandomMatrixLinear(rows);
-    std::vector<double> values = parallelGaussianMethod(sample_matrix, rows);
-    if (rank == 0) {
-        std::vector<double> expectedResult = calculateResults(sample_matrix, rows, values);
-        for (size_t i = 0; i < rows; i++) {
-            if (std::isnan(expectedResult[i])) {
-                break;
-            }
-            ASSERT_NEAR(sample_matrix[(rows+1)*i+rows], expectedResult[i], 0.1);
-        }
-    }
-}
-
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     MPI_Init(&argc, &argv);
