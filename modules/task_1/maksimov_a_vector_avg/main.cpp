@@ -6,11 +6,17 @@
 
 #include "../../modules/task_1/maksimov_a_vector_avg/vec_avg.h"
 
-TEST(Parallel_Operations_MPI, Can_Generate_Vector) {
-    const int vecSize = 10;
+#define MAX_GEN 100
 
-    std::vector<int> vec = getRandomVector(vecSize);
-    ASSERT_EQ(static_cast<int>(vec.size()), vecSize);
+TEST(Parallel_Operations_MPI, Can_Generate_Vector) {
+    const int vecSize = 40;
+
+    int* vec = getRandomVector(vecSize);
+    for (int i = 0; i < vecSize; i++) {
+        ASSERT_LE(vec[i], MAX_GEN);
+        ASSERT_GT(vec[i], -1);
+    }
+    delete[] vec;
 }
 
 TEST(Parallel_Operations_MPI, Test_Negative_VecSize) {
@@ -24,7 +30,7 @@ TEST(Parallel_Operations_MPI, Test_Size_1) {
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    std::vector<int> vec;
+    int* vec = new int[vecSize];
     if (rank == 0) {
         vec = getRandomVector(vecSize);
     }
@@ -33,6 +39,7 @@ TEST(Parallel_Operations_MPI, Test_Size_1) {
         int avgNotParall = getVectorAvgNotParall(vec, vecSize);
         ASSERT_EQ(avgNotParall, avg);
     }
+    delete[] vec;
 }
 
 TEST(Parallel_Operations_MPI, Test_Size_Tiny) {
@@ -40,7 +47,7 @@ TEST(Parallel_Operations_MPI, Test_Size_Tiny) {
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    std::vector<int> vec;
+    int* vec = new int[vecSize];
     if (rank == 0) {
         vec = getRandomVector(vecSize);
     }
@@ -49,13 +56,14 @@ TEST(Parallel_Operations_MPI, Test_Size_Tiny) {
         int avgNotParall = getVectorAvgNotParall(vec, vecSize);
         ASSERT_EQ(avgNotParall, avg);
     }
+    delete[] vec;
 }
 TEST(Parallel_Operations_MPI, Test_Size_Medium) {
     const int vecSize = 100;
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    std::vector<int> vec;
+    int* vec = new int[vecSize];
     if (rank == 0) {
         vec = getRandomVector(vecSize);
     }
@@ -64,6 +72,7 @@ TEST(Parallel_Operations_MPI, Test_Size_Medium) {
         int avgNotParall = getVectorAvgNotParall(vec, vecSize);
         ASSERT_EQ(avgNotParall, avg);
     }
+    delete[] vec;
 }
 
 TEST(Parallel_Operations_MPI, Test_Size_Huge) {
@@ -71,7 +80,7 @@ TEST(Parallel_Operations_MPI, Test_Size_Huge) {
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    std::vector<int> vec;
+    int* vec = new int[vecSize];
     if (rank == 0) {
         vec = getRandomVector(vecSize);
     }
@@ -80,6 +89,7 @@ TEST(Parallel_Operations_MPI, Test_Size_Huge) {
         int avgNotParall = getVectorAvgNotParall(vec, vecSize);
         ASSERT_EQ(avgNotParall, avg);
     }
+    delete[] vec;
 }
 
 int main(int argc, char* argv[]) {

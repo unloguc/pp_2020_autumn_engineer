@@ -3,6 +3,7 @@
 #include <mpi.h>
 #include <vector>
 #include <algorithm>
+#include <iostream>
 
 
 std::vector<int32_t> getRandomVector(size_t size) {
@@ -63,8 +64,8 @@ std::vector<int32_t> getMinRowElementParallel(
             pos += send_size[i];
     }
 
-    MPI_Scatterv(&vector[0], &send_size[0],  &send_pos[0], MPI_INT32_T,
-                 &rec_vector[0], static_cast<int>(send_size[comm_rank] * size),
+    MPI_Scatterv(vector.data(), &send_size[0],  send_pos.data(), MPI_INT32_T,
+                 rec_vector.data(), static_cast<int>(send_size[comm_rank] * size),
                  MPI_INT32_T, 0, MPI_COMM_WORLD);
 
     std::vector<int32_t> min_element_row(send_size[comm_rank] / size);
@@ -92,8 +93,8 @@ std::vector<int32_t> getMinRowElementParallel(
             pos += rec_size_v[i];
     }
 
-    MPI_Gatherv(&min_element_row[0], rec_size_v[comm_rank], MPI_INT32_T,
-                &min_element_together[0], &rec_size_v[0], &rec_pos[0],
+    MPI_Gatherv(min_element_row.data(),  rec_size_v[comm_rank], MPI_INT32_T,
+                min_element_together.data(), rec_size_v.data(), rec_pos.data(),
                 MPI_INT32_T, 0, MPI_COMM_WORLD);
 
     return min_element_together;
