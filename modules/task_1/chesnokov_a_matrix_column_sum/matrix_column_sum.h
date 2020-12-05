@@ -3,7 +3,18 @@
 #define MODULES_TASK_1_CHESNOKOV_A_MATRIX_COLUMN_SUM_MATRIX_COLUMN_SUM_H_
 
 #include <vector>
-typedef std::vector<std::vector<int>> Matrix;
+class Matrix {
+ public:
+    int* buf;
+    int columns, rows;
+
+    Matrix(int col, int r);
+    Matrix(int col, int r, int* buf);
+    Matrix(const Matrix& m);
+    ~Matrix() {
+        delete[] buf;
+    }
+};
 
 // returns random matrix in column-major order
 Matrix getRandomMatrix(int columns, int rows);
