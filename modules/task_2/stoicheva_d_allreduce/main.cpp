@@ -25,7 +25,8 @@ std::vector<T> create_random_vector(size_t size) {
 
 
 template<typename T>
-void test_allreduce_with(const int count, const int root_id, const MPI_Datatype datatype, const MPI_Op op) {
+void test_allreduce_with(const int count, const int root_id, const MPI_Datatype datatype, const MPI_Op op,
+                    bool show_times = false) {
     int world_size, rank;
     MPI_Comm_size(MPI_COMM_WORLD, &world_size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -93,27 +94,24 @@ void test_allreduce_with(const int count, const int root_id, const MPI_Datatype 
 #endif
 
     if (rank == root_id) {
-        std::cout << "my_MPI_Allreduce time: " << t1 << std::endl;
-        std::cout << "MPI_Allreduce Time: " << t2 << std::endl;
-        std::cout << "MPI_Allreduce " << t1 / t2 << " times faster." << std::endl;
+        if (show_times) {
+            std::cout << "my_MPI_Allreduce time: " << t1 << std::endl;
+            std::cout << "MPI_Allreduce Time: " << t2 << std::endl;
+            std::cout << "MPI_Allreduce " << t1 / t2 << " times faster." << std::endl;
+        }
 
         T sequential_out = getSequentialOperations<T>(global_data_in, op);
 
 #ifdef DEBUG_PRINT
         printf("[%d] sequential_out = %s\n", rank, std::to_string(sequential_out).c_str());
 #endif
-        switch (datatype) {
-        case MPI_INT:
+        if (MPI_INT == datatype) {
             ASSERT_EQ(expected_out, proc_out);
             ASSERT_EQ(sequential_out, proc_out);
-            break;
-
-        case MPI_FLOAT:
-            ASSERT_FLOAT_EQ(expected_out, proc_out);
+        } else if (MPI_FLOAT == datatype) {
+            ASSERT_NEAR(expected_out, proc_out, 0.001);
             ASSERT_NEAR(sequential_out, proc_out, 0.001);
-            break;
-
-        case MPI_DOUBLE:
+        } else if (MPI_DOUBLE == datatype) {
             ASSERT_DOUBLE_EQ(expected_out, proc_out);
             ASSERT_NEAR(sequential_out, proc_out, 0.001);
         }
@@ -226,7 +224,7 @@ TEST(DISABLED_Parallel_Operations_MPI, Test_swap_0_5_10) {
 }
 
 TEST(Parallel_Operations_MPI, Test_Allreduce_C100000_R2_INT_SUM) {
-    test_allreduce_with<int>(100000, 0, MPI_INT, MPI_SUM);
+    test_allreduce_with<int>(100000, 0, MPI_INT, MPI_SUM, true);
 }
 
 

@@ -88,14 +88,11 @@ int swap_0_with_root(bool swap_required, int proc_id, int root_id) {
 std::string value_to_string(const void *buffer, MPI_Datatype datatype, const int count = 1) {
     if (datatype == MPI_INT) {
         return std::to_string(*pointer_cast<int *>(buffer));
-    }
-    else if (datatype == MPI_FLOAT) {
+    } else if (datatype == MPI_FLOAT) {
         return std::to_string(*pointer_cast<float *>(buffer));
-    }
-    else if (datatype == MPI_DOUBLE) {
+    } else if (datatype == MPI_DOUBLE) {
         return std::to_string(*pointer_cast<double *>(buffer));
-    }
-    else {
+    } else {
         return "Unsupported data type.";
     }
 }
@@ -141,21 +138,17 @@ int do_op_t(const size_t index, const void *in_buf, void *out_buf, MPI_Op op) {
     // dbg        to_string(*operand).c_str());
     if (op == MPI_SUM) {
         buffer[index] += operand[index];
-    }
-    else if (op == MPI_MAX) {
+    } else if (op == MPI_MAX) {
         if (operand[index] > buffer[index]) {
             buffer[index] = operand[index];
         }
-    }
-    else if (op == MPI_MIN) {
+    } else if (op == MPI_MIN) {
         if (operand[index] < buffer[index]) {
             buffer[index] = operand[index];
         }
-    }
-    else if (op == MPI_PROD) {
+    } else if (op == MPI_PROD) {
         buffer[index] *= operand[index];
-    }
-    else {
+    } else {
         status = MPI_ERR_OP;
     }
     return status;
@@ -167,14 +160,11 @@ int do_op(const size_t index, const void *in_buf, void *out_buf, MPI_Datatype da
     int status;
     if (datatype == MPI_INT) {
         status = do_op_t<int>(index, in_buf, out_buf, op);
-    }
-    else if (datatype == MPI_FLOAT) {
+    } else if (datatype == MPI_FLOAT) {
         status = do_op_t<float>(index, in_buf, out_buf, op);
-    }
-    else if (datatype == MPI_DOUBLE) {
+    } else if (datatype == MPI_DOUBLE) {
         status = do_op_t<double>(index, in_buf, out_buf, op);
-    }
-    else {
+    } else {
         status = MPI_ERR_TYPE;
     }
     return status;
@@ -410,15 +400,14 @@ int my_MPI_Allreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype
 
     if (datatype == MPI_INT) {
         status = my_MPI_Reduce_t<int>(sendbuf, recvbuf, count, datatype, op, root, comm);
-    }
-    else if (datatype == MPI_FLOAT) {
+    } else if (datatype == MPI_FLOAT) {
         status = my_MPI_Reduce_t<float>(sendbuf, recvbuf, count, datatype, op, root, comm);
-    }
-    else if (datatype == MPI_DOUBLE) {
+    } else if (datatype == MPI_DOUBLE) {
         status = my_MPI_Reduce_t<double>(sendbuf, recvbuf, count, datatype, op, root, comm);
-    }
-    else {
+    } else {
         status = MPI_ERR_TYPE;
     }
+    MPI_Barrier(comm);
+    my_MPI_Bcast_Tree(recvbuf, count, datatype, root, comm);
     return status;
 }
