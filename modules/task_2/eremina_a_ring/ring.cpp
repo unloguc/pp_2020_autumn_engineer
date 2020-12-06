@@ -1,5 +1,18 @@
 // Copyright 2020 Eremina Alena
+#include <random>
+#include <ctime>
+#include <vector>
 #include "../../../modules/task_2/eremina_a_ring/ring.h"
+
+std::vector<int> getRandomVector(int size) {
+    std::mt19937 gen;
+    gen.seed(static_cast<unsigned int>(time(0)));
+    std::vector<int> vector(size);
+    for (int i = 0; i < size; i++) {
+        vector[i] = (gen() % 1000) / 7;
+    }
+    return vector;
+}
 
 MPI_Comm topologyRing(int* order) {
     int ProcRank, ProcNum;

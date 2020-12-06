@@ -2,6 +2,7 @@
 #include <gtest-mpi-listener.hpp>
 #include <gtest/gtest.h>
 #include <random>
+#include <vector>
 #include "./ring.h"
 
 TEST(Topology_Ring, Default_Number_Of_Neighboring_Processes_Is_2) {
@@ -160,10 +161,8 @@ TEST(Topology_Ring, Test_Default_Topology) {
     MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
     MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
 
-    int *array = new int[ProcNum];
-    for (int i = 0; i < ProcNum; i++) {
-        array[i] = rand_r() % 100;
-    }
+    std::vector<int> array(ProcNum);
+    array = getRandomVector(ProcNum);
 
     MPI_Comm RingComm = topologyRing(NULL);
 
@@ -186,16 +185,9 @@ TEST(Topology_Ring, Test_Ordered_Topology) {
     MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
     MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
 
-    int *array = new int[ProcNum];
-    for (int i = 0; i < ProcNum; i++) {
-        array[i] = rand_r() % 100;
-    }
-    if (ProcRank == 0) {
-        for (int i = 0; i < ProcNum; i++) {
-            printf("%d ", array[i]);
-        }
-        printf("\n");
-    }
+    std::vector<int> array(ProcNum);
+    array = getRandomVector(ProcNum);
+
     /* if ProcNum = 10 */
     /* 0 - 2 - 4 - 6 - 8 - 9 - 7 - 5 - 3 - 1 */
     int *order = new int[ProcNum];
