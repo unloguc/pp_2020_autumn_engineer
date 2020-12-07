@@ -169,13 +169,14 @@ TEST(Topology_Ring, Test_Default_Topology) {
     int neighbors[2];
     MPI_Graph_neighbors(RingComm, ProcRank, 2, &neighbors[0]);
 
+    MPI_Barrier(MPI_COMM_WORLD);
     MPI_Send(&array[ProcRank], 1, MPI_INT, neighbors[1], ProcRank, RingComm);
-    MPI_Barrier(RingComm);
+    MPI_Barrier(MPI_COMM_WORLD);
 
     int number;
     MPI_Status status;
     MPI_Recv(&number, 1, MPI_INT, neighbors[0], neighbors[0], RingComm, &status);
-    MPI_Barrier(RingComm);
+    MPI_Barrier(MPI_COMM_WORLD);
 
     ASSERT_EQ(array[neighbors[0]], number);
 }
@@ -201,13 +202,14 @@ TEST(Topology_Ring, Test_Ordered_Topology) {
 
     int neighbors[2];
     MPI_Graph_neighbors(RingComm, ProcRank, 2, &neighbors[0]);
+    MPI_Barrier(MPI_COMM_WORLD);
     MPI_Send(&array[ProcRank], 1, MPI_INT, neighbors[1], ProcRank, RingComm);
-    MPI_Barrier(RingComm);
+    MPI_Barrier(MPI_COMM_WORLD);
 
     int number;
     MPI_Status status;
     MPI_Recv(&number, 1, MPI_INT, neighbors[0], neighbors[0], RingComm, &status);
-    MPI_Barrier(RingComm);
+    MPI_Barrier(MPI_COMM_WORLD);
 
     ASSERT_EQ(array[neighbors[0]], number);
 }
