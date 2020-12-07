@@ -2,6 +2,7 @@
 #ifndef MODULES_TASK_3_EREMINA_A_CANNON_CANNON_H_
 #define MODULES_TASK_3_EREMINA_A_CANNON_CANNON_H_
 
+#include <mpi.h>
 #include <vector>
 #include <string>
 

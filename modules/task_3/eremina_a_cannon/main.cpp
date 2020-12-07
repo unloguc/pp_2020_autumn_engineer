@@ -1,9 +1,9 @@
 // Copyright 2020 Eremina Alena
 #include <gtest-mpi-listener.hpp>
 #include <gtest/gtest.h>
-#include <vector>
 #include <stdio.h>
-#include <time.h>
+#include <math.h>
+#include <vector>
 #include "./cannon.h"
 
 TEST(Cannon_Algorithm_MPI, Test_Sequential_Multiplication) {
@@ -36,15 +36,15 @@ TEST(Cannon_Algorithm_MPI, Test_Cartesian_Topology) {
 
     MPI_Comm BlockComm;
     int coords[2];
-    CartesianComm((int)sqrt(ProcNum), &BlockComm);
+    CartesianComm(static_cast<int>(sqrt(ProcNum)), &BlockComm);
     MPI_Cart_coords(BlockComm, ProcRank, 2, coords);
 
-    int coords_ref[2] = { ProcRank / (int)sqrt(ProcNum),  ProcRank % (int)sqrt(ProcNum) };
+    int coords_ref[2] = { ProcRank / static_cast<int>(sqrt(ProcNum)),  ProcRank % static_cast<int>(sqrt(ProcNum)) };
     if (ProcRank == 0) {
-		for (int proc = 0; proc < ProcNum; proc++) {
-			for (int i = 0; i < 2; i++)
-				ASSERT_EQ(coords[i], coords_ref[i]);
-		}
+        for (int proc = 0; proc < ProcNum; proc++) {
+            for (int i = 0; i < 2; i++)
+                ASSERT_EQ(coords[i], coords_ref[i]);
+        }
     }
 }
 
@@ -53,22 +53,22 @@ TEST(Cannon_Algorithm_MPI, Test_Parallel_Multiplication) {
     MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
     MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
 
-	int size = 440 * (int)sqrt(ProcNum);
+    int size = 440 * static_cast<int>(sqrt(ProcNum));
     std::vector<double> a(size*size);
     std::vector<double> b(size*size);
     std::vector<double> c_seq(size*size, 0.0);
     std::vector<double> c_par(size*size, 0.0);
     a = getRandomMatrix(size);
     b = getRandomMatrix(size);
-	double t0 = MPI_Wtime();
+    double t0 = MPI_Wtime();
     c_par = getParallelMultiply(a, b, size);
-	double t1 = MPI_Wtime();
+    double t1 = MPI_Wtime();
     if (ProcRank == 0) {
-		printf("Par: %f\n", t1 - t0);
-		t0 = MPI_Wtime();
+        printf("Par: %f\n", t1 - t0);
+        t0 = MPI_Wtime();
         c_seq = getSequentialMultiply(a, b, size);
-		t1 = MPI_Wtime();
-		printf("Seq: %f\n", t1 - t0);
+        t1 = MPI_Wtime();
+        printf("Seq: %f\n", t1 - t0);
         int count = 0;
         for (int i = 0; i < size*size; i++) {
             if (abs(c_seq[i] - c_par[i]) > 0.000001) count++;
@@ -78,40 +78,40 @@ TEST(Cannon_Algorithm_MPI, Test_Parallel_Multiplication) {
 }
 
 TEST(Cannon_Algorithm_MPI, Test_Parallel_Multiplication_With_One_Elems_In_Block) {
-	int ProcNum, ProcRank;
-	MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
-	MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
+    int ProcNum, ProcRank;
+    MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
+    MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
 
-	int size = (int)sqrt(ProcNum);
-	std::vector<double> a(size*size);
-	std::vector<double> b(size*size);
-	std::vector<double> c_seq(size*size, 0.0);
-	std::vector<double> c_par(size*size, 0.0);
-	a = getRandomMatrix(size);
-	b = getRandomMatrix(size);
-	c_par = getParallelMultiply(a, b, size);
-	if (ProcRank == 0) {
-		c_seq = getSequentialMultiply(a, b, size);
-		int count = 0;
-		for (int i = 0; i < size*size; i++) {
-			if (abs(c_seq[i] - c_par[i]) > 0.000001) count++;
-		}
-		ASSERT_EQ(0, count);
-	}
+    int size = static_cast<int>(sqrt(ProcNum));
+    std::vector<double> a(size*size);
+    std::vector<double> b(size*size);
+    std::vector<double> c_seq(size*size, 0.0);
+    std::vector<double> c_par(size*size, 0.0);
+    a = getRandomMatrix(size);
+    b = getRandomMatrix(size);
+    c_par = getParallelMultiply(a, b, size);
+    if (ProcRank == 0) {
+        c_seq = getSequentialMultiply(a, b, size);
+        int count = 0;
+        for (int i = 0; i < size*size; i++) {
+            if (abs(c_seq[i] - c_par[i]) > 0.000001) count++;
+        }
+        ASSERT_EQ(0, count);
+    }
 }
 
 TEST(Cannon_Algorithm_MPI, Test_Parallel_Mitliplication_With_Wrong_Size) {
-	int ProcNum, ProcRank;
-	MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
-	MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
+    int ProcNum, ProcRank;
+    MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
+    MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
 
-	int size = 99;
-	std::vector<double> a(size*size);
-	std::vector<double> b(size*size);
-	std::vector<double> c_par(size*size, 0.0);
-	a = getRandomMatrix(size);
-	b = getRandomMatrix(size);
-	ASSERT_ANY_THROW(c_par = getParallelMultiply(a, b, size));
+    int size = 99;
+    std::vector<double> a(size*size);
+    std::vector<double> b(size*size);
+    std::vector<double> c_par(size*size, 0.0);
+    a = getRandomMatrix(size);
+    b = getRandomMatrix(size);
+    ASSERT_ANY_THROW(c_par = getParallelMultiply(a, b, size));
 }
 
 int main(int argc, char** argv) {
