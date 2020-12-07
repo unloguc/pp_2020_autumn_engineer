@@ -1,6 +1,7 @@
 // Copyright 2020 Eremina Alena
 #include <gtest-mpi-listener.hpp>
 #include <gtest/gtest.h>
+#include <mpi.h>
 #include <stdio.h>
 #include <math.h>
 #include <vector>

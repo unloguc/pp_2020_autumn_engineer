@@ -8,7 +8,7 @@
 
 std::vector<double> getParallelMultiply(std::vector<double> a, std::vector<double> b, int size);
 std::vector<double> getSequentialMultiply(std::vector<double> a, std::vector<double> b, int size);
-void CartesianComm(int block_size, MPI_Comm* BlocksComm);
+void CartesianComm(int block_size, MPI_Comm *BlocksComm);
 std::vector<double> getRandomMatrix(int size);
 
 #endif  // MODULES_TASK_3_EREMINA_A_CANNON_CANNON_H_

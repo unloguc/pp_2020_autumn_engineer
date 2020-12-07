@@ -16,7 +16,7 @@ std::vector<double> getRandomMatrix(int size) {
     return matrix;
 }
 
-void CartesianComm(int block_num, MPI_Comm* BlockComm) {
+void CartesianComm(int block_num, MPI_Comm *BlockComm) {
     int ProcNum;
     MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
 
