@@ -7,6 +7,12 @@
 #include <vector>
 #include "./cannon.h"
 
+TEST(Cannon_Algorithm_MPI, Test_Get_Rangom_Matrix) {
+    int size = 6;
+    std::vector<double> a(size*size);
+    ASSERT_NO_THROW(a = getRandomMatrix(size));
+}
+
 TEST(Cannon_Algorithm_MPI, Test_Sequential_Multiplication) {
     int ProcNum, ProcRank;
     MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
@@ -27,25 +33,6 @@ TEST(Cannon_Algorithm_MPI, Test_Sequential_Multiplication) {
             if (abs(c[i] - c_ref[i]) > 0.000001) count++;
         }
         ASSERT_EQ(0, count);
-    }
-}
-
-TEST(Cannon_Algorithm_MPI, Test_Cartesian_Topology) {
-    int ProcNum, ProcRank;
-    MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
-    MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
-
-    MPI_Comm BlockComm;
-    int coords[2];
-    CartesianComm(static_cast<int>(sqrt(ProcNum)), &BlockComm);
-    MPI_Cart_coords(BlockComm, ProcRank, 2, coords);
-
-    int coords_ref[2] = { ProcRank / static_cast<int>(sqrt(ProcNum)),  ProcRank % static_cast<int>(sqrt(ProcNum)) };
-    if (ProcRank == 0) {
-        for (int proc = 0; proc < ProcNum; proc++) {
-            for (int i = 0; i < 2; i++)
-                ASSERT_EQ(coords[i], coords_ref[i]);
-        }
     }
 }
 
@@ -112,7 +99,7 @@ TEST(Cannon_Algorithm_MPI, Test_Parallel_Mitliplication_With_Wrong_Size) {
     std::vector<double> c_par(size*size, 0.0);
     a = getRandomMatrix(size);
     b = getRandomMatrix(size);
-    ASSERT_ANY_THROW(c_par = getParallelMultiply(a, b, size));
+    ASSERT_NO_THROW(c_par = getParallelMultiply(a, b, size));
 }
 
 int main(int argc, char** argv) {

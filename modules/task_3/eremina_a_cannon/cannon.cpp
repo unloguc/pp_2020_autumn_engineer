@@ -52,90 +52,88 @@ std::vector<double> getParallelMultiply(std::vector<double> a, std::vector<doubl
 
     int BlockNum, BlockSize;
     int bCastData[2];
-    if (ProcRank == 0) {
-        BlockNum = static_cast<int>(sqrt(ProcNum));
-        if (BlockNum * BlockNum != ProcNum) {
-            MPI_Abort(MPI_COMM_WORLD, 1);
+    if (static_cast<int>(sqrt(ProcNum)) * static_cast<int>(sqrt(ProcNum)) != ProcNum ||
+        size % static_cast<int>(sqrt(ProcNum)) != 0) {
+        if (ProcRank == 0) {
+            c = getSequentialMultiply(a, b, size);
         }
-        BlockSize = size / BlockNum;
-        bCastData[0] = BlockNum;
-        bCastData[1] = BlockSize;
-    }
-
-    MPI_Bcast(&bCastData, 2, MPI_INT, 0, MPI_COMM_WORLD);
-    BlockNum = bCastData[0];
-    BlockSize = bCastData[1];
-
-    if (size % BlockNum != 0) {
-        throw - 1;
-        MPI_Abort(MPI_COMM_WORLD, 2);
-    }
-
-    MPI_Comm BlockComm;
-    CartesianComm(BlockNum, &BlockComm);
-
-    std::vector<double> blockA(BlockSize*BlockSize);
-    std::vector<double> blockB(BlockSize*BlockSize);
-
-    int globalSize[2] = { size, size };
-    int localSize[2] = { BlockSize, BlockSize };
-    int starts[2] = { 0, 0 };
-    MPI_Datatype type, subarrType;
-    MPI_Type_create_subarray(2, globalSize, localSize, starts, MPI_ORDER_C, MPI_DOUBLE, &type);
-    MPI_Type_create_resized(type, 0, BlockSize * sizeof(double), &subarrType);
-    MPI_Type_commit(&subarrType);
-
-    int *sendcounts = new int[ProcNum];
-    int *displs = new int[ProcNum];
-    if (ProcRank == 0) {
-        for (int i = 0; i < ProcNum; i++) {
-            sendcounts[i] = 1;
+    } else {
+        if (ProcRank == 0) {
+            BlockNum = static_cast<int>(sqrt(ProcNum));
+            BlockSize = size / BlockNum;
+            bCastData[0] = BlockNum;
+            bCastData[1] = BlockSize;
         }
-        int disp = 0;
-        for (int i = 0; i < BlockNum; i++) {
-            for (int j = 0; j < BlockNum; j++) {
-                displs[i * BlockNum + j] = disp;
-                disp += 1;
+
+        MPI_Bcast(&bCastData, 2, MPI_INT, 0, MPI_COMM_WORLD);
+        BlockNum = bCastData[0];
+        BlockSize = bCastData[1];
+
+        MPI_Comm BlockComm;
+        CartesianComm(BlockNum, &BlockComm);
+
+        std::vector<double> blockA(BlockSize*BlockSize);
+        std::vector<double> blockB(BlockSize*BlockSize);
+
+        int globalSize[2] = { size, size };
+        int localSize[2] = { BlockSize, BlockSize };
+        int starts[2] = { 0, 0 };
+        MPI_Datatype type, subarrType;
+        MPI_Type_create_subarray(2, globalSize, localSize, starts, MPI_ORDER_C, MPI_DOUBLE, &type);
+        MPI_Type_create_resized(type, 0, BlockSize * sizeof(double), &subarrType);
+        MPI_Type_commit(&subarrType);
+
+        int *sendcounts = new int[ProcNum];
+        int *displs = new int[ProcNum];
+        if (ProcRank == 0) {
+            for (int i = 0; i < ProcNum; i++) {
+                sendcounts[i] = 1;
             }
-            disp += (BlockSize - 1) * BlockNum;
+            int disp = 0;
+            for (int i = 0; i < BlockNum; i++) {
+                for (int j = 0; j < BlockNum; j++) {
+                    displs[i * BlockNum + j] = disp;
+                    disp += 1;
+                }
+                disp += (BlockSize - 1) * BlockNum;
+            }
         }
-    }
-    MPI_Scatterv(&(a[0]), sendcounts, displs, subarrType,
-        &(blockA[0]), size*size / (ProcNum), MPI_DOUBLE, 0, MPI_COMM_WORLD);
-    MPI_Scatterv(&(b[0]), sendcounts, displs, subarrType,
-        &(blockB[0]), size*size / (ProcNum), MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Scatterv(&(a[0]), sendcounts, displs, subarrType,
+            &(blockA[0]), size*size / (ProcNum), MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Scatterv(&(b[0]), sendcounts, displs, subarrType,
+            &(blockB[0]), size*size / (ProcNum), MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
-    int left, right, up, down;
-    int coords[2];
-    MPI_Cart_coords(BlockComm, ProcRank, 2, coords);
-    MPI_Cart_shift(BlockComm, 1, coords[0], &left, &right);
-    MPI_Sendrecv_replace(&(blockA[0]), BlockSize * BlockSize, MPI_DOUBLE,
-        left, 1, right, 1, BlockComm, MPI_STATUS_IGNORE);
-    MPI_Cart_shift(BlockComm, 0, coords[1], &up, &down);
-    MPI_Sendrecv_replace(&(blockB[0]), BlockSize * BlockSize, MPI_DOUBLE,
-        up, 1, down, 1, BlockComm, MPI_STATUS_IGNORE);
-
-    std::vector<double> blockC(BlockSize*BlockSize, 0.0);
-
-    std::vector<double> blockRes(BlockSize*BlockSize);
-
-    for (int k = 0; k < BlockNum; k++) {
-        blockRes = getSequentialMultiply(blockA, blockB, BlockSize);
-
-        for (int i = 0; i < BlockSize * BlockSize; i++) {
-            blockC[i] += blockRes[i];
-        }
-
-        MPI_Cart_shift(BlockComm, 1, 1, &left, &right);
-        MPI_Cart_shift(BlockComm, 0, 1, &up, &down);
+        int left, right, up, down;
+        int coords[2];
+        MPI_Cart_coords(BlockComm, ProcRank, 2, coords);
+        MPI_Cart_shift(BlockComm, 1, coords[0], &left, &right);
         MPI_Sendrecv_replace(&(blockA[0]), BlockSize * BlockSize, MPI_DOUBLE,
             left, 1, right, 1, BlockComm, MPI_STATUS_IGNORE);
+        MPI_Cart_shift(BlockComm, 0, coords[1], &up, &down);
         MPI_Sendrecv_replace(&(blockB[0]), BlockSize * BlockSize, MPI_DOUBLE,
             up, 1, down, 1, BlockComm, MPI_STATUS_IGNORE);
+
+        std::vector<double> blockC(BlockSize*BlockSize, 0.0);
+
+        std::vector<double> blockRes(BlockSize*BlockSize);
+
+        for (int k = 0; k < BlockNum; k++) {
+            blockRes = getSequentialMultiply(blockA, blockB, BlockSize);
+
+            for (int i = 0; i < BlockSize * BlockSize; i++) {
+                blockC[i] += blockRes[i];
+            }
+
+            MPI_Cart_shift(BlockComm, 1, 1, &left, &right);
+            MPI_Cart_shift(BlockComm, 0, 1, &up, &down);
+            MPI_Sendrecv_replace(&(blockA[0]), BlockSize * BlockSize, MPI_DOUBLE,
+                left, 1, right, 1, BlockComm, MPI_STATUS_IGNORE);
+            MPI_Sendrecv_replace(&(blockB[0]), BlockSize * BlockSize, MPI_DOUBLE,
+                up, 1, down, 1, BlockComm, MPI_STATUS_IGNORE);
+        }
+
+        MPI_Gatherv(&(blockC[0]), size * size / ProcNum, MPI_DOUBLE,
+            &(c[0]), sendcounts, displs, subarrType, 0, MPI_COMM_WORLD);
     }
-
-    MPI_Gatherv(&(blockC[0]), size * size / ProcNum, MPI_DOUBLE,
-        &(c[0]), sendcounts, displs, subarrType, 0, MPI_COMM_WORLD);
-
     return c;
 }
