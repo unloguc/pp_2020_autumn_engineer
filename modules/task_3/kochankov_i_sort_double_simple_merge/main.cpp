@@ -25,7 +25,7 @@ TEST(Parallel_Operations_MPI, getRandomVector_works) {
     const int size = 100;
     if (rank == 0) {
         vec = getRandomVector(size);
-        ASSERT_EQ(vec.size(), 100);
+        ASSERT_EQ(static_cast<int>(vec.size()), 100);
     }
 }
 
@@ -175,7 +175,7 @@ TEST(Parallel_Operations_MPI, merge_works_diff_size) {
         std::vector<double> v2{ 32.1, 32.2, 91234.3 };
         std::vector<double> res{ 26.333, 32.1, 32.2, 111.123, 91234.3 };
         std::vector<double> v3 = merge(v1, v2);
-        for (int i = 0; i < res.size(); ++i)
+        for (int i = 0; i < static_cast<int>(res.size()); ++i)
             EXPECT_EQ(v3[i], res[i]) << "Arrays check_array and res_array differ at index " << i;
     }
 }
