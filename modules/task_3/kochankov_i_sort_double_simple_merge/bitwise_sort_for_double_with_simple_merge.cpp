@@ -238,7 +238,8 @@ std::vector<double> parallel_bitwise_sort(const std::vector<double>& vect) {
 
         // cout << "Process " << rank << " await for result: "<< flush << endl;
 
-        MPI_Recv(&tmp[0], static_cast<int>(vect.size()), MPI_DOUBLE, process_num_map[0].first, 0, MPI_COMM_WORLD, &status);
+        MPI_Recv(&tmp[0], static_cast<int>(vect.size()),
+            MPI_DOUBLE, process_num_map[0].first, 0, MPI_COMM_WORLD, &status);
         return tmp;
     }
     return vector<double>();
