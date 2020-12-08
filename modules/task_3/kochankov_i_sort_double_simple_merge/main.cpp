@@ -131,10 +131,10 @@ TEST(Parallel_Operations_MPI, parallel_bitwise_sort_works_rand_vector) {
     time_t start, end;
     double seconds;
 
-    vector<double> vect(1000000);
+    vector<double> vect(5000000);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     if (rank == 0) {
-        vect = getRandomVector(1000000);
+        vect = getRandomVector(5000000);
         time(&start);
     }
 
