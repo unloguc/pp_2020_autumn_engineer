@@ -111,6 +111,75 @@ TEST(Parallel_Operations_MPI, linear_bitwise_sort_works) {
   }
 }
 
+TEST(Parallel_Operations_MPI, parallel_bitwise_sort_works) {
+  int rank;
+  vector<double> vect(6);
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  if (rank == 0) {
+    vector<double> tmp = {111.123, 26.333, 3.444, 91234.34234, 32.1, 32.2};
+    vect = tmp;
+  }
+  auto sorted = parallel_bitwise_sort(vect);
+  if (rank == 0) {
+    vector<double> result = {3.444, 26.333, 32.1, 32.2, 111.123, 91234.34234};
+    EXPECT_EQ(sorted, result);
+  }
+}
+
+TEST(Parallel_Operations_MPI, parallel_bitwise_sort_works_rand_vector) {
+  int rank;
+  time_t start, end;
+  double seconds;
+
+  vector<double> vect(1000000);
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  if (rank == 0) {
+    vect = getRandomVector(1000000);
+    time(&start);
+  }
+
+  auto sorted = parallel_bitwise_sort(vect);
+
+  if (rank == 0) {
+    time(&end);
+    seconds = difftime(end, start);
+    std::cout << "Parallel method: " << seconds << std::endl;
+
+    time(&start);
+    vector<double> result = linear_bitwise_sort(vect);
+    time(&end);
+    seconds = difftime(end, start);
+    std::cout << "Linear method: " << seconds << std::endl;
+    EXPECT_EQ(sorted, result);
+  }
+}
+
+TEST(Parallel_Operations_MPI, merge_works) {
+  int rank;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  if (rank == 0) {
+    std::vector<double> v1{2, 2, 4, 6};
+    std::vector<double> v2{0, 2, 3, 6};
+    std::vector<double> res{0, 2, 2, 2, 3, 4, 6, 6};
+    std::vector<double> v3 = merge(v1, v2);
+    for (int i = 0; i < 8; ++i)
+        EXPECT_EQ(v3[i], res[i]) << "Arrays check_array and res_array differ at index " << i;
+  }
+}
+
+TEST(Parallel_Operations_MPI, merge_works_diff_size) {
+  int rank;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  if (rank == 0) {
+    std::vector<double> v1{26.333, 111.123};
+    std::vector<double> v2{32.1, 32.2, 91234.3};
+    std::vector<double> res{26.333, 32.1, 32.2, 111.123, 91234.3};
+    std::vector<double> v3 = merge(v1, v2);
+    for (int i = 0; i < res.size(); ++i)
+        EXPECT_EQ(v3[i], res[i]) << "Arrays check_array and res_array differ at index " << i;
+  }
+}
+
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     MPI_Init(&argc, &argv);
