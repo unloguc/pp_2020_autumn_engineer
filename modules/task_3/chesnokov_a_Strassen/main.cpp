@@ -88,8 +88,8 @@ TEST(Task_3, Test_Parallel_Strassen_Works_512x512) {
     double str_start;
     double str_end;
     if (rank == 0) {
-        a = getRandomMatrix(1024, 1024);
-        b = getRandomMatrix(1024, 1024);
+        a = getRandomMatrix(1024 * 2, 1024 * 2);
+        b = getRandomMatrix(1024 * 2, 1024 * 2);
         str_start = MPI_Wtime();
         str_res = getMatrixMulStrassen(a, b);
         str_end = MPI_Wtime();

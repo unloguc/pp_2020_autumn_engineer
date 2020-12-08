@@ -131,7 +131,13 @@ Matrix getParallelMatrixMul(const Matrix & a, const Matrix & b)
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    if (size < 7) return getMatrixMulStrassen(a, b);
+    // calculating delta
+    int delta = 7 / size;
+    int tail = 7 % size;
+    // num of mults
+    int count;
+    if (rank < tail)  count = delta + 1;
+    else count = delta;
 
     // Work division
     if (rank == 0) {
@@ -157,7 +163,7 @@ Matrix getParallelMatrixMul(const Matrix & a, const Matrix & b)
 
         Matrix matrices[7][2];
 
-        // each process will solve 1 of 7 mults
+        // each process will solve ~7^k/rank mults
         matrices[0][0] = A11 + A22; matrices[0][1] = B11 + B22;
         matrices[1][0] = A21 + A22; matrices[1][1] = B11;
         matrices[2][0] = A11;       matrices[2][1] = B12 - B22;
@@ -168,19 +174,43 @@ Matrix getParallelMatrixMul(const Matrix & a, const Matrix & b)
 
         int m_size = A11.columns;
         MPI_Bcast(&m_size, 1, MPI_INT, 0, MPI_COMM_WORLD);
-        for (int proc = 1; proc < 7; proc++) {
-            MPI_Send(matrices[proc][0].buf, m_size * m_size, MPI_DOUBLE, proc, 1, MPI_COMM_WORLD);
-            MPI_Send(matrices[proc][1].buf, m_size * m_size, MPI_DOUBLE, proc, 2, MPI_COMM_WORLD);
+        int proc;
+        for (proc = 1; proc < tail; proc++) {
+            for (int i = 0; i < delta + 1; i++) {
+                MPI_Send(matrices[proc*(delta + 1) + i][0].buf, m_size * m_size, MPI_DOUBLE, proc, 1, MPI_COMM_WORLD);
+                MPI_Send(matrices[proc*(delta + 1) + i][1].buf, m_size * m_size, MPI_DOUBLE, proc, 2, MPI_COMM_WORLD);
+            }
+        }
+        for (; proc < size; proc++) {
+            for (int i = 0; i < delta; i++) {
+                MPI_Send(matrices[tail*(delta + 1) + (proc - tail)*delta + i][0].buf,
+                    m_size * m_size, MPI_DOUBLE, proc, 1, MPI_COMM_WORLD);
+                MPI_Send(matrices[tail*(delta + 1) + (proc - tail)*delta + i][1].buf,
+                    m_size * m_size, MPI_DOUBLE, proc, 2, MPI_COMM_WORLD);
+            }
         }
 
         // gathering results mults
         cout << "gathering results mults" << endl;
         Matrix P[7];
-        P[0] = getMatrixMulStrassen(matrices[0][0], matrices[0][1]);
-        for (int proc = 1; proc < 7; proc++) {
-            MPI_Status status;
-            P[proc] = Matrix(m_size, m_size);
-            MPI_Recv(P[proc].buf, m_size * m_size, MPI_DOUBLE, proc, 3, MPI_COMM_WORLD, &status);
+        // local 0th rank computations
+        for (int i = 0; i < count; i++) {
+            P[i] = getMatrixMulStrassen(matrices[i][0], matrices[i][1]);
+        }
+        MPI_Status status;
+
+        for (proc = 1; proc < tail; proc++) {
+            for (int i = 0; i < delta + 1; i++) {
+                P[proc*(delta + 1) + i] = Matrix(m_size, m_size);
+                MPI_Recv(P[proc*(delta + 1) + i].buf, m_size * m_size, MPI_DOUBLE, proc, 3, MPI_COMM_WORLD, &status);
+            }
+        }
+        for (; proc < size; proc++) {
+            for (int i = 0; i < delta; i++) {
+                P[tail*(delta + 1) + (proc - tail)*delta + i] = Matrix(m_size, m_size);
+                MPI_Recv(P[tail*(delta + 1) + (proc - tail)*delta + i].buf, m_size * m_size,
+                    MPI_DOUBLE, proc, 3, MPI_COMM_WORLD, &status);
+            }
         }
 
         // calculating final result
@@ -192,18 +222,25 @@ Matrix getParallelMatrixMul(const Matrix & a, const Matrix & b)
 
         return assembleMatrix(C11, C12, C21, C22);
 
-    } else {
+    } else { // All process with rank != 0 just count received mults
         int m_size;
         MPI_Bcast(&m_size, 1, MPI_INT, 0, MPI_COMM_WORLD);
         // local sub matrices
-        Matrix l_a(m_size, m_size);
-        Matrix l_b(m_size, m_size);
+        Matrix * l_a = new Matrix[count];
+        Matrix * l_b = new Matrix[count];
         MPI_Status status;
-        MPI_Recv(l_a.buf, m_size * m_size, MPI_DOUBLE, 0, 1, MPI_COMM_WORLD, &status);
-        MPI_Recv(l_b.buf, m_size * m_size, MPI_DOUBLE, 0, 2, MPI_COMM_WORLD, &status);
-
-        Matrix mult = getMatrixMulStrassen(l_a, l_b);
-        MPI_Send(mult.buf, m_size * m_size, MPI_DOUBLE, 0, 3, MPI_COMM_WORLD);
+        for (int i = 0; i < count; i++) {
+            l_a[i] = Matrix(m_size, m_size);
+            MPI_Recv(l_a[i].buf, m_size * m_size, MPI_DOUBLE, 0, 1, MPI_COMM_WORLD, &status);
+            l_b[i] = Matrix(m_size, m_size);
+            MPI_Recv(l_b[i].buf, m_size * m_size, MPI_DOUBLE, 0, 2, MPI_COMM_WORLD, &status);
+        }
+        
+        Matrix * mults = new Matrix[count];
+        for (int i = 0; i < count; i++) {
+            mults[i] = getMatrixMulStrassen(l_a[i], l_b[i]);
+            MPI_Send(mults[i].buf, m_size * m_size, MPI_DOUBLE, 0, 3, MPI_COMM_WORLD);
+        }
 
         return Matrix();
     }
