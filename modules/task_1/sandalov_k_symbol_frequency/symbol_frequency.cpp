@@ -63,7 +63,6 @@ int countFrequencyPar(const std::string& global_string, char symbol, int string_
         MPI_Recv(&local_string[0], real_size, MPI_CHAR, 0, 0, MPI_COMM_WORLD, &status);
         local_sum = countFrequencySec(local_string, symbol, real_size);
     }
-
     MPI_Reduce(&local_sum, &global_sum, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
     return global_sum;
 }
