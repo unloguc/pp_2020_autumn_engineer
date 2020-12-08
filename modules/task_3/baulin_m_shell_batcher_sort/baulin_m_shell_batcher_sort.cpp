@@ -3,9 +3,8 @@
 #include <mpi.h>
 #include <random>
 #include <vector>
-#include <string>
+#include <limits>
 #include <ctime>
-#include <algorithm>
 #include <utility>
 
 std::vector<std::pair<int, int>> comps;
