@@ -1,5 +1,5 @@
 // Copyright 2020 Kochankov Ilya
-#include "../../../modules/task_3/kochankov_i_bitwise_sort_for_double_with_simple_merge/bitwise_sort_for_double_with_simple_merge.h"
+#include "../../../modules/task_3/kochankov_i_sort_double_simple_merge/bitwise_sort_for_double_with_simple_merge.h"
 #include <mpi.h>
 #include <math.h>
 #include <iostream>
@@ -42,7 +42,7 @@ std::vector<double> linear_bitwise_sort(const std::vector<double>& vect) {
         }
     }
 
-    vector<double> result(vect.size());
+    vector<double> result(static_cast<int>(vect.size()));
     copy(vect.begin(), vect.end(), result.begin());
 
     for (int i = -(max_digits_below_zero); i <= digits_above_zero; i++) {
@@ -92,14 +92,14 @@ int get_digit_number_above_zero(int number) {
 int get_digit_number_below_zero(double number) {
     auto s = to_string(number);
     if (s.find('.')) {
-        return -(s.find('.') - s.size()) - 1;
+        return -(static_cast<int>(s.find('.')) - static_cast<int>(s.size())) - 1;
     } else {
         return 0;
     }
 }
 
 std::vector<double> parallel_bitwise_sort(const std::vector<double>& vect) {
-    int size, rank, len = vect.size();
+    int size, rank, len = static_cast<int>(vect.size());
 
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -153,18 +153,19 @@ std::vector<double> parallel_bitwise_sort(const std::vector<double>& vect) {
     }
     process_num_map[size - 1] = make_pair(size - 1, len - delta * (size - 1));
 
-    while (process_num_map.size() > 1) {
+    while (static_cast<int>(process_num_map.size()) > 1) {
         int index = std::find(process_num_map.begin(),
             process_num_map.end(), make_pair(rank, count)) - process_num_map.begin();
 
-        if ((process_num_map.size() % 2) && (index == process_num_map.size() - 1)) {
+        if ((static_cast<int>(process_num_map.size()) % 2) &&
+            (index == static_cast<int>(process_num_map.size()) - 1)) {
             vector<pair<int, int> > tmp_proc;
-            for (int i = 1; i < process_num_map.size(); i += 2) {
+            for (int i = 1; i < static_cast<int>(process_num_map.size()); i += 2) {
                 tmp_proc.push_back(process_num_map[i]);
             }
             tmp_proc.push_back(process_num_map[index]);
 
-            for (int i = 0; i < tmp_proc.size(); i++) {
+            for (int i = 0; i < static_cast<int>(tmp_proc.size()); i++) {
                 if (tmp_proc[i].first != rank) {
                     tmp_proc[i].second = tmp_proc[i].second + tmp_proc[i].second;
                 }
@@ -184,7 +185,7 @@ std::vector<double> parallel_bitwise_sort(const std::vector<double>& vect) {
                 return vector<double>();
             } else {
                 process_num_map = vector<pair<int, int> >(1);
-                process_num_map[0] = make_pair(size - 1, vect.size());
+                process_num_map[0] = make_pair(size - 1, static_cast<int>(vect.size()));
             }
         } else {
             MPI_Status status;
@@ -194,7 +195,7 @@ std::vector<double> parallel_bitwise_sort(const std::vector<double>& vect) {
                 process_num_map[index - 1].first, 0, MPI_COMM_WORLD, &status);
 
             result = merge(result, tmp);
-            count = result.size();
+            count = static_cast<int>(result.size());
 
             // cout << "Process " << rank << " merged: "<< flush << endl;
             // copy(result.begin(), result.end(), ostream_iterator<double>(cout, " "));
@@ -204,14 +205,15 @@ std::vector<double> parallel_bitwise_sort(const std::vector<double>& vect) {
 
 
             vector<pair<int, int> > tmp_proc;
-            for (int i = 1; i < process_num_map.size(); i += 2) {
+            for (int i = 1; i < static_cast<int>(process_num_map.size()); i += 2) {
                 tmp_proc.push_back(process_num_map[i]);
             }
-            if ((process_num_map.size() != 1) && (process_num_map.size() % 2)) {
-                tmp_proc.push_back(process_num_map[process_num_map.size() - 1]);
+            if ((static_cast<int>(process_num_map.size()) != 1) &&
+                (static_cast<int>(process_num_map.size()) % 2)) {
+                tmp_proc.push_back(process_num_map[static_cast<int>(process_num_map.size()) - 1]);
             }
 
-            for (int i = 0; i < tmp_proc.size(); i++) {
+            for (int i = 0; i < static_cast<int>(tmp_proc.size()); i++) {
                 if (tmp_proc[i].first != rank) {
                     tmp_proc[i].second = tmp_proc[i].second + tmp_proc[i].second;
                 } else {
@@ -232,19 +234,19 @@ std::vector<double> parallel_bitwise_sort(const std::vector<double>& vect) {
         MPI_Send(&result[0], count, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
     } else {
         MPI_Status status;
-        vector<double> tmp(vect.size());
+        vector<double> tmp(static_cast<int>(vect.size()));
 
         // cout << "Process " << rank << " await for result: "<< flush << endl;
 
-        MPI_Recv(&tmp[0], vect.size(), MPI_DOUBLE, process_num_map[0].first, 0, MPI_COMM_WORLD, &status);
+        MPI_Recv(&tmp[0], static_cast<int>(vect.size()), MPI_DOUBLE, process_num_map[0].first, 0, MPI_COMM_WORLD, &status);
         return tmp;
     }
     return vector<double>();
 }
 
 std::vector<double> merge(std::vector<double> vect_a, std::vector<double> vect_b) {
-    int size1 = vect_a.size();
-    int size2 = vect_b.size();
+    int size1 = static_cast<int>(vect_a.size());
+    int size2 = static_cast<int>(vect_b.size());
     std::vector<double> res((size1 + size2));
 
     int i, j, k;
