@@ -29,8 +29,12 @@ Matrix::Matrix(const Matrix & m) : columns(m.columns), rows(m.rows) {
 }
 
 Matrix Matrix::operator+(const Matrix & b) {
-    if (columns != b.columns || rows != b.rows)
+    if (columns != b.columns || rows != b.rows) {
+        cout << "[ERROR] invalid dimensions" << endl;
+        cout << "columns = " << columns << " b.columns = " << b.columns << endl;
+        cout << "rows = " << rows << " b.rows = " << b.rows << endl;
         throw "Invalid dimension";
+    }
     Matrix res(*this);
     for (int i = 0; i < res.columns * res.rows; i++) {
         res.buf[i] += b.buf[i];
@@ -39,8 +43,12 @@ Matrix Matrix::operator+(const Matrix & b) {
 }
 
 Matrix Matrix::operator-(const Matrix & b) {
-    if (columns != b.columns || rows != b.rows)
+    if (columns != b.columns || rows != b.rows) {
+        cout << "[ERROR] invalid dimensions" << endl;
+        cout << "columns = " << columns << " b.columns = " << b.columns << endl;
+        cout << "rows = " << rows << " b.rows = " << b.rows << endl;
         throw "Invalid dimension";
+    }
     Matrix res(*this);
     for (int i = 0; i < res.columns * res.rows; i++) {
         res.buf[i] -= b.buf[i];
@@ -74,7 +82,11 @@ Matrix getRandomMatrix(int columns, int rows) {
 }
 
 Matrix getMatrixMul(const Matrix & a, const Matrix & b) {
-    if (a.columns != b.rows) throw "Invalid dimensions";
+    if (a.columns != b.rows) {
+        cout << "[ERROR] invalid dimensions" << endl;
+        cout << "a.columns = " << a.columns << " b.rows = " << b.rows << endl;
+        throw "Invalid dimensions";
+    }
     Matrix res(a.rows, b.columns);
     for (int i = 0; i < res.rows; i++)
         for (int j = 0; j < res.columns; j++)
@@ -281,19 +293,21 @@ Matrix getParallelMatrixMul(const Matrix & a, const Matrix & b)
 
 void GetQuarterOf(Matrix & recv, const Matrix & src, int y, int x) {
     x--; y--;
-    int size = src.columns / 2;
-    for (int i = 0; i < size; i++)
-        for (int j = 0; j < size; j++) {
-            recv.buf[i * size + j] = src.buf[size*size*2*y + x*size + i * size * 2 + j];
+    int c2 = src.columns / 2;
+    int r2 = src.rows / 2;
+    for (int i = 0; i < r2; i++)
+        for (int j = 0; j < c2; j++) {
+            recv.buf[i * c2 + j] = src.buf[src.columns*r2*y + x*c2 + i * c2 * 2 + j];
         }
 }
 
 void SetQuarterTo(Matrix & recv, const Matrix & src, int y, int x) {
     x--; y--;
-    int size = src.columns;
-    for (int i = 0; i < size; i++)
-        for (int j = 0; j < size; j++) {
-            recv.buf[size*size * 2 * y + x * size + i * size * 2 + j] = src.buf[i * size + j];
+    int c = src.columns;
+    int r = src.rows;
+    for (int i = 0; i < r; i++)
+        for (int j = 0; j < c; j++) {
+            recv.buf[r*c*2*y + x*c + i*c*2 + j] = src.buf[i*c + j];
         }
 }
 

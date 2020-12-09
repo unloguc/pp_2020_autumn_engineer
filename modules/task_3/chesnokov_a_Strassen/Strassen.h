@@ -31,6 +31,9 @@ void GetQuarterOf(Matrix & recv, const Matrix & src, int y, int x);
 // sets quarter in matrix to coords(x, y) = { 1,2 } ^ 2
 void SetQuarterTo(Matrix & recv, const Matrix & src, int y, int x);
 
+// makes matrix from quarters
 Matrix assembleMatrix(const Matrix & c11, const Matrix & c12, const Matrix & c21, const Matrix & c22);
+
+// rounds matrix to
 
 #endif  // MODULES_TASK_3_CHESNOKOV_A_STRASSEN_STRASSEN_H_

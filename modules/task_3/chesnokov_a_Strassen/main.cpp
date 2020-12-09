@@ -79,18 +79,46 @@ TEST(Task_3, Test_Sequential_Strassen_Works_512x512) {
     }
 }
 
-TEST(Task_3, Test_Parallel_Strassen_Works_2048x2048) {
+TEST(Task_3, Test_Parallel_Strassen_Works_1024x1024) {
     int rank;
-    int s = 2048;
+    int s = 1024;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    Matrix a(1, 1);
-    Matrix b(1, 1);
+    Matrix a;
+    Matrix b;
     Matrix str_res(1, 1);
     double str_start;
     double str_end;
     if (rank == 0) {
         a = getRandomMatrix(s, s);
         b = getRandomMatrix(s, s);
+        str_start = MPI_Wtime();
+        str_res = getMatrixMulStrassen(a, b);
+        str_end = MPI_Wtime();
+    }
+    double par_start = MPI_Wtime();
+    Matrix par_res = getParallelMatrixMul(a, b);
+    double par_end = MPI_Wtime();
+    if (rank == 0) {
+        for (int i = 0; i < str_res.rows; i++)
+            for (int j = 0; j < str_res.columns; j++) {
+                EXPECT_EQ(str_res.buf[i * str_res.columns + j], par_res.buf[i * par_res.columns + j]);
+            }
+        cout << "Strassen seq mult: " << str_end - str_start << endl;
+        cout << "Strassen parallel mult: " << par_end - par_start << endl;
+    }
+}
+
+TEST(Task_3, Test_Parallel_Strassen_Works_With_Not_Square_Matrix_1024x512) {
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    Matrix a;
+    Matrix b;
+    Matrix str_res(1, 1);
+    double str_start;
+    double str_end;
+    if (rank == 0) {
+        a = getRandomMatrix(1024, 512);
+        b = getRandomMatrix(512, 1024);
         str_start = MPI_Wtime();
         str_res = getMatrixMulStrassen(a, b);
         str_end = MPI_Wtime();
