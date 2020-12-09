@@ -79,8 +79,9 @@ TEST(Task_3, Test_Sequential_Strassen_Works_512x512) {
     }
 }
 
-TEST(Task_3, Test_Parallel_Strassen_Works_512x512) {
+TEST(Task_3, Test_Parallel_Strassen_Works_2048x2048) {
     int rank;
+    int s = 2048;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     Matrix a(1, 1);
     Matrix b(1, 1);
@@ -88,8 +89,8 @@ TEST(Task_3, Test_Parallel_Strassen_Works_512x512) {
     double str_start;
     double str_end;
     if (rank == 0) {
-        a = getRandomMatrix(1024 * 2, 1024 * 2);
-        b = getRandomMatrix(1024 * 2, 1024 * 2);
+        a = getRandomMatrix(s, s);
+        b = getRandomMatrix(s, s);
         str_start = MPI_Wtime();
         str_res = getMatrixMulStrassen(a, b);
         str_end = MPI_Wtime();

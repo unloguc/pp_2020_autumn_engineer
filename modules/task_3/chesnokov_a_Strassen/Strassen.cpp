@@ -131,9 +131,14 @@ Matrix getParallelMatrixMul(const Matrix & a, const Matrix & b)
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
+    int lvl;
+    int mult_count;
+    for (mult_count = 7, lvl = 1; mult_count < size; mult_count *= 7, lvl++);
+
+
     // calculating delta
-    int delta = 7 / size;
-    int tail = 7 % size;
+    int delta = mult_count / size;
+    int tail = mult_count % size;
     // num of mults
     int count;
     if (rank < tail)  count = delta + 1;
@@ -141,38 +146,60 @@ Matrix getParallelMatrixMul(const Matrix & a, const Matrix & b)
 
     // Work division
     if (rank == 0) {
-        Matrix A11(a.columns / 2, a.columns / 2);
-        Matrix A12(a.columns / 2, a.columns / 2);
-        Matrix A21(a.columns / 2, a.columns / 2);
-        Matrix A22(a.columns / 2, a.columns / 2);
 
-        Matrix B11(a.columns / 2, a.columns / 2);
-        Matrix B12(a.columns / 2, a.columns / 2);
-        Matrix B21(a.columns / 2, a.columns / 2);
-        Matrix B22(a.columns / 2, a.columns / 2);
+        Matrix ** matrices = new Matrix*[mult_count];
+        for (int i = 0; i < mult_count; i++) {
+            matrices[i] = new Matrix[2];
+        }
 
-        GetQuarterOf(A11, a, 1, 1);
-        GetQuarterOf(A12, a, 1, 2);
-        GetQuarterOf(A21, a, 2, 1);
-        GetQuarterOf(A22, a, 2, 2);
+        matrices[0][0] = a; matrices[0][1] = b;
 
-        GetQuarterOf(B11, b, 1, 1);
-        GetQuarterOf(B12, b, 1, 2);
-        GetQuarterOf(B21, b, 2, 1);
-        GetQuarterOf(B22, b, 2, 2);
+        int mults = 1;
+        int stride = mult_count;
+        for (int i = 0; i < lvl; i++) {
+            for (int j = 0; j < mults; j++) {
+                int s = matrices[j * stride][0].columns / 2;
+                Matrix A11(s, s);
+                Matrix A12(s, s);
+                Matrix A21(s, s);
+                Matrix A22(s, s);
 
-        Matrix matrices[7][2];
+                Matrix B11(s, s);
+                Matrix B12(s, s);
+                Matrix B21(s, s);
+                Matrix B22(s, s);
 
-        // each process will solve ~7^k/rank mults
-        matrices[0][0] = A11 + A22; matrices[0][1] = B11 + B22;
-        matrices[1][0] = A21 + A22; matrices[1][1] = B11;
-        matrices[2][0] = A11;       matrices[2][1] = B12 - B22;
-        matrices[3][0] = A22;       matrices[3][1] = B21 - B11;
-        matrices[4][0] = A11 + A12; matrices[4][1] = B22;
-        matrices[5][0] = A21 - A11; matrices[5][1] = B11 + B12;
-        matrices[6][0] = A12 - A22; matrices[6][1] = B21 + B22;
+                GetQuarterOf(A11, matrices[j*stride][0], 1, 1);
+                GetQuarterOf(A12, matrices[j*stride][0], 1, 2);
+                GetQuarterOf(A21, matrices[j*stride][0], 2, 1);
+                GetQuarterOf(A22, matrices[j*stride][0], 2, 2);
 
-        int m_size = A11.columns;
+                GetQuarterOf(B11, matrices[j*stride][1], 1, 1);
+                GetQuarterOf(B12, matrices[j*stride][1], 1, 2);
+                GetQuarterOf(B21, matrices[j*stride][1], 2, 1);
+                GetQuarterOf(B22, matrices[j*stride][1], 2, 2);
+
+                // each process will solve ~7^k/rank mults
+                matrices[j*stride + 0 * (stride / 7)][0] = A11 + A22;
+                matrices[j*stride + 1 * (stride / 7)][0] = A21 + A22;
+                matrices[j*stride + 2 * (stride / 7)][0] = A11;      
+                matrices[j*stride + 3 * (stride / 7)][0] = A22;      
+                matrices[j*stride + 4 * (stride / 7)][0] = A11 + A12;
+                matrices[j*stride + 5 * (stride / 7)][0] = A21 - A11;
+                matrices[j*stride + 6 * (stride / 7)][0] = A12 - A22;
+
+                matrices[j*stride + 0 * (stride / 7)][1] = B11 + B22;
+                matrices[j*stride + 1 * (stride / 7)][1] = B11;
+                matrices[j*stride + 2 * (stride / 7)][1] = B12 - B22;
+                matrices[j*stride + 3 * (stride / 7)][1] = B21 - B11;
+                matrices[j*stride + 4 * (stride / 7)][1] = B22;
+                matrices[j*stride + 5 * (stride / 7)][1] = B11 + B12;
+                matrices[j*stride + 6 * (stride / 7)][1] = B21 + B22;
+            }
+            mults *= 7; stride /= 7;
+        }
+
+        int m_size = matrices[0][0].columns;
         MPI_Bcast(&m_size, 1, MPI_INT, 0, MPI_COMM_WORLD);
         int proc;
         for (proc = 1; proc < tail; proc++) {
@@ -191,14 +218,12 @@ Matrix getParallelMatrixMul(const Matrix & a, const Matrix & b)
         }
 
         // gathering results mults
-        cout << "gathering results mults" << endl;
-        Matrix P[7];
+        Matrix * P = new Matrix[mult_count];
         // local 0th rank computations
         for (int i = 0; i < count; i++) {
             P[i] = getMatrixMulStrassen(matrices[i][0], matrices[i][1]);
         }
         MPI_Status status;
-
         for (proc = 1; proc < tail; proc++) {
             for (int i = 0; i < delta + 1; i++) {
                 P[proc*(delta + 1) + i] = Matrix(m_size, m_size);
@@ -214,13 +239,21 @@ Matrix getParallelMatrixMul(const Matrix & a, const Matrix & b)
         }
 
         // calculating final result
-        cout << "calc final result" << endl;
-        Matrix C11 = P[0] + P[3] - P[4] + P[6];
-        Matrix C12 = P[2] + P[4];
-        Matrix C21 = P[1] + P[3];
-        Matrix C22 = P[0] - P[1] + P[2] + P[5];
+        mults = mult_count / 7;  stride = 1;
+        for (int i = 0; i < lvl; i++) {
+            for (int j = 0; j < mults; j++) {
+                Matrix C11 = P[j*stride * 7 + 0 * stride] + P[j*stride * 7 + 3 * stride]
+                    - P[j*stride * 7 + 4 * stride] + P[j*stride * 7 + 6 * stride];
+                Matrix C12 = P[j*stride * 7 + 2 * stride] + P[j*stride * 7 + 4 * stride];
+                Matrix C21 = P[j*stride * 7 + 1 * stride] + P[j*stride * 7 + 3 * stride];
+                Matrix C22 = P[j*stride * 7 + 0 * stride] - P[j*stride * 7 + 1 * stride]
+                    + P[j*stride * 7 + 2 * stride] + P[j*stride * 7 + 5 * stride];
+                P[j * stride * 7] = assembleMatrix(C11, C12, C21, C22);
+            }
+            mults /= 7; stride *= 7;
+        }
 
-        return assembleMatrix(C11, C12, C21, C22);
+        return P[0];
 
     } else { // All process with rank != 0 just count received mults
         int m_size;
