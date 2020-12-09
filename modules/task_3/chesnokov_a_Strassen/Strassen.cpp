@@ -5,7 +5,8 @@
 #include <ctime>
 #include <iostream>
 
-using namespace std;
+using std::cout;
+using std::endl;
 
 Matrix::Matrix(int col, int r) : columns(col), rows(r) {
     buf = new double[col * r];
@@ -56,8 +57,8 @@ Matrix Matrix::operator-(const Matrix & b) {
     return res;
 }
 
-Matrix & Matrix::operator=(const Matrix & m)
-{
+Matrix & Matrix::operator=(const Matrix & m) {
+    if (this == &m) return *this;
     if (buf) delete[] buf;
     columns = m.columns;
     rows = m.rows;
@@ -87,7 +88,7 @@ Matrix getMatrixMul(const Matrix & a, const Matrix & b) {
         cout << "a.columns = " << a.columns << " b.rows = " << b.rows << endl;
         throw "Invalid dimensions";
     }
-    Matrix res(a.rows, b.columns);
+    Matrix res(b.columns, a.rows);
     for (int i = 0; i < res.rows; i++)
         for (int j = 0; j < res.columns; j++)
             for (int r = 0; r < a.columns; r++) {
@@ -97,29 +98,37 @@ Matrix getMatrixMul(const Matrix & a, const Matrix & b) {
     return res;
 }
 
-// It's supposed that a and b are square matrix, with equal size = 2^n
 Matrix getMatrixMulStrassen(const Matrix & a, const Matrix & b) {
-    if (a.columns <= 64) return getMatrixMul(a, b);
+    if (a.columns <= 64 || a.rows <= 64) return getMatrixMul(a, b);
 
-    Matrix A11(a.columns / 2, a.columns / 2);
-    Matrix A12(a.columns / 2, a.columns / 2);
-    Matrix A21(a.columns / 2, a.columns / 2);
-    Matrix A22(a.columns / 2, a.columns / 2);
+    // resizing
+    Matrix _a = RoundToSquareMatrix(a, 64);
+    Matrix _b = RoundToSquareMatrix(b, 64);
+    if (_a.columns > _b.columns) {
+        _b = RoundToSpecificSquareMatrix(_b, _a.columns);
+    } else if (_a.columns < _b.columns) {
+        _a = RoundToSpecificSquareMatrix(_a, _b.columns);
+    }
 
-    Matrix B11(a.columns / 2, a.columns / 2);
-    Matrix B12(a.columns / 2, a.columns / 2);
-    Matrix B21(a.columns / 2, a.columns / 2);
-    Matrix B22(a.columns / 2, a.columns / 2);
+    Matrix A11(_a.columns / 2, _a.rows / 2);
+    Matrix A12(_a.columns / 2, _a.rows / 2);
+    Matrix A21(_a.columns / 2, _a.rows / 2);
+    Matrix A22(_a.columns / 2, _a.rows / 2);
 
-    GetQuarterOf(A11, a, 1, 1);
-    GetQuarterOf(A12, a, 1, 2);
-    GetQuarterOf(A21, a, 2, 1);
-    GetQuarterOf(A22, a, 2, 2);
+    Matrix B11(_b.columns / 2, _b.rows / 2);
+    Matrix B12(_b.columns / 2, _b.rows / 2);
+    Matrix B21(_b.columns / 2, _b.rows / 2);
+    Matrix B22(_b.columns / 2, _b.rows / 2);
 
-    GetQuarterOf(B11, b, 1, 1);
-    GetQuarterOf(B12, b, 1, 2);
-    GetQuarterOf(B21, b, 2, 1);
-    GetQuarterOf(B22, b, 2, 2);
+    GetQuarterOf(&A11, _a, 1, 1);
+    GetQuarterOf(&A12, _a, 1, 2);
+    GetQuarterOf(&A21, _a, 2, 1);
+    GetQuarterOf(&A22, _a, 2, 2);
+
+    GetQuarterOf(&B11, _b, 1, 1);
+    GetQuarterOf(&B12, _b, 1, 2);
+    GetQuarterOf(&B21, _b, 2, 1);
+    GetQuarterOf(&B22, _b, 2, 2);
 
     Matrix P1 = getMatrixMulStrassen(A11 + A22, B11 + B22);
     Matrix P2 = getMatrixMulStrassen(A21 + A22, B11);
@@ -134,18 +143,26 @@ Matrix getMatrixMulStrassen(const Matrix & a, const Matrix & b) {
     Matrix C21 = P2 + P4;
     Matrix C22 = P1 - P2 + P3 + P6;
 
-    return assembleMatrix(C11, C12, C21, C22);
+    return ShrinkMatrix(assembleMatrix(C11, C12, C21, C22), a.rows, b.columns);
 }
 
-Matrix getParallelMatrixMul(const Matrix & a, const Matrix & b)
-{
+Matrix getParallelMatrixMul(const Matrix & a, const Matrix & b) {
     int size, rank;
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
+    // Resizing
+    Matrix _a = RoundToSquareMatrix(a, 64);
+    Matrix _b = RoundToSquareMatrix(b, 64);
+    if (_a.columns > _b.columns) {
+        _b = RoundToSpecificSquareMatrix(_b, _a.columns);
+    } else if (_a.columns < _b.columns) {
+        _a = RoundToSpecificSquareMatrix(_a, _b.columns);
+    }
+
     int lvl;
     int mult_count;
-    for (mult_count = 7, lvl = 1; mult_count < size; mult_count *= 7, lvl++);
+    for (mult_count = 7, lvl = 1; mult_count < size; mult_count *= 7, lvl++) {}
 
 
     // calculating delta
@@ -153,49 +170,53 @@ Matrix getParallelMatrixMul(const Matrix & a, const Matrix & b)
     int tail = mult_count % size;
     // num of mults
     int count;
-    if (rank < tail)  count = delta + 1;
-    else count = delta;
+    if (rank < tail) {
+        count = delta + 1;
+    } else {
+        count = delta;
+    }
 
     // Work division
     if (rank == 0) {
-
         Matrix ** matrices = new Matrix*[mult_count];
         for (int i = 0; i < mult_count; i++) {
             matrices[i] = new Matrix[2];
         }
 
-        matrices[0][0] = a; matrices[0][1] = b;
+        matrices[0][0] = _a; matrices[0][1] = _b;
 
         int mults = 1;
         int stride = mult_count;
         for (int i = 0; i < lvl; i++) {
             for (int j = 0; j < mults; j++) {
-                int s = matrices[j * stride][0].columns / 2;
-                Matrix A11(s, s);
-                Matrix A12(s, s);
-                Matrix A21(s, s);
-                Matrix A22(s, s);
+                int c = matrices[j * stride][0].columns / 2;
+                int r = matrices[j * stride][0].rows / 2;
+                Matrix A11(c, r);
+                Matrix A12(c, r);
+                Matrix A21(c, r);
+                Matrix A22(c, r);
 
-                Matrix B11(s, s);
-                Matrix B12(s, s);
-                Matrix B21(s, s);
-                Matrix B22(s, s);
+                c = matrices[j * stride][1].columns / 2;
+                r = matrices[j * stride][1].rows / 2;
+                Matrix B11(c, r);
+                Matrix B12(c, r);
+                Matrix B21(c, r);
+                Matrix B22(c, r);
 
-                GetQuarterOf(A11, matrices[j*stride][0], 1, 1);
-                GetQuarterOf(A12, matrices[j*stride][0], 1, 2);
-                GetQuarterOf(A21, matrices[j*stride][0], 2, 1);
-                GetQuarterOf(A22, matrices[j*stride][0], 2, 2);
+                GetQuarterOf(&A11, matrices[j*stride][0], 1, 1);
+                GetQuarterOf(&A12, matrices[j*stride][0], 1, 2);
+                GetQuarterOf(&A21, matrices[j*stride][0], 2, 1);
+                GetQuarterOf(&A22, matrices[j*stride][0], 2, 2);
 
-                GetQuarterOf(B11, matrices[j*stride][1], 1, 1);
-                GetQuarterOf(B12, matrices[j*stride][1], 1, 2);
-                GetQuarterOf(B21, matrices[j*stride][1], 2, 1);
-                GetQuarterOf(B22, matrices[j*stride][1], 2, 2);
+                GetQuarterOf(&B11, matrices[j*stride][1], 1, 1);
+                GetQuarterOf(&B12, matrices[j*stride][1], 1, 2);
+                GetQuarterOf(&B21, matrices[j*stride][1], 2, 1);
+                GetQuarterOf(&B22, matrices[j*stride][1], 2, 2);
 
-                // each process will solve ~7^k/rank mults
                 matrices[j*stride + 0 * (stride / 7)][0] = A11 + A22;
                 matrices[j*stride + 1 * (stride / 7)][0] = A21 + A22;
-                matrices[j*stride + 2 * (stride / 7)][0] = A11;      
-                matrices[j*stride + 3 * (stride / 7)][0] = A22;      
+                matrices[j*stride + 2 * (stride / 7)][0] = A11;
+                matrices[j*stride + 3 * (stride / 7)][0] = A22;
                 matrices[j*stride + 4 * (stride / 7)][0] = A11 + A12;
                 matrices[j*stride + 5 * (stride / 7)][0] = A21 - A11;
                 matrices[j*stride + 6 * (stride / 7)][0] = A12 - A22;
@@ -265,9 +286,9 @@ Matrix getParallelMatrixMul(const Matrix & a, const Matrix & b)
             mults /= 7; stride *= 7;
         }
 
-        return P[0];
+        return ShrinkMatrix(P[0], a.rows, b.columns);
 
-    } else { // All process with rank != 0 just count received mults
+    } else {  // All process with rank != 0 just count received mults
         int m_size;
         MPI_Bcast(&m_size, 1, MPI_INT, 0, MPI_COMM_WORLD);
         // local sub matrices
@@ -280,7 +301,6 @@ Matrix getParallelMatrixMul(const Matrix & a, const Matrix & b)
             l_b[i] = Matrix(m_size, m_size);
             MPI_Recv(l_b[i].buf, m_size * m_size, MPI_DOUBLE, 0, 2, MPI_COMM_WORLD, &status);
         }
-        
         Matrix * mults = new Matrix[count];
         for (int i = 0; i < count; i++) {
             mults[i] = getMatrixMulStrassen(l_a[i], l_b[i]);
@@ -291,31 +311,79 @@ Matrix getParallelMatrixMul(const Matrix & a, const Matrix & b)
     }
 }
 
-void GetQuarterOf(Matrix & recv, const Matrix & src, int y, int x) {
+void GetQuarterOf(Matrix * recv, const Matrix & src, int y, int x) {
     x--; y--;
     int c2 = src.columns / 2;
     int r2 = src.rows / 2;
     for (int i = 0; i < r2; i++)
         for (int j = 0; j < c2; j++) {
-            recv.buf[i * c2 + j] = src.buf[src.columns*r2*y + x*c2 + i * c2 * 2 + j];
+            recv->buf[i * c2 + j] = src.buf[src.columns*r2*y + x*c2 + i * c2 * 2 + j];
         }
 }
 
-void SetQuarterTo(Matrix & recv, const Matrix & src, int y, int x) {
+void SetQuarterTo(Matrix * recv, const Matrix & src, int y, int x) {
     x--; y--;
     int c = src.columns;
     int r = src.rows;
     for (int i = 0; i < r; i++)
         for (int j = 0; j < c; j++) {
-            recv.buf[r*c*2*y + x*c + i*c*2 + j] = src.buf[i*c + j];
+            recv->buf[r*c*2*y + x*c + i*c*2 + j] = src.buf[i*c + j];
         }
 }
 
 Matrix assembleMatrix(const Matrix & c11, const Matrix & c12, const Matrix & c21, const Matrix & c22) {
-    Matrix res(c11.rows * 2, c11.columns * 2);
-    SetQuarterTo(res, c11, 1, 1);
-    SetQuarterTo(res, c12, 1, 2);
-    SetQuarterTo(res, c21, 2, 1);
-    SetQuarterTo(res, c22, 2, 2);
+    Matrix res(c11.rows + c21.rows, c11.columns + c12.columns);
+    SetQuarterTo(&res, c11, 1, 1);
+    SetQuarterTo(&res, c12, 1, 2);
+    SetQuarterTo(&res, c21, 2, 1);
+    SetQuarterTo(&res, c22, 2, 2);
     return res;
+}
+
+Matrix RoundToSquareMatrix(const Matrix & mat, int m) {
+    if (mat.columns % m == 0 && mat.rows % m == 0 && mat.rows == mat.columns) return mat;
+    int max;
+    if (mat.columns % m == 0 && mat.rows % m == 0) {
+        max = mat.columns > mat.rows ? mat.columns : mat.rows;
+    } else {
+        int new_c, new_r;
+        new_c = (mat.columns / m + 1) * m;
+        new_r = (mat.rows / m + 1) * m;
+        if (new_c > new_r) {
+            max = new_c;
+        } else {
+            max = new_r;
+        }
+    }
+
+    Matrix result(max, max);
+    for (int i = 0; i < mat.rows; i++) {
+        for (int j = 0; j < mat.columns; j++) {
+            result.buf[i*max + j] = mat.buf[i*mat.columns + j];
+        }
+    }
+    return result;
+}
+
+Matrix RoundToSpecificSquareMatrix(const Matrix & mat, int size) {
+    Matrix result(size, size);
+    for (int i = 0; i < mat.rows; i++) {
+        for (int j = 0; j < mat.columns; j++) {
+            result.buf[i*size + j] = mat.buf[i*mat.columns + j];
+        }
+    }
+    return result;
+}
+
+Matrix ShrinkMatrix(const Matrix & mat, int c, int r) {
+    if (mat.columns == c && mat.rows == r) {
+        return mat;
+    }
+    Matrix result(c, r);
+    for (int i = 0; i < c; i++) {
+        for (int j = 0; j < r; j++) {
+            result.buf[i*r + j] = mat.buf[i*mat.rows + j];
+        }
+    }
+    return result;
 }

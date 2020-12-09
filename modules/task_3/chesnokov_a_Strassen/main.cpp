@@ -3,7 +3,8 @@
 #include <gtest/gtest.h>
 #include "./Strassen.h"
 
-using namespace std;
+using std::cout;
+using std::endl;
 
 TEST(Task_3, Test_Sequential_Mul_Works) {
     double data_a[] = { 1, 2, 1,  0, 3, 2 };
@@ -135,6 +136,92 @@ TEST(Task_3, Test_Parallel_Strassen_Works_With_Not_Square_Matrix_1024x512) {
         cout << "Strassen parallel mult: " << par_end - par_start << endl;
     }
 }
+
+TEST(Task_3, Test_Parallel_Strassen_Works_With_Any_Square_Dimension_789x789) {
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    Matrix a;
+    Matrix b;
+    Matrix str_res(1, 1);
+    double str_start;
+    double str_end;
+    if (rank == 0) {
+        a = getRandomMatrix(789, 789);
+        b = getRandomMatrix(789, 789);
+        str_start = MPI_Wtime();
+        str_res = getMatrixMulStrassen(a, b);
+        str_end = MPI_Wtime();
+    }
+    double par_start = MPI_Wtime();
+    Matrix par_res = getParallelMatrixMul(a, b);
+    double par_end = MPI_Wtime();
+    if (rank == 0) {
+        for (int i = 0; i < str_res.rows; i++)
+            for (int j = 0; j < str_res.columns; j++) {
+                EXPECT_EQ(str_res.buf[i * str_res.columns + j], par_res.buf[i * par_res.columns + j]);
+            }
+        cout << "Strassen seq mult: " << str_end - str_start << endl;
+        cout << "Strassen parallel mult: " << par_end - par_start << endl;
+    }
+}
+
+TEST(Task_3, Test_Parallel_Strassen_Works_With_Any_NOT_Square_Dimension_789x567_922x789) {
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    Matrix a;
+    Matrix b;
+    Matrix str_res(1, 1);
+    double str_start;
+    double str_end;
+    if (rank == 0) {
+        a = getRandomMatrix(789, 567);
+        b = getRandomMatrix(922, 789);
+        str_start = MPI_Wtime();
+        str_res = getMatrixMulStrassen(a, b);
+        str_end = MPI_Wtime();
+    }
+    double par_start = MPI_Wtime();
+    Matrix par_res = getParallelMatrixMul(a, b);
+    double par_end = MPI_Wtime();
+    if (rank == 0) {
+        for (int i = 0; i < str_res.rows; i++)
+            for (int j = 0; j < str_res.columns; j++) {
+                EXPECT_EQ(str_res.buf[i * str_res.columns + j], par_res.buf[i * par_res.columns + j]);
+            }
+        cout << "Strassen seq mult: " << str_end - str_start << endl;
+        cout << "Strassen parallel mult: " << par_end - par_start << endl;
+    }
+}
+/*
+TEST(Task_3, Test_Time_With_Big_Matrix_2048x2048) {
+    int rank;
+    int s = 2048;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    Matrix a;
+    Matrix b;
+    Matrix str_res(1, 1);
+    double str_start;
+    double str_end;
+    if (rank == 0) {
+        a = getRandomMatrix(s, s);
+        b = getRandomMatrix(s, s);
+        str_start = MPI_Wtime();
+        str_res = getMatrixMulStrassen(a, b);
+        str_end = MPI_Wtime();
+    }
+    double par_start = MPI_Wtime();
+    Matrix par_res = getParallelMatrixMul(a, b);
+    double par_end = MPI_Wtime();
+    if (rank == 0) {
+        for (int i = 0; i < str_res.rows; i++)
+            for (int j = 0; j < str_res.columns; j++) {
+                EXPECT_EQ(str_res.buf[i * str_res.columns + j], par_res.buf[i * par_res.columns + j]);
+            }
+        cout << "Strassen seq mult: " << str_end - str_start << endl;
+        cout << "Strassen parallel mult: " << par_end - par_start << endl;
+    }
+}
+*/
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     MPI_Init(&argc, &argv);

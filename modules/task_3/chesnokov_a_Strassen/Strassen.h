@@ -3,7 +3,7 @@
 #define MODULES_TASK_3_CHESNOKOV_A_STRASSEN_STRASSEN_H_
 
 class Matrix {
-public:
+ public:
     double* buf;
     int columns, rows;
 
@@ -27,13 +27,17 @@ Matrix getParallelMatrixMul(const Matrix& a, const Matrix& b);
 // Helper functions------------------------------------------
 
 // returns quarter sub matrix with coords (x,y) = {1,2}^2
-void GetQuarterOf(Matrix & recv, const Matrix & src, int y, int x);
+void GetQuarterOf(Matrix * recv, const Matrix & src, int y, int x);
 // sets quarter in matrix to coords(x, y) = { 1,2 } ^ 2
-void SetQuarterTo(Matrix & recv, const Matrix & src, int y, int x);
+void SetQuarterTo(Matrix * recv, const Matrix & src, int y, int x);
 
 // makes matrix from quarters
 Matrix assembleMatrix(const Matrix & c11, const Matrix & c12, const Matrix & c21, const Matrix & c22);
 
-// rounds matrix to
+// rounds matrix dimensions to be equal and multiple of m with extra 0-filled rows and columns
+Matrix RoundToSquareMatrix(const Matrix & mat, int m);
+Matrix RoundToSpecificSquareMatrix(const Matrix & mat, int size);
+// shrinks matrix to upper left c-columns and r-rows
+Matrix ShrinkMatrix(const Matrix & mat, int c, int r);
 
 #endif  // MODULES_TASK_3_CHESNOKOV_A_STRASSEN_STRASSEN_H_
