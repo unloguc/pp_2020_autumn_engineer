@@ -3,7 +3,7 @@
 #include <mpi.h>
 #include <random>
 #include <vector>
-#include <limits>
+#include <climits>
 #include <ctime>
 #include <algorithm>
 #include <utility>
@@ -24,7 +24,7 @@ void S(std::vector<int> procs_up, std::vector<int> procs_down) {
     std::vector<int> procs_down_odd;
     std::vector<int> procs_down_even;
 
-    for (int i = 0; i < procs_up.size(); ++i) {
+    for (size_t i = 0; i < procs_up.size(); ++i) {
         if (i % 2) {
             procs_up_even.push_back(procs_up[i]);
         } else {
@@ -32,7 +32,7 @@ void S(std::vector<int> procs_up, std::vector<int> procs_down) {
         }
     }
 
-    for (int i = 0; i < procs_down.size(); ++i) {
+    for (size_t i = 0; i < procs_down.size(); ++i) {
         if (i % 2) {
             procs_down_even.push_back(procs_down[i]);
         } else {
@@ -49,7 +49,7 @@ void S(std::vector<int> procs_up, std::vector<int> procs_down) {
         procs_down.begin(), procs_down.end(),
         result.begin());
 
-    for (int i = 1; i + 1 < procs_up.size() + procs_down.size(); i += 2) {
+    for (size_t i = 1; i + 1 < procs_up.size() + procs_down.size(); i += 2) {
         comps.push_back(std::pair<int, int>{ result[i], result[i + 1]});
     }
 }
@@ -83,8 +83,8 @@ std::vector<int> getVectorWithRandomNumbers(int size, int limit) {
 }
 
 void getSequentialOperations(std::vector<int>* vec) {
-    for (int step = (*vec).size() / 2; step > 0; step /= 2)
-        for (int i = step; i < (*vec).size(); i++)
+    for (size_t step = (*vec).size() / 2; step > 0; step /= 2)
+        for (size_t i = step; i < (*vec).size(); i++)
             for (int j = i - step; j >= 0 && (*vec)[j] > (*vec)[j + step]; j -= step) {
                 int tmp = (*vec)[j];
                 (*vec)[j] = (*vec)[j + step];
