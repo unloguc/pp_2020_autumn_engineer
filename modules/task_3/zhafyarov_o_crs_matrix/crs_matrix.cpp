@@ -7,7 +7,7 @@
 #include <ctime>
 #include "../../../modules/task_3/zhafyarov_o_crs_matrix/crs_matrix.h"
 
-int process_number = 0;
+int process_number;
 
 void InitializeMatrix(int Size, int No_empty, MatrixCRS* Matrix) {
   Matrix->Size = Size;
