@@ -18,13 +18,13 @@ std::vector<int> getVector(int size) {
 int getSequentialOperations(std::vector<int> vector, std::string operation) {
     const int  size = vector.size();
     int reduction_element = 0;
-    if (operation == "-") {
-        for (int i = 0; i < size; i++) {
-            reduction_element -= vector[i];
-        }
-    } else if (operation == "+") {
+    if (operation == "+") {
         for (int i = 0; i < size; i++) {
             reduction_element += vector[i];
+        }
+    } else if (operation == "-") {
+        for (int i = 0; i < size; i++) {
+            reduction_element -= vector[i];
         }
     } else if (operation == "min") {
         reduction_element = vector[0];
