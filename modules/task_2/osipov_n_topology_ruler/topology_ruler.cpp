@@ -58,8 +58,7 @@ int getParallelOperations(std::vector<int> global_vector,
     if (rank == 0) {
         local_vector = std::vector<int>(global_vector.begin(),
             global_vector.begin() + delta);
-    }
-    else {
+    } else {
         MPI_Status status;
         MPI_Recv(&local_vector[0], delta, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
     }
