@@ -1,11 +1,11 @@
 // Copyright 2020 Osipov Nikolay
+#include "../../../modules/task_2/osipov_n_topology_ruler/topology_ruler.h"
 #include <mpi.h>
 #include <vector>
 #include <string>
 #include <random>
 #include <ctime>
 #include <algorithm>
-#include "../../../modules/task_2/osipov_n_topology_ruler/topology_ruler.h"
 
 
 std::vector<int> getVector(int size) {
