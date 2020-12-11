@@ -11,7 +11,7 @@ std::vector<int> getVector(int size) {
     std::mt19937 gen;
     gen.seed(static_cast<unsigned int>(time(0)));
     std::vector<int> vector(size);
-    for (int i = 0; i < size; i++) { vector[i] = gen() % 30; }
+    for (int i = 0; i < size; i++) { vector[i] = gen() % 120; }
     return vector;
 }
 
