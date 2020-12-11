@@ -71,8 +71,6 @@ MPI_Comm createTopologyStar(MPI_Comm comm, std::vector<int> MasNodes) {
     }
     MPI_Comm StarComm;
     MPI_Graph_create(comm, size, index, edges, reorder, &StarComm);
-	delete[]index;
-	delete[]edges;
     return StarComm;
 }
 

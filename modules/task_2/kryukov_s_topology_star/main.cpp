@@ -85,8 +85,6 @@ TEST(topology_star, message_exchange) {
             ASSERT_EQ(sendMessage[i], result_message[i]);
         }
     }
-	delete[]sendMessage;
-	delete[]result_message;
 }
 
 TEST(topology_star, message_exchange1) {
@@ -113,8 +111,6 @@ TEST(topology_star, message_exchange1) {
             ASSERT_EQ(sendMessage[i], result_message[i]);
         }
     }
-	delete[]sendMessage;
-	delete[]result_message;
 }
 
 int main(int argc, char** argv) {
