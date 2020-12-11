@@ -5,7 +5,6 @@
 #include <string>
 #include <random>
 #include <ctime>
-#include <algorithm>
 
 
 std::vector<int> getVector(int size) {
