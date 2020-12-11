@@ -11,7 +11,7 @@ std::vector<int> getVector(int size) {
     std::mt19937 gen;
     gen.seed(static_cast<unsigned int>(time(0)));
     std::vector<int> vector(size);
-    for (int i = 0; i < size; i++) { vector[i] = gen() % 100; }
+    for (int i = 0; i < size; i++) { vector[i] = gen() % 30; }
     return vector;
 }
 
@@ -30,11 +30,6 @@ int getSequentialOperations(std::vector<int> vector, std::string operation) {
         reduction_element = vector[0];
         for (int  i = 1; i < size; i++) {
             reduction_element = std::min(reduction_element, vector[i]);
-        }
-    } else if (operation == "max") {
-        reduction_element = vector[0];
-        for (int i = 1; i < size; i++) {
-            reduction_element = std::max(reduction_element, vector[i]);
         }
     }
     return reduction_element;
@@ -69,7 +64,6 @@ int getParallelOperations(std::vector<int> global_vector,
     MPI_Op op;
     if (operation == "-" || operation == "+") { op = MPI_SUM; }
     if (operation == "min") { op = MPI_MIN; }
-    if (operation == "max") { op = MPI_MAX; }
     MPI_Reduce(&local_sum, &global_sum, 1, MPI_INT, op, 0, MPI_COMM_WORLD);
     return global_sum;
 }

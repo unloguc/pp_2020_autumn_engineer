@@ -8,7 +8,7 @@ TEST(MPILinearTopology, Test_Sum) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     std::vector<int> global_vector;
-    const int count_size_vector = 100;
+    const int count_size_vector = 150;
 
     if (rank == 0) {
         global_vector = getVector(count_size_vector);
@@ -26,7 +26,7 @@ TEST(MPILinearTopology, Test_Difference) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     std::vector<int> global_vector;
-    const int count_size_vector = 100;
+    const int count_size_vector = 150;
 
     if (rank == 0) {
         global_vector = getVector(count_size_vector);
@@ -40,30 +40,11 @@ TEST(MPILinearTopology, Test_Difference) {
     }
 }
 
-TEST(MPILinearTopology, Test_Max) {
-    int rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    std::vector<int> global_vector;
-    const int count_size_vector = 50;
-
-    if (rank == 0) {
-        global_vector = getVector(count_size_vector);
-    }
-
-    int parallel_max;
-    parallel_max = getParallelOperations(global_vector, count_size_vector, "max");
-
-    if (rank == 0) {
-        int sequential_max = getSequentialOperations(global_vector, "max");
-        ASSERT_EQ(sequential_max, parallel_max);
-    }
-}
-
 TEST(MPILinearTopology, Test_Min) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     std::vector<int> global_vector;
-    const int count_size_vector = 50;
+    const int count_size_vector = 150;
 
     if (rank == 0) {
         global_vector = getVector(count_size_vector);
