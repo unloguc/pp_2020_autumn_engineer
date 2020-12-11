@@ -5,6 +5,7 @@
 #include <string>
 #include <random>
 #include <ctime>
+#include <algorithm>
 
 
 std::vector<int> getVector(int size) {
@@ -31,6 +32,11 @@ int getSequentialOperations(std::vector<int> vector, std::string operation) {
         for (int  i = 1; i < size; i++) {
             reduction_element = std::min(reduction_element, vector[i]);
         }
+    } else if (operation == "max") {
+        reduction_element = vector[0];
+        for (int i = 1; i < size; i++) {
+            reduction_element = std::max(reduction_element, vector[i]);
+        }
     }
     return reduction_element;
 }
@@ -48,7 +54,6 @@ int getParallelOperations(std::vector<int> global_vector,
                 MPI_INT, proc, 0, MPI_COMM_WORLD);
         }
     }
-
     std::vector<int> local_vector(delta);
     if (rank == 0) {
         local_vector = std::vector<int>(global_vector.begin(),
@@ -64,6 +69,7 @@ int getParallelOperations(std::vector<int> global_vector,
     MPI_Op op;
     if (operation == "-" || operation == "+") { op = MPI_SUM; }
     if (operation == "min") { op = MPI_MIN; }
+    if (operation == "max") { op = MPI_MAX; }
     MPI_Reduce(&local_sum, &global_sum, 1, MPI_INT, op, 0, MPI_COMM_WORLD);
     return global_sum;
 }
