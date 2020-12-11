@@ -3,13 +3,12 @@
 #include <gtest/gtest.h>
 #include <vector>
 #include "../../../modules/task_2/osipov_n_topology_ruler/topology_ruler.h"
-#include <iostream>
 
 TEST(MPILinearTopology, Test_Sum) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     std::vector<int> global_vector;
-    const int count_size_vector = 150;
+    const int count_size_vector = 120;
 
     if (rank == 0) {
         global_vector = getVector(count_size_vector);
@@ -27,7 +26,7 @@ TEST(MPILinearTopology, Test_Difference) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     std::vector<int> global_vector;
-    const int count_size_vector = 150;
+    const int count_size_vector = 120;
 
     if (rank == 0) {
         global_vector = getVector(count_size_vector);
@@ -45,7 +44,7 @@ TEST(MPILinearTopology, Test_Max) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     std::vector<int> global_vector;
-    const int count_size_vector = 150;
+    const int count_size_vector = 120;
 
     if (rank == 0) {
         global_vector = getVector(count_size_vector);
@@ -64,7 +63,7 @@ TEST(MPILinearTopology, Test_Min) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     std::vector<int> global_vector;
-    const int count_size_vector = 150;
+    const int count_size_vector = 120;
 
     if (rank == 0) {
         global_vector = getVector(count_size_vector);

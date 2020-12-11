@@ -65,8 +65,8 @@ int getParallelOperations(std::vector<int> global_vector,
         MPI_Recv(&local_vector[0], delta, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
     }
 
-    int local_sum = getSequentialOperations(local_vector, operation);
     int global_sum = 0;
+    int local_sum = getSequentialOperations(local_vector, operation);
     MPI_Op op;
     if (operation == "-" || operation == "+") { op = MPI_SUM; }
     if (operation == "min") { op = MPI_MIN; }
