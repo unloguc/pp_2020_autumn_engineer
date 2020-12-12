@@ -21,7 +21,7 @@ TEST(Parallel_Operations_MPI, Can_Make_Parallel_Calculating) {
   ASSERT_NO_THROW(MooreParallel(&Graph, 0));
 }
 
-TEST(Parallel_Operations_MPI, Is_Sequential_Eq_Parallel) {
+TEST(Parallel_Operations_MPI, Is_Sequential_EQ_Parallel) {
   int size = 10;
   std::vector<int> Graph;
   std::vector<int> sequentialAns;
