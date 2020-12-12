@@ -1,15 +1,9 @@
-<<<<<<< HEAD
-[![Build Status](https://travis-ci.com/learning-process/parallel_programming_course.svg?branch=master)](https://travis-ci.com/learning-process/parallel_programming_course)
-[![Build status](https://ci.appveyor.com/api/projects/status/t46nd9gyt7iirdy8/branch/master?svg=true)](https://ci.appveyor.com/project/allnes/parallel-programming-course/branch/master)
-![Build application](https://github.com/learning-process/parallel_programming_course/workflows/Build%20application/badge.svg?branch=master)
-=======
 [![Build Status](https://travis-ci.com/allnes/pp_2020_autumn_engineer.svg?branch=master)](https://travis-ci.com/allnes/pp_2020_autumn_engineer)
 ![Build application](https://github.com/allnes/pp_2020_autumn_engineer/workflows/Build%20application/badge.svg?branch=master)
 [![deepcode](https://www.deepcode.ai/api/gh/badge?key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybTEiOiJnaCIsIm93bmVyMSI6ImFsbG5lcyIsInJlcG8xIjoicHBfMjAyMF9hdXR1bW5fZW5naW5lZXIiLCJpbmNsdWRlTGludCI6ZmFsc2UsImF1dGhvcklkIjoyNDg0MiwiaWF0IjoxNjA1NDUzODg3fQ.LToknIn-NbjpGKx4m-fNA6OBhKvxFipsY7X7AK5j8UM)](https://www.deepcode.ai/app/gh/allnes/pp_2020_autumn_engineer/_/dashboard?utm_content=gh%2Fallnes%2Fpp_2020_autumn_engineer)
 
 ### Upd 09.10.2020: Репозиторий до 18 октября находится в тестовом режиме - могут быть внесены новые изменения и проверки!!!
 ### Upd 19.10.2020: Репозиторий на неопределенное время находится в тестовом режиме - могут быть внесены новые изменения и проверки!!! Следите за обновлениями.
->>>>>>> e7e5bab927d1795c61585aa65115bf23e97e4ab3
 
 # Parallel programming course
 
