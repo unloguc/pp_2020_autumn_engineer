@@ -13,8 +13,6 @@ int comm_size = 1;
 int rows = 1;
 int columns = 1;
 
-const int starts[2] = {0, 0};
-
 int checkProc(const int size) {
   int pow = 1;
   for (int i = 0; i <= 10; ++i) {
@@ -246,57 +244,6 @@ void Strassen_Multiplication(const double* A, const double* B, double* C,
   std::vector<double> local_B(no_of_elements);
   std::vector<double> local_C(no_of_elements);
 
-  const int end_pos[2] = {size, size};
-  const int sub_size[2] = {rows, columns};
-
-  MPI_Datatype mysubarray, subarrtype;
-  MPI_Type_create_subarray(2, end_pos, sub_size, starts, MPI_ORDER_C,
-                           MPI_DOUBLE, &mysubarray);
-  MPI_Type_create_resized(
-      mysubarray, 0, (size / 2) * (size / 2) * sizeof(double), &subarrtype);
-  MPI_Type_commit(&subarrtype);
-
-  for (int i = 0; i < thread_size; i += 2) {
-    for (int j = 0; j < thread_size; j += 2) {
-      if (comm_rank != (thread_size)*i + j) continue;
-
-      MPI_Request req;
-      MPI_Isend(A + size * i * rows + j * columns, 1, subarrtype, comm_rank, 0,
-                MPI_COMM_WORLD, &req);
-      MPI_Isend(B + size * i * rows + j * columns, 1, subarrtype, comm_rank, 0,
-                MPI_COMM_WORLD, &req);
-
-      MPI_Isend(A + size * i * rows + (j + 1) * columns, 1, subarrtype,
-                comm_rank + 1, 1, MPI_COMM_WORLD, &req);
-      MPI_Isend(B + size * i * rows + (j + 1) * columns, 1, subarrtype,
-                comm_rank + 1, 1, MPI_COMM_WORLD, &req);
-
-      MPI_Isend(A + size * (i + 1) * rows + j * columns, 1, subarrtype,
-                comm_rank + thread_size, 2, MPI_COMM_WORLD, &req);
-      MPI_Isend(B + size * (i + 1) * rows + j * columns, 1, subarrtype,
-                comm_rank + thread_size, 2, MPI_COMM_WORLD, &req);
-
-      MPI_Isend(A + size * (i + 1) * rows + (j + 1) * columns, 1, subarrtype,
-                comm_rank + thread_size + 1, 3, MPI_COMM_WORLD, &req);
-      MPI_Isend(B + size * (i + 1) * rows + (j + 1) * columns, 1, subarrtype,
-                comm_rank + thread_size + 1, 3, MPI_COMM_WORLD, &req);
-    }
-  }
-
-  for (int i = 0; i < thread_size; i += 1) {
-    for (int j = 0; j < thread_size; j += 1) {
-      if (comm_rank != (thread_size)*i + j) continue;
-      MPI_Status stat;
-      MPI_Recv(&local_A.at(0), no_of_elements, MPI_DOUBLE, MPI_ANY_SOURCE,
-               MPI_ANY_TAG, MPI_COMM_WORLD, &stat);
-      MPI_Recv(&local_B.at(0), no_of_elements, MPI_DOUBLE, MPI_ANY_SOURCE,
-               MPI_ANY_TAG, MPI_COMM_WORLD, &stat);
-    }
-  }
-
-  MPI_Type_free(&subarrtype);
-  MPI_Barrier(MPI_COMM_WORLD);
-
   std::vector<double> T1(no_of_elements);
   std::vector<double> T2(no_of_elements);
   std::vector<double> T3(no_of_elements);
@@ -328,26 +275,16 @@ void Strassen_Multiplication(const double* A, const double* B, double* C,
       std::vector<double> local_A12(no_of_elements);
       std::vector<double> local_B21(no_of_elements);
 
-      MPI_Request req;
-      MPI_Isend(&local_B.at(0), no_of_elements, MPI_DOUBLE,
-                comm_rank + thread_size + 1, 600, MPI_COMM_WORLD, &req);
-      MPI_Isend(&local_B.at(0), no_of_elements, MPI_DOUBLE,
-                comm_rank + thread_size, 400, MPI_COMM_WORLD, &req);
-      MPI_Isend(&local_A.at(0), no_of_elements, MPI_DOUBLE,
-                comm_rank + thread_size + 1, 500, MPI_COMM_WORLD, &req);
-      MPI_Isend(&local_A.at(0), no_of_elements, MPI_DOUBLE, comm_rank + 1, 100,
-                MPI_COMM_WORLD, &req);
+      CutSybMatr(A, &local_A, size, rows);
+      CutSybMatr(B, &local_B, size, rows);
 
-      MPI_Status stat;
-      MPI_Recv(&local_B22.at(0), no_of_elements, MPI_DOUBLE,
-               comm_rank + thread_size + 1, 200, MPI_COMM_WORLD, &stat);
+      CutSybMatr(A + size / 2, &local_A12, size, rows);
 
-      MPI_Recv(&local_A22.at(0), no_of_elements, MPI_DOUBLE,
-               comm_rank + thread_size + 1, 100, MPI_COMM_WORLD, &stat);
-      MPI_Recv(&local_B21.at(0), no_of_elements, MPI_DOUBLE,
-               comm_rank + thread_size, 200, MPI_COMM_WORLD, &stat);
-      MPI_Recv(&local_A12.at(0), no_of_elements, MPI_DOUBLE, comm_rank + 1, 100,
-               MPI_COMM_WORLD, &stat);
+      CutSybMatr(B + size * size / 2, &local_B21, size, rows);
+
+      CutSybMatr(A + size * size / 2 + size / 2, &local_A22, size, rows);
+      CutSybMatr(B + size * size / 2 + size / 2, &local_B22, size, rows);
+
       for (int i = 0; i < no_of_elements; i++) {
         T1.at(i) = local_A.at(i) + local_A22.at(i);
         T2.at(i) = local_B.at(i) + local_B22.at(i);
@@ -364,17 +301,12 @@ void Strassen_Multiplication(const double* A, const double* B, double* C,
       std::vector<double> local_A11(no_of_elements);
       std::vector<double> local_B22(no_of_elements);
 
-      MPI_Request req;
-      MPI_Isend(&local_B.at(0), no_of_elements, MPI_DOUBLE,
-                comm_rank + thread_size, 500, MPI_COMM_WORLD, &req);
-      MPI_Isend(&local_A.at(0), no_of_elements, MPI_DOUBLE, comm_rank - 1, 100,
-                MPI_COMM_WORLD, &req);
+      CutSybMatr(A, &local_A11, size, rows);
 
-      MPI_Status stat;
-      MPI_Recv(&local_B22.at(0), no_of_elements, MPI_DOUBLE,
-               comm_rank + thread_size, 200, MPI_COMM_WORLD, &stat);
-      MPI_Recv(&local_A11.at(0), no_of_elements, MPI_DOUBLE, comm_rank - 1, 100,
-               MPI_COMM_WORLD, &stat);
+      CutSybMatr(A + size / 2, &local_A, size, rows);
+      CutSybMatr(B + size / 2, &local_B, size, rows);
+
+      CutSybMatr(B + size * size / 2 + size / 2, &local_B22, size, rows);
 
       for (int i = 0; i < no_of_elements; i++) {
         T5.at(i) = local_B.at(i) - local_B22.at(i);
@@ -392,17 +324,12 @@ void Strassen_Multiplication(const double* A, const double* B, double* C,
       std::vector<double> local_A22(no_of_elements);
       std::vector<double> local_B11(no_of_elements);
 
-      MPI_Request req;
-      MPI_Isend(&local_A.at(0), no_of_elements, MPI_DOUBLE, comm_rank + 1, 500,
-                MPI_COMM_WORLD, &req);
-      MPI_Isend(&local_B.at(0), no_of_elements, MPI_DOUBLE,
-                comm_rank - thread_size, 200, MPI_COMM_WORLD, &req);
+      CutSybMatr(B, &local_B11, size, rows);
 
-      MPI_Status stat;
-      MPI_Recv(&local_A22.at(0), no_of_elements, MPI_DOUBLE, comm_rank + 1, 100,
-               MPI_COMM_WORLD, &stat);
-      MPI_Recv(&local_B11.at(0), no_of_elements, MPI_DOUBLE,
-               comm_rank - thread_size, 400, MPI_COMM_WORLD, &stat);
+      CutSybMatr(A + size * size / 2, &local_A, size, rows);
+      CutSybMatr(B + size * size / 2, &local_B, size, rows);
+
+      CutSybMatr(A + size * size / 2 + size / 2, &local_A22, size, rows);
 
       for (int i = 0; i < no_of_elements; i++) {
         T8.at(i) = local_A.at(i) + local_A22.at(i);
@@ -422,25 +349,15 @@ void Strassen_Multiplication(const double* A, const double* B, double* C,
       std::vector<double> local_B12(no_of_elements);
       std::vector<double> local_B11(no_of_elements);
 
-      MPI_Request req;
-      MPI_Isend(&local_A.at(0), no_of_elements, MPI_DOUBLE, comm_rank - 1, 100,
-                MPI_COMM_WORLD, &req);
-      MPI_Isend(&local_B.at(0), no_of_elements, MPI_DOUBLE,
-                comm_rank - thread_size, 200, MPI_COMM_WORLD, &req);
-      MPI_Isend(&local_B.at(0), no_of_elements, MPI_DOUBLE,
-                comm_rank - thread_size - 1, 200, MPI_COMM_WORLD, &req);
-      MPI_Isend(&local_A.at(0), no_of_elements, MPI_DOUBLE,
-                comm_rank - thread_size - 1, 100, MPI_COMM_WORLD, &req);
+      CutSybMatr(A, &local_A11, size, rows);
+      CutSybMatr(B, &local_B11, size, rows);
 
-      MPI_Status stat;
-      MPI_Recv(&local_A21.at(0), no_of_elements, MPI_DOUBLE, comm_rank - 1, 500,
-               MPI_COMM_WORLD, &stat);
-      MPI_Recv(&local_B12.at(0), no_of_elements, MPI_DOUBLE,
-               comm_rank - thread_size, 500, MPI_COMM_WORLD, &stat);
-      MPI_Recv(&local_A11.at(0), no_of_elements, MPI_DOUBLE,
-               comm_rank - thread_size - 1, 500, MPI_COMM_WORLD, &stat);
-      MPI_Recv(&local_B11.at(0), no_of_elements, MPI_DOUBLE,
-               comm_rank - thread_size - 1, 600, MPI_COMM_WORLD, &stat);
+      CutSybMatr(B + size / 2, &local_B12, size, rows);
+
+      CutSybMatr(A + size * size / 2, &local_A21, size, rows);
+
+      CutSybMatr(A + size * size / 2 + size / 2, &local_A, size, rows);
+      CutSybMatr(B + size * size / 2 + size / 2, &local_B, size, rows);
 
       for (int i = 0; i < no_of_elements; i++) {
         T12.at(i) = local_A21.at(i) - local_A11.at(i);

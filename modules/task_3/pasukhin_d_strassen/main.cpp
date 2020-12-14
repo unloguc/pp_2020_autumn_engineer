@@ -7,6 +7,8 @@
 #include <limits>
 #include "./strassen.h"
 
+const bool debug = false;
+
 TEST(Parallel_Operations_MPI, Test_Little_Strassen_Result) {
   int comm_rank;
   int comm_size;
@@ -14,22 +16,27 @@ TEST(Parallel_Operations_MPI, Test_Little_Strassen_Result) {
   MPI_Comm_rank(MPI_COMM_WORLD, &comm_rank);
   MPI_Comm_size(MPI_COMM_WORLD, &comm_size);
 
-  const int size = 36;
-
+  int pow_size = 4*comm_size;
+  const int size = pow_size*pow_size;
   double* A = new double[size];
   GenerateMatrix(A, size, 2);
 
   double* B = new double[size];
   GenerateMatrix(B, size, 3);
 
-  int pow_size = 6;
 
   double* res_C = new double[size];
   double* org_C = new double[size];
 
+  const double start = MPI_Wtime();
   Strassen_Multiplication(A, B, res_C, pow_size);
+  if (debug && comm_rank == 0)
+    std::cout << "Paral time: " << MPI_Wtime() - start << std::endl;
 
+  const double start2 = MPI_Wtime();
   Serial_Strassen(A, B, org_C, pow_size);
+  if (debug && comm_rank == 0)
+    std::cout << "Seq time: " << MPI_Wtime() - start2 << std::endl;
 
   if (comm_rank == 0) {
     bool is_OK = true;
@@ -50,7 +57,8 @@ TEST(Parallel_Operations_MPI, Test_Middle_Strassen_Result) {
   MPI_Comm_rank(MPI_COMM_WORLD, &comm_rank);
   MPI_Comm_size(MPI_COMM_WORLD, &comm_size);
 
-  const int size = 144;
+  int pow_size = 16 * comm_size;
+  const int size = pow_size * pow_size;
 
   double* A = new double[size];
   GenerateMatrix(A, size, 2);
@@ -58,14 +66,18 @@ TEST(Parallel_Operations_MPI, Test_Middle_Strassen_Result) {
   double* B = new double[size];
   GenerateMatrix(B, size, 3);
 
-  int pow_size = 12;
-
   double* res_C = new double[size];
   double* org_C = new double[size];
 
+  const double start = MPI_Wtime();
   Strassen_Multiplication(A, B, res_C, pow_size);
+  if (debug && comm_rank == 0)
+    std::cout << "Paral time: " << MPI_Wtime() - start << std::endl;
 
+  const double start2 = MPI_Wtime();
   Serial_Strassen(A, B, org_C, pow_size);
+  if (debug && comm_rank == 0)
+    std::cout << "Seq time: " << MPI_Wtime() - start2 << std::endl;
 
   if (comm_rank == 0) {
     bool is_OK = true;
@@ -86,7 +98,8 @@ TEST(Parallel_Operations_MPI, Test_Big_Strassen_result) {
   MPI_Comm_rank(MPI_COMM_WORLD, &comm_rank);
   MPI_Comm_size(MPI_COMM_WORLD, &comm_size);
 
-  const int size = 256;
+  int pow_size = 64 * comm_size/4;
+  const int size = pow_size * pow_size;
 
   double* A = new double[size];
   GenerateMatrix(A, size, 2);
@@ -94,14 +107,18 @@ TEST(Parallel_Operations_MPI, Test_Big_Strassen_result) {
   double* B = new double[size];
   GenerateMatrix(B, size, 3);
 
-  int pow_size = 16;
-
   double* res_C = new double[size];
   double* org_C = new double[size];
 
+  const double start = MPI_Wtime();
   Strassen_Multiplication(A, B, res_C, pow_size);
+  if (debug && comm_rank == 0)
+    std::cout << "Paral time: " << MPI_Wtime() - start << std::endl;
 
+  const double start2 = MPI_Wtime();
   Serial_Strassen(A, B, org_C, pow_size);
+  if (debug && comm_rank == 0)
+    std::cout << "Seq time: " << MPI_Wtime() - start2 << std::endl;
 
   if (comm_rank == 0) {
     bool is_OK = true;
